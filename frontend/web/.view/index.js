@@ -201,7 +201,7 @@ prefix.currentName = parentName;
 
 
 
-pug_html = pug_html + "\u003Chtml\u003E\u003Chead\u003E";
+pug_html = pug_html + "\u003Chtml\u003E\u003Chead\u003E\u003Cmeta charset=\"utf-8\"\u003E\u003Ctitle\u003EBAKAMO\u003C\u002Ftitle\u003E";
 pug_mixins["css"]([
       {name: "bootstrap", path: "dist/css/bootstrap.min.css"},
       {name: "@loadingio/bootstrap.ext"},
