@@ -1,0 +1,22 @@
+//- module
++scope("navtop"): .navbar.navbar-expand-lg.navbar-light.fixed-top(ld="root")
+  .collapse.navbar-collapse
+    a.d-flex.align-items-center(href="/",style="font-size:24px;line-height:1em")
+      //-img.mr-1(src="/assets/img/plotdb-logo-round.svg",style="width:1em;margin:.125em 0")
+      .font-weight-bold.text-sm.text-dark BAKAMO
+    .ml-auto
+      ul.navbar-nav.ml-4
+        li.nav-item.d-none(ld="unauthed login"): a.nav-link 登入
+        li.nav-item.d-none(ld="unauthed signup"): a.nav-link 註冊
+        li.nav-item.dropdown.d-none(ld="authed profile")
+          a.nav-link.dropdown-toggle(href="#",data-toggle="dropdown"): i.i-user
+          .dropdown-menu.dropdown-menu-right.shadow-sm
+            a.dropdown-item(href="/me/settings/")
+              .align-middle.text-capitalize.text-ellipsis(ld="displayname") Greeting!
+              .text-sm.align-middle.text-ellipsis(ld="username") ...
+            .dropdown-divider
+            a.dropdown-item(href="/me/settings/") 設定
+            .dropdown-divider
+            .dropdown-item.text-danger(ld="logout") 登出
+
+

@@ -46,7 +46,7 @@
     "@xlfont/load": "^2.1.0",
     "@zbryikt/voronoijs": "^1.0.0",
     "bootstrap": "^4.6.1",
-    "bootstrap.native": "^4.0.4",
+    "bootstrap.native": "^3.0.15",
     "codemirror": "^5.65.3",
     "csv4xls": "^0.2.0",
     "curegex": "^0.0.4",

@@ -1,0 +1,45 @@
+//- module
+doctype html
+include /modules/common.pug
+html
+  head
+    block var
+    block prehead
+    +css([
+      {name: "bootstrap", path: "dist/css/bootstrap.min.css"},
+      {name: "@loadingio/bootstrap.ext"},
+      {name: "ldiconfont"},
+      {name: "ldcover"}
+    ])
+    block head
+  body
+    include /modules/navtop.pug
+    block body
+    +script([
+      {name: "bootstrap.native", path: "dist/bootstrap-native-v4.min.js"},
+      {name: "proxise"},
+      {name: "@loadingio/debounce.js"},
+      {name: "@loadingio/ldquery"},
+      {name: "@loadingio/ldc"},
+      {name: "zmgr"},
+      {name: "ldview"},
+      {name: "ldcover"},
+      {name: "ldnotify"},
+      {name: "ldcvmgr"},
+      {name: "lderror"},
+      {name: "ldloader"},
+      {name: "@plotdb/httputil"},
+      {name: "@plotdb/semver"},
+      {name: "@plotdb/rescope"},
+      {name: "@plotdb/csscope"},
+      {name: "@plotdb/block"},
+      {name: "@servebase/auth"},
+      {name: "@servebase/consent"},
+      {name: "@servebase/captcha"},
+      {name: "@servebase/erratum"},
+      {name: "@servebase/core"},
+      {name: "@servebase/connector"},
+      {name: "@servebase/navtop"},
+      {url: "/js/site.min.js"}
+    ])
+    block script
