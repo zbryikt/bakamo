@@ -1,5 +1,5 @@
 require! <[crypto lderror]>
-require! <[@servebase/backend/throttle]>
+require! <[@servebase/backend/throttle @servebase/backend/aux]>
 
 (backend) <- ((f) -> module.exports = -> f it) _
 {db,config,route} = backend
@@ -52,3 +52,23 @@ route.auth.post \/passwd/reset, mdw.throttle, mdw.captcha, (req, res) ->
         {now: true}
       )
     .then -> res.send ''
+
+route.auth.put \/passwd/, mdw.throttle, aux.signedin, (req, res, next) ->
+  {n,o} = req.body{n,o}
+  Promise.resolve!
+    .then ->
+      {n,o} = req.body{n,o}
+      if !req.user => return aux.reject 403
+      if n.length < 8 => return aux.reject 1031
+      db.query "select password from users where key = $1", [req.user.key]
+    .then (r = {}) ->
+      if !(u = r.[]rows.0) => return aux.reject 403
+      db.user-store.compare o, u.password
+        .catch -> return aux.reject 1030
+    .then -> db.user-store.hashing n
+    .then (password) ->
+      req.user <<< {password}
+      db.query "update users set (password,method) = ($1,'local') where key = $2", [password, req.user.key]
+    .then -> new Promise (res, rej) -> req.login(req.user, -> res!)
+    .then -> res.send!
+
