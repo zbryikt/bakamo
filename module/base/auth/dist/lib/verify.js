@@ -14,8 +14,12 @@
       return f(it);
     };
   })(function(backend){
-    var db, config, route, verifyEmail;
+    var db, config, route, mdw, verifyEmail;
     db = backend.db, config = backend.config, route = backend.route;
+    mdw = {
+      throttle: throttle.kit.login,
+      captcha: backend.middleware.captcha
+    };
     verifyEmail = function(arg$){
       var req, io, user, obj;
       req = arg$.req, io = arg$.io, user = arg$.user;
@@ -37,7 +41,7 @@
         });
       });
     };
-    route.auth.post('/mail/verify', aux.signedin, function(req, res){
+    route.auth.post('/mail/verify', aux.signedin, mdw.throttle, mdw.captcha, function(req, res){
       return db.query("select key from users where key = $1 and deleted is not true", [req.user.key]).then(function(r){
         r == null && (r = {});
         if (!(r.rows || (r.rows = [])).length) {

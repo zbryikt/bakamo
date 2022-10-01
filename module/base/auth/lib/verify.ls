@@ -3,6 +3,7 @@ require! <[@servebase/backend/aux @servebase/backend/session @servebase/backend/
 
 (backend) <- ((f) -> module.exports = -> f it) _
 {db,config,route} = backend
+mdw = throttle: throttle.kit.login, captcha: backend.middleware.captcha
 
 verify-email = ({req, io, user}) ->
   obj = {}
@@ -20,7 +21,7 @@ verify-email = ({req, io, user}) ->
         {now: true}
       )
 
-route.auth.post \/mail/verify, aux.signedin, (req, res) ->
+route.auth.post \/mail/verify, aux.signedin, mdw.throttle, mdw.captcha, (req, res) ->
   db.query "select key from users where key = $1 and deleted is not true", [req.user.key]
     .then (r={}) ->
       if !(r.[]rows.length) => return lderror.reject 404
