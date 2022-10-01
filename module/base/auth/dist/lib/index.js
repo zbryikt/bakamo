@@ -187,7 +187,8 @@
           }
           : {},
         captcha: captcha,
-        version: this$.version
+        version: this$.version,
+        config: backend.config.client || {}
       });
       res.cookie('global', payload, {
         path: '/',

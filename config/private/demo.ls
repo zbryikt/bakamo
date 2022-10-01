@@ -55,3 +55,6 @@ module.exports = do
     mailgun: auth:
       domain: '...'
       api_key: '...'
+  # additional information passing to client side via api/auth/info.
+  # use `global.config` to access this object.
+  client: {}

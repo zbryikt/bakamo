@@ -109,6 +109,7 @@ route.auth.get \/info, (req, res) ~>
     user: if req.user => req.user{key, config, displayname, verified, username, staff} else {}
     captcha: captcha
     version: @version
+    config: backend.config.client or {}
   })
   res.cookie 'global', payload, { path: '/', secure: true }
   res.send payload
