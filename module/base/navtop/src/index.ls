@@ -40,7 +40,7 @@ view = new ldview do
 
 bar = view.get \root
 dotst = (bar.getAttribute(\data-classes) or "").split(';').map(->it.split(' ').filter(->it))
-tst-tgt = ld$.find document, bar.getAttribute(\data-pivot), 0
+tst-tgt = if bar.getAttribute(\data-pivot) => ld$.find(document, that, 0) else null
 if !(dotst.length and tst-tgt) => return
 (new IntersectionObserver (->
   if !(n = it.0) => return

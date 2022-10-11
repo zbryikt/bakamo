@@ -7,7 +7,7 @@
       return function(it){
         return it.apply({});
       }(function(){
-        var auth, navtop, view, bar, dotst, tstTgt, this$ = this;
+        var auth, navtop, view, bar, dotst, tstTgt, that, this$ = this;
         auth = core.auth;
         this.user = core.user;
         this.global = core.global;
@@ -102,7 +102,7 @@
             return it;
           });
         });
-        tstTgt = ld$.find(document, bar.getAttribute('data-pivot'), 0);
+        tstTgt = (that = bar.getAttribute('data-pivot')) ? ld$.find(document, that, 0) : null;
         if (!(dotst.length && tstTgt)) {
           return;
         }
