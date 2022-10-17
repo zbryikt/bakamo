@@ -6,8 +6,8 @@ require! <[@servebase/backend/aux @servebase/backend/session @servebase/backend/
 mdw = throttle: throttle.kit.login, captcha: backend.middleware.captcha
 
 getmap = (req) ->
-  sitename: config.sitename or config.hostname or aux.hostname(req)
-  domain: config.hostname or aux.hostname(req)
+  sitename: config.sitename or config.domain or aux.hostname(req)
+  domain: config.domain or aux.hostname(req)
 
 verify-email = ({req, io, user}) ->
   obj = {}

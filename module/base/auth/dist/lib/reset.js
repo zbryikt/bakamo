@@ -18,8 +18,8 @@
     };
     getmap = function(req){
       return {
-        sitename: config.sitename || config.hostname || aux.hostname(req),
-        domain: config.hostname || aux.hostname(req)
+        sitename: config.sitename || config.domain || aux.hostname(req),
+        domain: config.domain || aux.hostname(req)
       };
     };
     route.auth.post('/passwd/reset/:token', mdw.throttle, mdw.captcha, function(req, res){

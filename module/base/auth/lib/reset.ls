@@ -6,8 +6,8 @@ require! <[@servebase/backend/throttle @servebase/backend/aux]>
 mdw = throttle: throttle.kit.login, captcha: backend.middleware.captcha
 
 getmap = (req) ->
-  sitename: config.sitename or config.hostname or aux.hostname(req)
-  domain: config.hostname or aux.hostname(req)
+  sitename: config.sitename or config.domain or aux.hostname(req)
+  domain: config.domain or aux.hostname(req)
 
 route.auth.post \/passwd/reset/:token, mdw.throttle, mdw.captcha, (req, res) ->
   token = req.params.token
