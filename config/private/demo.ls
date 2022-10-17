@@ -1,4 +1,5 @@
 module.exports = do
+  name: 'serve.base' # verbose name for user, if needed.
   port: 8901
   limit: '20mb'
   i18n:
