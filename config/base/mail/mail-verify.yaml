@@ -1,5 +1,5 @@
 from: '"#{sitename} Support" <contact@#{domain}>'
-subject: Email Verification from #{sitename}
+subject: 'Email Verification from #{sitename}'
 content: |
   You receive this mail because there is an email verification request for the account using this email in #{sitename}. If you didn't sign up #{sitename}, please just ignore this mail, or reply directly to ask removing email.
 
