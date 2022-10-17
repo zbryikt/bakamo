@@ -10,11 +10,17 @@
       return f(it);
     };
   })(function(backend){
-    var db, config, route, mdw;
+    var db, config, route, mdw, getmap;
     db = backend.db, config = backend.config, route = backend.route;
     mdw = {
       throttle: throttle.kit.login,
       captcha: backend.middleware.captcha
+    };
+    getmap = function(req){
+      return {
+        sitename: config.sitename || config.hostname || aux.hostname(req),
+        domain: config.hostname || aux.hostname(req)
+      };
     };
     route.auth.post('/passwd/reset/:token', mdw.throttle, mdw.captcha, function(req, res){
       var token, password;
@@ -81,9 +87,9 @@
       }).then(function(){
         return db.query("insert into pwresettoken (owner,token,time) values ($1,$2,$3)", [obj.key, obj.hex, obj.time]);
       }).then(function(){
-        return backend.mailQueue.byTemplate('reset-password', email, {
+        return backend.mailQueue.byTemplate('reset-password', email, import$({
           token: obj.hex
-        }, {
+        }, getmap(req)), {
           now: true
         });
       }).then(function(){
@@ -134,4 +140,9 @@
       });
     });
   });
+  function import$(obj, src){
+    var own = {}.hasOwnProperty;
+    for (var key in src) if (own.call(src, key)) obj[key] = src[key];
+    return obj;
+  }
 }).call(this);

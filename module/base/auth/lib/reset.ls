@@ -5,6 +5,10 @@ require! <[@servebase/backend/throttle @servebase/backend/aux]>
 {db,config,route} = backend
 mdw = throttle: throttle.kit.login, captcha: backend.middleware.captcha
 
+getmap = (req) ->
+  sitename: config.sitename or config.hostname or aux.hostname(req)
+  domain: config.hostname or aux.hostname(req)
+
 route.auth.post \/passwd/reset/:token, mdw.throttle, mdw.captcha, (req, res) ->
   token = req.params.token
   password = {plain: req.body.password}
@@ -48,7 +52,7 @@ route.auth.post \/passwd/reset, mdw.throttle, mdw.captcha, (req, res) ->
       backend.mail-queue.by-template(
         \reset-password
         email
-        {token: obj.hex}
+        ({token: obj.hex} <<< getmap(req))
         {now: true}
       )
     .then -> res.send ''

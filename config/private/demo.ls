@@ -1,5 +1,11 @@
 module.exports = do
-  site-name: 'serve.base' # verbose name for user, if needed.
+  # verbose name for user, such as in mail title, etc.
+  #  - if omitted, `hostname` below or `aux.hostname(req)` should be used instead.
+  sitename: 'servebase'
+  # optional hostname.
+  #  - dev can still infer domain name in used by `aux.hostname(req)` if omitted,
+  #    however this should be used if provided.
+  hostname: 'serve.base'
   port: 8901
   limit: '20mb'
   i18n:

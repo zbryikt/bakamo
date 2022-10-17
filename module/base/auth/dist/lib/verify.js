@@ -14,11 +14,17 @@
       return f(it);
     };
   })(function(backend){
-    var db, config, route, mdw, verifyEmail;
+    var db, config, route, mdw, getmap, verifyEmail;
     db = backend.db, config = backend.config, route = backend.route;
     mdw = {
       throttle: throttle.kit.login,
       captcha: backend.middleware.captcha
+    };
+    getmap = function(req){
+      return {
+        sitename: config.sitename || config.hostname || aux.hostname(req),
+        domain: config.hostname || aux.hostname(req)
+      };
     };
     verifyEmail = function(arg$){
       var req, io, user, obj;
@@ -34,9 +40,9 @@
       }).then(function(){
         return db.query("insert into mailverifytoken (owner,token,time) values ($1,$2,$3)", [obj.key, obj.hex, obj.time]);
       }).then(function(){
-        return backend.mailQueue.byTemplate('mail-verify', user.username, {
+        return backend.mailQueue.byTemplate('mail-verify', user.username, import$({
           token: obj.hex
-        }, {
+        }, getmap(req)), {
           now: true
         });
       });
@@ -106,4 +112,9 @@
       });
     });
   });
+  function import$(obj, src){
+    var own = {}.hasOwnProperty;
+    for (var key in src) if (own.call(src, key)) obj[key] = src[key];
+    return obj;
+  }
 }).call(this);

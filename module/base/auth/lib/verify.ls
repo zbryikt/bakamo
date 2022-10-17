@@ -5,6 +5,10 @@ require! <[@servebase/backend/aux @servebase/backend/session @servebase/backend/
 {db,config,route} = backend
 mdw = throttle: throttle.kit.login, captcha: backend.middleware.captcha
 
+getmap = (req) ->
+  sitename: config.sitename or config.hostname or aux.hostname(req)
+  domain: config.hostname or aux.hostname(req)
+
 verify-email = ({req, io, user}) ->
   obj = {}
   Promise.resolve!
@@ -17,7 +21,7 @@ verify-email = ({req, io, user}) ->
       backend.mail-queue.by-template(
         \mail-verify
         user.username
-        {token: obj.hex}
+        ({token: obj.hex} <<< getmap(req))
         {now: true}
       )
 
