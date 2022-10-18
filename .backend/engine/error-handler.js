@@ -7,8 +7,25 @@
   (function(it){
     return module.exports = it;
   })(function(backend){
-    var config, handler;
+    var config, route490, handler;
     config = backend.config;
+    route490 = function(req, res, err){
+      if (!/^\/api/.exec(req.originalUrl) && !/^\/err\/490/.exec(req.originalUrl)) {
+        res.set({
+          "Content-Type": "text/html",
+          "X-Accel-Redirect": err.redirect || '/err/490'
+        });
+      } else {
+        delete err.redirect;
+      }
+      res.cookie('lderror', JSON.stringify(err), {
+        maxAge: 60000,
+        httpOnly: false,
+        secure: true,
+        sameSite: 'Strict'
+      });
+      return res.status(490).send(err);
+    };
     handler = function(err, req, res, next){
       var e;
       try {
@@ -40,21 +57,7 @@
             }, ("exception logged [URL: " + req.originalUrl + "] " + (err.message ? ': ' + err.message : '') + " " + err.uuid).red);
           }
           delete err.stack;
-          if (!/^\/api/.exec(req.originalUrl) && !/^\/err\/490/.exec(req.originalUrl)) {
-            res.set({
-              "Content-Type": "text/html",
-              "X-Accel-Redirect": err.redirect || '/err/490'
-            });
-          } else {
-            delete err.redirect;
-          }
-          res.cookie('lderror', JSON.stringify(err), {
-            maxAge: 60000,
-            httpOnly: false,
-            secure: true,
-            sameSite: 'Strict'
-          });
-          return res.status(490).send(err);
+          return route490(req, res, err);
         } else if (err instanceof URIError && (err.stack + "").startsWith('URIError: Failed to decode param')) {
           return res.status(400).send(err);
         }
@@ -68,11 +71,16 @@
       req.log.error({
         err: err
       }, ("unhandled exception occurred [URL: " + req.originalUrl + "] " + (err.message ? ': ' + err.message : '') + " " + err.uuid).red);
-      return res.status(500).send({
+      err = {
         id: err.id,
         name: err.name,
         uuid: err.uuid
-      });
+      };
+      if (!(err.name != null && err.id != null)) {
+        err.name = 'lderror';
+        err.id = 500;
+      }
+      return route490(req, res, err);
     };
     return handler;
   });
