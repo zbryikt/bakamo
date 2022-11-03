@@ -41,13 +41,14 @@
           err = lderror(1005);
         }
         err.uuid = suuid();
+        err._detail = {
+          user: (req.user || {}).key || 0,
+          ip: aux.ip(req),
+          url: req.originalUrl
+        };
         if (backend.config.log.allError && !(lderror.id(err) && err.log)) {
           backend.logError.debug({
-            err: (err._detail = {
-              user: (req.user || {}).key || 0,
-              ip: aux.ip(req),
-              url: req.originalUrl
-            }, err)
+            err: err
           }, "error logged in error handler (lderror id " + lderror.id(err) + ")");
         }
         if (lderror.id(err)) {

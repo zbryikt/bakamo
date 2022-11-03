@@ -34,10 +34,11 @@ handler = (err, req, res, next) ->
     # delegate csrf token mismatch to lderror handling
     if err.code == \EBADCSRFTOKEN => err = lderror 1005
     err.uuid = suuid!
+    err <<< {_detail: user: (req.user or {}).key or 0, ip: aux.ip(req), url: req.originalUrl}
     # log every single error except those will be logged below ( has id + log = true )
     if backend.config.log.all-error and !(lderror.id(err) and err.log) =>
       backend.log-error.debug(
-        {err: err <<< {_detail: user: (req.user or {}).key or 0, ip: aux.ip(req), url: req.originalUrl}}
+        {err: err}
         "error logged in error handler (lderror id #{lderror.id(err)})"
       )
     if lderror.id(err) =>
