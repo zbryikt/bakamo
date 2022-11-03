@@ -16,6 +16,7 @@
     "../../module/base/erratum",
     "../../module/base/core",
     "../../module/base/navtop",
+    "../../module/base/pugutil",
     "../../module/base/connector"
   ],
   "dependencies": {

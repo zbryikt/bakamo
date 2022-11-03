@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+rm -rf dist
+mkdir -p dist
+
+cp src/*.pug dist/
+cat src/*.pug > dist/index.pug
+
+echo "done."
