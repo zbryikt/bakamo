@@ -1,6 +1,7 @@
 node_modules
 *.log
 secret.*
+secret
 .*.swp
 .swp
 config/gen
