@@ -154,18 +154,18 @@ route.auth
     db.user-store.create {username, password} <<< {
       method: \local, detail: {displayname}, config: (config or {})
     }
-      .then (user) !-> req.logIn user, !-> res.send!
+      .then (user) !-> req.login user, !-> res.send!
       .catch !-> next(lderror 403)
   ..post \/login, (req, res, next) ->
     ((err,user,info) <- passport.authenticate \local, _
     if err or !user => return next(err or lderror(1000))
-    req.logIn user, (err) !-> if err => next(err) else res.send!
+    req.login user, (err) !-> if err => next(err) else res.send!
     )(req, res, next)
-  ..post \/logout, (req, res) -> req.logout!; res.send!
+  ..post \/logout, (req, res) -> req.logout(!-> res.send!)
 
 app.get \/auth, (req, res) ->
   aux.clear-cookie req, res
-  req.logout!
+  <-! req.logout _
   # by rendering instead of redirecting, we can keep the URL as is.
   # in this case a reload after authenticaed will help refresh that page
   # frontend should determine current URL and redirect to landing page if necessary to prevent infinite loop
@@ -174,13 +174,13 @@ app.get \/auth, (req, res) ->
 # identical to `/auth` but if it's more semantic clear.
 app.get \/auth/reset, (req, res) ->
   aux.clear-cookie req, res
-  req.logout!
+  <-! req.logout _
   res.render "auth/index.pug"
 
 # this must not be guarded by csrf since it's used to recover csrf token.
 app.post \/api/auth/reset, (req, res) ->
   aux.clear-cookie req, res
-  req.logout!
+  <-! req.logout _
   res.send!
 
 reset backend

@@ -269,7 +269,7 @@
         },
         config: config || {}
       }).then(function(user){
-        req.logIn(user, function(){
+        req.login(user, function(){
           res.send();
         });
       })['catch'](function(){
@@ -281,7 +281,7 @@
         if (err || !user) {
           return next(err || lderror(1000));
         }
-        return req.logIn(user, function(err){
+        return req.login(user, function(err){
           if (err) {
             next(err);
           } else {
@@ -291,23 +291,27 @@
       })(req, res, next);
     });
     x$.post('/logout', function(req, res){
-      req.logout();
-      return res.send();
+      return req.logout(function(){
+        res.send();
+      });
     });
     app.get('/auth', function(req, res){
       aux.clearCookie(req, res);
-      req.logout();
-      return res.render("auth/index.pug");
+      return req.logout(function(){
+        res.render("auth/index.pug");
+      });
     });
     app.get('/auth/reset', function(req, res){
       aux.clearCookie(req, res);
-      req.logout();
-      return res.render("auth/index.pug");
+      return req.logout(function(){
+        res.render("auth/index.pug");
+      });
     });
     app.post('/api/auth/reset', function(req, res){
       aux.clearCookie(req, res);
-      req.logout();
-      return res.send();
+      return req.logout(function(){
+        res.send();
+      });
     });
     reset(backend);
     verify(backend);
