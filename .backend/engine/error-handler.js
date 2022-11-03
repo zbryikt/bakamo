@@ -41,7 +41,7 @@
           err = lderror(1005);
         }
         err.uuid = suuid();
-        if (backend.config.log.allError) {
+        if (backend.config.log.allError && !(lderror.id(err) && err.log)) {
           backend.logError.debug({
             err: (err._detail = {
               user: (req.user || {}).key || 0,
