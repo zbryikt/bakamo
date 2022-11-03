@@ -94,7 +94,7 @@
       logout: function(){
         var this$ = this;
         this.ui.loader.on();
-        return ld$.fetch(this.apiRoot() + "/logout", {
+        return ld$.fetch(this.apiRoot() + "logout", {
           method: 'post'
         }, {}).then(function(){
           return this$.fetch({

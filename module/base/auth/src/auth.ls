@@ -38,7 +38,7 @@ auth.prototype = Object.create(Object.prototype) <<< do
   set-ui: -> @ui <<< (it or {}) # TBD. seems not needed anymore.
   logout: ->
     @ui.loader.on!
-    ld$.fetch "#{@api-root!}/logout", {method: \post}, {}
+    ld$.fetch "#{@api-root!}logout", {method: \post}, {}
       .then ~> @fetch {renew: true}
       .then ~> @fire \logout
       .then ~> @ui.loader.off!
