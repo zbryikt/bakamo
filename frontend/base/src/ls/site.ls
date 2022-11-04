@@ -2,9 +2,8 @@ ldc.register \corecfg, <[]>, -> ->
   # corecfg function will be run in `core` context.
   manager: new block.manager registry: ({ns, name, version, path, type}) ~>
     # access @global.version in core context
-    console.log @global.version
     # only customized core will show following registry detail
-    console.log ns, name, version, path, type
+    console.log "mgr (dec=#{@global.version}): ", {ns, name, version, path, type}
     path = path or if type == \block => \index.html
     else if type => "index.min.#type" else 'index.min.js'
     path = "#{path}?dec=#{@global.version or ''}"
