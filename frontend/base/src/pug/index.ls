@@ -53,6 +53,10 @@
                   console.error "accessing /api/demo/post with captcha failed: ", it
                   Promise.reject it
         .catch -> alert "captcha verification failed"
+  init:
+    discuss: ({node}) ~>
+      @manager.from {name: \@servebase/discuss}, {root: node} .then ->
+
   text: do
     username: ~> @user.username or 'n/a'
     userid: ~> @user.key or 'n/a'

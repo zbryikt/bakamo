@@ -151,8 +151,10 @@ html(lang="en")
                 b password #[span.text-sm / left empty for auto generation]
                 input.form-control(ld="adduser.password",type="password",aria-label="password")
               .btn.btn-primary(ld="adduser") Add User
-    +nbr(5)
-    #pivot: +nbr(50)
+    +nbr(2)
+    #pivot
+    .w-1024.rwd.mx-auto.p-4.shadow.rounded.border: div(ld="discuss")
+    +nbr(50)
     //-+script([ {name: "@sentry/tracing", version: "main", path: "build/bundle.tracing.min.js"} ])
 
     +script([
@@ -182,6 +184,7 @@ html(lang="en")
       {name: "@servebase/erratum", version: "main"},
       {name: "@servebase/core", version: "main"},
       {name: "@servebase/navtop", version: "main"},
+      {name: "@servebase/discuss", version: "main"},
       {url: "/js/site.min.js"}
     ])
     script(type="module")
