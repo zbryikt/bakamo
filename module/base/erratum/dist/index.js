@@ -10,7 +10,12 @@
       return this$.errorHandler(evt);
     });
     window.addEventListener('unhandledrejection', function(evt){
-      return this$.rejectionHandler(evt);
+      var e;
+      try {
+        return this$.rejectionHandler(evt);
+      } catch (e$) {
+        return e = e$;
+      }
     });
     if (o.handler) {
       this.handler = o.handler;
