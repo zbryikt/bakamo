@@ -22,3 +22,4 @@ package-lock.json
 .version
 module/version/index.pug
 config/**/local.*
+dev/srcbuild/static/
