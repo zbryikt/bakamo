@@ -99,13 +99,12 @@
       });
     },
     byTemplate: function(name, email, map, config){
-      var fn, path, that, this$ = this;
+      var fn, this$ = this;
       map == null && (map = {});
       config == null && (config = {});
       fn = function(b){
         return "config/" + b + "/mail/" + name + ".yaml";
       };
-      path = (that = config.path) ? that : '.';
       return fs.promises.access(fn(this.base)).then(function(){
         return fn(this$.base);
       })['catch'](function(){

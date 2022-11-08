@@ -50,9 +50,8 @@
       return ret.handler(req, res, next);
     };
   };
-  throttle.store = function(opt){
+  throttle.store = function(){
     var this$ = this;
-    opt == null && (opt = {});
     this.store = {};
     this.time = {};
     this.handler = setInterval(function(){

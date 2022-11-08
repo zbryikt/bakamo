@@ -72,7 +72,6 @@ mail-queue.prototype = Object.create(Object.prototype) <<< do
 
   by-template: (name, email, map = {}, config = {}) ->
     fn = (b) -> "config/#b/mail/#name.yaml"
-    path = if config.path => that else '.'
     fs.promises.access fn @base
       .then ~> fn @base
       .catch ~> fs.promises.access fn \base .then ~> fn \base

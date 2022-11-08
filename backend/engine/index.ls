@@ -1,4 +1,4 @@
-require! <[fs yargs express @plotdb/colors path pino lderror pino-http util body-parser csurf]>
+require! <[fs yargs express @plotdb/colors path pino lderror pino-http body-parser csurf]>
 require! <[i18next-http-middleware]>
 require! <[@plotdb/srcbuild]>
 require! <[@plotdb/srcbuild/dist/view/pug]>
@@ -164,7 +164,7 @@ backend.prototype = Object.create(Object.prototype) <<< do
 
         @route.app = aux.routecatch app
         @route.extapi = aux.routecatch express.Router {mergeParams: true}
-        @route.api = api = aux.routecatch express.Router {mergeParams: true}
+        @route.api = aux.routecatch express.Router {mergeParams: true}
         @route.auth = aux.routecatch express.Router {mergeParams: true}
         @route.consent = aux.routecatch express.Router {mergeParams: true}
 

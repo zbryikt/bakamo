@@ -37,7 +37,7 @@ throttle = (opt) ->
   throttle.factories.push ret
   (req, res, next) -> ret.handler(req, res, next)
 
-throttle.store = (opt = {}) ->
+throttle.store = ->
   @store = {}
   @time = {}
   # periodically clean internal store to prevent memory consumption over time

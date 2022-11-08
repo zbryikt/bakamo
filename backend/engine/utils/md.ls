@@ -1,4 +1,4 @@
-require! <[fs marked]>
+require! <[marked]>
 
 unescape = (text) -> text.replace /\&\#[0-9]*;|&amp;/g, (code) ->
   if /amp/.exec(code) => return \&
