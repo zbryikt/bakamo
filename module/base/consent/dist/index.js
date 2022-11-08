@@ -71,7 +71,7 @@
       ret = this.store.getItem(id);
       if (ret) {
         try {
-          ret = JSON.parse(ret);
+          JSON.parse(ret);
           return Promise.resolve(true);
         } catch (e$) {
           e = e$;

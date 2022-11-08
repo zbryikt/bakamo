@@ -24,7 +24,7 @@ consent.prototype = Object.create(Object.prototype) <<< do
     ret = @store.get-item id
     if ret =>
       try
-        ret = JSON.parse(ret)
+        JSON.parse(ret)
         return Promise.resolve true
       catch e
     ld$.fetch "#{@_api-root}", {method: \POST}, {json: {consent_id: id, check: true}, type: \json}
