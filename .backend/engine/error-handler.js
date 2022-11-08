@@ -7,8 +7,7 @@
   (function(it){
     return module.exports = it;
   })(function(backend){
-    var config, route490, handler;
-    config = backend.config;
+    var route490, handler;
     route490 = function(req, res, err){
       if (!/^\/api/.exec(req.originalUrl) && !/^\/err\/490/.exec(req.originalUrl)) {
         res.set({

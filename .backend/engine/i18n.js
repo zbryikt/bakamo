@@ -27,11 +27,11 @@
     return i18next.use(i18nextFsBackend).use(i18nextHttpMiddleware.LanguageDetector).init(options).then(function(){
       var _load, watcher;
       _load = function(arg$){
-        var file, type, ret, err;
+        var file, type, err;
         file = arg$.file, type = arg$.type;
         if (type !== 'unlink') {
           try {
-            ret = jsYaml.load(fs.readFileSync(file, 'utf8'));
+            jsYaml.load(fs.readFileSync(file, 'utf8'));
             i18next.reloadResources(options.lng);
             return this$.logI18n.info(file + " " + (type === 'add' ? '' : 're') + "loaded.");
           } catch (e$) {

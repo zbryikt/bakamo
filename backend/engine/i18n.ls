@@ -18,7 +18,8 @@ ret = (opt) ->
       _load = ({file, type}) ~>
         if type != \unlink =>
           try
-            ret = js-yaml.load fs.read-file-sync file, \utf8
+            # test load to trigger exception if file malformat
+            js-yaml.load fs.read-file-sync file, \utf8
             i18next.reloadResources(options.lng)
             @log-i18n.info "#file #{if type == \add => '' else \re}loaded."
           catch err

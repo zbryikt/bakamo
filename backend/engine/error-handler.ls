@@ -1,7 +1,6 @@
 require! <[lderror @plotdb/suuid ./aux]>
 
 (backend) <- (->module.exports = it)  _
-{config} = backend
 
 # for serving a friendly error page if it's not an API and prevent looping error
 route490 = (req, res, err) ->

@@ -1,6 +1,6 @@
-require! <[fs path lderror @servebase/backend/throttle @servebase/backend/aux]>
+require! <[lderror @servebase/backend/throttle @servebase/backend/aux]>
 (backend, {api, app}) <- (->module.exports = it)  _
-{db,config} = backend
+{db} = backend
 
 app.get \/, throttle.kit.generic, (req, res, next) ->
   db.query "select count(key) as count from users"
