@@ -55,7 +55,7 @@ throttle.store.prototype = Object.create(Object.prototype) <<< do
     return [@store[key], span - (n - (@time[key] or 0))]
   dec: (key, delta = 1) ->
     @store[key] = ((@store[key] or 0) - delta) >? 0
-  reset: (key) ->
+  reset: (key) !->
     if !(key?) => @ <<< store: {}, time: {}
     else
       @store[key] = 0

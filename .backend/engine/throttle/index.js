@@ -79,10 +79,11 @@
     },
     reset: function(key){
       if (!(key != null)) {
-        return this.store = {}, this.time = {}, this;
+        this.store = {};
+        this.time = {};
       } else {
         this.store[key] = 0;
-        return this.time[key] = 0;
+        this.time[key] = 0;
       }
     }
   });
