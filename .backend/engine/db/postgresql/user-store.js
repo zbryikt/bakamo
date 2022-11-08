@@ -117,7 +117,7 @@
         var displayname, user;
         displayname = detail ? detail.displayname || detail.username : void 8;
         if (!displayname) {
-          displayname = username.replace(/@.+$/, "");
+          displayname = username.replace(/@[^@]+$/, "");
         }
         (config.consent || (config.consent = {})).cookie = new Date().getTime();
         user = {

@@ -47,7 +47,7 @@ user-store.prototype = Object.create(Object.prototype) <<< do
       .then ~> if method == \local => @hashing(password) else password
       .then (password) ~>
         displayname = if detail => detail.displayname or detail.username
-        if !displayname => displayname = username.replace(/@.+$/, "")
+        if !displayname => displayname = username.replace(/@[^@]+$/, "")
         config.{}consent.cookie = new Date!getTime!
         user = { username, password, method, displayname, detail, config, createdtime: new Date! }
         @db.query """
