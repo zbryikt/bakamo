@@ -4,13 +4,14 @@ echo "prepare..."
 rm -rf dist
 mkdir -p dist
 
+bin=../../../node_modules/.bin
 echo "build captcha.ls -> index.js ..."
-./node_modules/.bin/lsc -cp src/captcha.ls > dist/index.js
+$bin/lsc -cp src/captcha.ls > dist/index.js
 echo "minify index.js -> index.min.js ..."
-./node_modules/.bin/uglifyjs dist/index.js > dist/index.min.js
+$bin/uglifyjs dist/index.js > dist/index.min.js
 
 echo "build index.pug ..."
-./node_modules/.bin/srcbuild-pug src/index.pug > dist/index.html
+$bin/srcbuild-pug src/index.pug > dist/index.html
 
 echo "build server files ..."
-node_modules/.bin/lsc -co dist/lib lib
+$bin/lsc -co dist/lib lib
