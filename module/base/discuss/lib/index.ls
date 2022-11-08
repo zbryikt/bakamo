@@ -1,10 +1,10 @@
-require! <[fs path lderror @plotdb/suuid]>
+require! <[lderror @plotdb/suuid]>
 require! <[@servebase/backend/throttle @servebase/backend/aux]>
 
 (backend) <- (->module.exports = it)  _
 <-(->it.apply backend) _
 
-{db,config,route:{api,app},session} = @
+{db,route:{api}} = @
 
 all-thread = (req, res) ->
   limit = if isNaN(req.query.limit) => 20 else +req.query.limit <? 100

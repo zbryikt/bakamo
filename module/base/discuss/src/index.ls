@@ -41,7 +41,7 @@ discuss.prototype = Object.create(Object.prototype) <<<
     cfg.edit =
       action:
         input:
-          "use-markdown": ({node}) ~>
+          "use-markdown": ~>
             @_edit.content.config["renderer"] == if @node.checked => \markdown else ''
             #view.render!
           "toggle-preview": ({node}) ~>
@@ -78,8 +78,8 @@ discuss.prototype = Object.create(Object.prototype) <<<
                 #view.render!
       #init: submit: ({node}) ~> @ldld = new ldloader root: node
       handler:
-        avatar: ({node}) ~> # site specific
-        preview: ({node}) ~>
+        avatar: ~> # site specific
+        preview: ~>
           #revert = ("off" in node.getAttribute(\ld).split(" "))
           #state = !(@preview and @use-markdown) xor revert
           #node.classList.toggle \d-none, state
@@ -100,7 +100,7 @@ discuss.prototype = Object.create(Object.prototype) <<<
               new Date(d.getTime! - (d.getTimezoneOffset!*60000)).toISOString!.slice(0,19).replace(\T,' ')
             author: ({ctx}) -> ctx.displayname
           handler:
-            avatar: ({node}) -> # site specified
+            avatar: -> # site specified
             role:
               list: ({ctx}) -> (if Array.is(ctx.role) => ctx.role else [ctx.role]).filter(->it)
               key: -> it

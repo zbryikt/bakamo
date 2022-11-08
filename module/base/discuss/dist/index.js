@@ -99,9 +99,7 @@
     cfg.edit = {
       action: {
         input: {
-          "use-markdown": function(arg$){
-            var node;
-            node = arg$.node;
+          "use-markdown": function(){
             return this$._edit.content.config["renderer"] === (this$.node.checked ? 'markdown' : '');
           },
           "toggle-preview": function(arg$){
@@ -160,14 +158,8 @@
         }
       },
       handler: {
-        avatar: function(arg$){
-          var node;
-          node = arg$.node;
-        },
-        preview: function(arg$){
-          var node;
-          node = arg$.node;
-        }
+        avatar: function(){},
+        preview: function(){}
       }
     };
     cfg.discuss = {
@@ -208,10 +200,7 @@
               }
             },
             handler: {
-              avatar: function(arg$){
-                var node;
-                node = arg$.node;
-              },
+              avatar: function(){},
               role: {
                 list: function(arg$){
                   var ctx;
