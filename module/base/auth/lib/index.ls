@@ -114,7 +114,7 @@ route.auth.get \/info, (req, res) ~>
   res.cookie 'global', payload, { path: '/', secure: true }
   res.send payload
 
-<[local google facebook line]>.map (name) ->
+<[local google facebook line]>.for-each (name) ->
   if config{}auth[name] => strategy[name](config.auth[name])
   route.auth
     ..post "/#name", passport.authenticate name, {scope: <[profile openid email]>}

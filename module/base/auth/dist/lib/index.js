@@ -196,7 +196,7 @@
       });
       return res.send(payload);
     });
-    ['local', 'google', 'facebook', 'line'].map(function(name){
+    ['local', 'google', 'facebook', 'line'].forEach(function(name){
       var x$;
       if ((config.auth || (config.auth = {}))[name]) {
         strategy[name](config.auth[name]);
