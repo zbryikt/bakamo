@@ -46,7 +46,7 @@ base = do
     else ret.catch -> next it
   # routecatch: for wrapping routers.
   routecatch: (route) ->
-    <[get post put delete]>.map (n) ->
+    <[get post put delete]>.for-each (n) ->
       route["_#n"] = route[n]
       route[n] = (...args) ->
         args = args.map (d,i) -> if d instanceof Function and (i == args.length - 1) => base.autocatch(d,true) else d

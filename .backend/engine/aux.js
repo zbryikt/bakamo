@@ -26,7 +26,7 @@
       };
     },
     routecatch: function(route){
-      ['get', 'post', 'put', 'delete'].map(function(n){
+      ['get', 'post', 'put', 'delete'].forEach(function(n){
         route["_" + n] = route[n];
         return route[n] = function(){
           var args, res$, i$, to$;
