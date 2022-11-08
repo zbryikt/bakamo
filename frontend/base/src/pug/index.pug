@@ -2,6 +2,7 @@ doctype html
 html(lang="en")
   include @/@loadingio/bootstrap.ext/index.pug
   include @/ldview/index.pug
+  include /modules/common.pug
 
   head
     meta(charset="utf-8")
@@ -57,7 +58,7 @@ html(lang="en")
           .flex-grow-1
           .btn-group.dropdown.mr-4
             .btn.btn-sm.btn-outline-dark(ld="lng") EN
-            .btn.btn-sm.btn-outline-dark.dropdown-toggle(data-toggle="dropdown"): i.i-globe
+            .btn.btn-sm.btn-outline-dark.dropdown-toggle(data-toggle="dropdown"): +i.i-globe
             .dropdown-menu.dropdown-menu-right
               .dropdown-item(ld="set-lng",data-name="en") EN
               .dropdown-item(ld="set-lng",data-name="zh-TW") 中
