@@ -3,11 +3,11 @@
   var marked, unescape, option;
   marked = require('marked');
   unescape = function(text){
-    return text.replace(/\&\#[0-9]*;|&amp;/g, function(code){
+    return text.replace(/\&\#\d*;|&amp;/g, function(code){
       if (/amp/.exec(code)) {
         return '&';
       }
-      return String.fromCharCode(code.match(/[0-9]+/));
+      return String.fromCharCode(code.match(/\d+/));
     });
   };
   option = {
