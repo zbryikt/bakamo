@@ -15,12 +15,11 @@
   reset = require('./reset');
   verify = require('./verify');
   (function(f){
-    var authModule;
-    return module.exports = authModule = function(it){
+    return module.exports = function(it){
       return f.call({}, it);
     };
   })(function(backend){
-    var db, app, config, route, captcha, k, v, getUser, strategy, session, x$, this$ = this;
+    var db, app, config, route, captcha, k, v, limitSessionAmount, getUser, strategy, x$, this$ = this;
     db = backend.db, app = backend.app, config = backend.config, route = backend.route;
     captcha = Object.fromEntries((function(){
       var ref$, results$ = [];
@@ -38,6 +37,7 @@
         }
       ];
     }));
+    limitSessionAmount = false;
     getUser = function(arg$){
       var username, password, method, detail, create, cb, req;
       username = arg$.username, password = arg$.password, method = arg$.method, detail = arg$.detail, create = arg$.create, cb = arg$.cb, req = arg$.req;
@@ -50,7 +50,7 @@
       }).then(function(user){
         db.query("select count(ip) from session where owner = $1 group by ip", [user.key]).then(function(r){
           r == null && (r = {});
-          if (false && (((r.rows || (r.rows = []))[0] || {}).count || 1) > 1) {
+          if (limitSessionAmount && (((r.rows || (r.rows = []))[0] || {}).count || 1) > 1) {
             return cb(lderror(1004), null, {
               message: ''
             });
@@ -234,7 +234,7 @@
         })
         : next();
     });
-    app.use(backend.session = session = expressSession({
+    app.use(backend.session = expressSession({
       secret: config.session.secret,
       resave: true,
       saveUninitialized: true,

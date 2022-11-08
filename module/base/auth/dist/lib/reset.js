@@ -103,11 +103,6 @@
         o: ref$.o
       }, n = ref$.n, o = ref$.o;
       return Promise.resolve().then(function(){
-        var ref$, n, o;
-        ref$ = {
-          n: (ref$ = req.body).n,
-          o: ref$.o
-        }, n = ref$.n, o = ref$.o;
         if (!req.user) {
           return aux.reject(403);
         }

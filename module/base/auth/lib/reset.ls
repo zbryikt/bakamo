@@ -61,7 +61,6 @@ route.auth.put \/passwd/, mdw.throttle, aux.signedin, (req, res, next) ->
   {n,o} = req.body{n,o}
   Promise.resolve!
     .then ->
-      {n,o} = req.body{n,o}
       if !req.user => return aux.reject 403
       if n.length < 8 => return aux.reject 1031
       db.query "select password from users where key = $1", [req.user.key]

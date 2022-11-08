@@ -4,10 +4,12 @@ require! <[passport-google-oauth20]>
 require! <[passport-line-auth]>
 require! <[@servebase/backend/aux ./reset ./verify]>
 
-(backend) <- ((f) -> module.exports = auth-module = -> f.call {}, it) _
+(backend) <- ((f) -> module.exports = -> f.call {}, it) _
 {db,app,config,route} = backend
 
 captcha = Object.fromEntries [[k,v] for k,v of config.captcha].map -> [it.0, it.1{sitekey, enabled}]
+
+limit-session-amount = false
 
 get-user = ({username, password, method, detail, create, cb, req}) ->
   db.user-store.get {username, password, method, detail, create}
@@ -15,7 +17,7 @@ get-user = ({username, password, method, detail, create, cb, req}) ->
       db.query "select count(ip) from session where owner = $1 group by ip", [user.key]
         .then (r={}) ->
           # by default disabled - session amount limitation
-          if false and ((r.[]rows.0 or {}).count or 1) > 1 => cb lderror(1004), null, {message: ''}
+          if limit-session-amount and ((r.[]rows.0 or {}).count or 1) > 1 => cb lderror(1004), null, {message: ''}
           else cb null, (user <<< {ip: aux.ip(req)})
     .catch !-> cb lderror(1012), null, {message: ''}
 
@@ -134,7 +136,7 @@ app.use (req, res, next) ->
   cs = c.split /;/ .filter -> /^connect.sid=/.exec(it.trim!)
   return if cs.length > 1 => next {code: \SESSIONCORRUPTED} else next!
 
-app.use backend.session = session = express-session do
+app.use backend.session = express-session do
   secret: config.session.secret
   resave: true
   saveUninitialized: true

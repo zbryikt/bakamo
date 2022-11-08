@@ -1,5 +1,5 @@
-require! <[fs fs-extra crypto lderror]>
-require! <[@servebase/backend/aux @servebase/backend/session @servebase/backend/throttle @servebase/captcha]>
+require! <[crypto lderror]>
+require! <[@servebase/backend/aux @servebase/backend/session @servebase/backend/throttle]>
 
 (backend) <- ((f) -> module.exports = -> f it) _
 {db,config,route} = backend
@@ -9,7 +9,7 @@ getmap = (req) ->
   sitename: config.sitename or config.domain or aux.hostname(req)
   domain: config.domain or aux.hostname(req)
 
-verify-email = ({req, io, user}) ->
+verify-email = ({req, user}) ->
   obj = {}
   Promise.resolve!
     .then ->
