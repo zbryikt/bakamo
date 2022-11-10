@@ -1,3 +1,1 @@
-# discuss
-
-
+../../../module/base/discuss/README.md
