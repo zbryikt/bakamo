@@ -2,15 +2,25 @@
 
 Authentication Subsystem involes following parts:
 
- - db - defines data schema for authentication
+ - db - defines data schema for authentication.
+   - This is defined in `init.sql` under `config/base/db`.
  - backend - access endpoint between client and server ( via server API )
  - frontend - how website interact with users via widgets and client API
- - config
 
 User information is stored in an object called `global`, passed by an API by requested, which contains:
 
- - `key`
- - ...
+ - `csrfToken`: a string for csrf token.
+ - `production`: either true or false, indicating if this is run under production environment.
+ - `ip`: user ip.
+ - `user`: user object with at least following fields:
+   - `key`: positive integer if user is logged in. otherwise 0, null or undefined.
+   - `displayname`: verbose name
+   - `username`: email
+   - `staff`: true if this is staff user. 
+   - `verified`: if this account if verified.
+ - `captcha`: captcha configuration. an object of key(captcha provider) / config (sitekey / enabled) mapping.
+ - `version`: software version
+ - `config`: other configuration for frontend, from `client` field of `secret.ls`.
 
 
 ## Frontend 
@@ -27,44 +37,59 @@ include `auth/index.js` and construct a new `auth` object:
 
     new auth(opt)
 
-with following options:
 
- - `ui` - predefined UI components, with following fields:
-   - `authpanel`: should be an `authpanel` block if provided.
-   - `loader`: should be a `ldloader` object if provided.
-   - `timeout`: should be a function that triggers timeout related event / ui if provided
- - `api` - root of auth related api for accessing backend API. default `/api/auth`
+with following constructor options:
+
+ - `api`: default `/api/auth/`. auth api root path. update this if you change the api root path in backend.
+ - `manager`: a block manager for loading block modules.
+ - `loader`: a global ldloader. `auth` uses this to indicate loading status for better UX.
+ - `zmgr`: a global zmgr for aligning z-index between widgets.
+ - `initFetch`: default true. invoke `fetch` automatically when constructs if true.
 
 
-The constructed object provides following API: ( TODO: review and rename / refactor if necessary )
+APIs of the auth object:
 
  - `logout()`: logout a user.
-   - fire `logout` event if success, otherwise fire `error` event.
- - `get(opt)`: return a Promise that resolves the `global` object.
-   - by default, this doesn't involve `fetch` from server ( or cookie ) - it's expected to simply request a `global` object which already fetched earlier - so it will block until `fetch` called. However, `fetch` may still be called if a sign in process is triggered.
-     - TODO: perhaps we can trigger fetch ( e.g., in proxise.once ) if global is not yet fetched?
+   - fire `update` event if success, otherwise fire `error` event.
+ - `reset()`: reset user session (clear cookie) by redirecting to reset url (`/auth/reset` by default)
+ - `get(opt)`: return a Promise that resolves with the (local stored) `global` object.
+   - if no `global` available, `fetch` is called (without `renew` flag) automatically.
    - options:
-     - `authed-only`: should we only get authed `global` object.
-       - true if we require users to be authed ( logged in ).
-       - default false, which still resolves to an user global object as a guest user ( no user info ).
+     - `authedOnly`: ensure that user is logged in.
+       - trigger authentication flow if user is not login
+         - resolve with `global` object if authed, and rejects with `lderror(1000)` if auth fails.
+       - without `authedOnly`, a `global` object for anonymous user will be returned.
+     - `tab`: see `prompt(opt)` below.
+     - `lock`: see `prompt(opt)` below.
+   - difference between `get` and `fetch`:
+     - `get` returns local stored global object.
+     - `fetch` retrieve data from cookie or server (with `renew`)
+ - `ensure()`: ensure a user is logged in. Prompt an authpanel if a user is not logged in.
+   - shorthand for `get({authedOnly: true})`
  - `fetch(opt)`: fetch the `global` object from either cookie or server.
    - options:
      - `renew`: true to fetch from server. false to fetch from cookie first. default true.
- - `prompt(opt)`: shorthand for `ui.authpanel(true, opt)`
+   - fire `update` event if local auth information is updated (either from server or cookie).
+ - `prompt(opt)`: shorthand for `ui.authpanel(true, opt)` / toggle authpanel on, with options:
+   - `tab`: either `login` or `signup`, indicating tab to show. previous state (or `login`) if omitted.
+   - `lock`: if true, force user to not dismiss this panel unless authenticated.
  - `social(opt)`: trigger social login. options:
    - `name`: social login name. e.g., `facebook`, `google` or `line`.
- - `ensure()`: make sure an user is logged in. prompt a auth panel if not
-   - return a Promise that resolves the `global` object.
-   - reject `lderror(1000)` if anyway we fail to ensure the user is logged in.
  - `reset()`: reset user cookie by redirecting user to `/auth/reset`.
- - `set-ui`: change ui widget configured in constructor option `ui`.
  - `on(name, cb)`: listen to specific event `name` with callback function `cb`
  - `fire(name, ...args)`: fire event `name` with `args`.
- - `api-root()`: return `api-root`
- - `inject`: TBD
+ - `apiRoot()`: return `apiRoot`
+ - `inject`: (TBD)
+ - `setUi`: (TBD/deprecated) change ui widget configured in constructor option `ui`.
 
 
-### Authpanel
+### Events
+
+ - `error`: when error occurs during authentication, along with the error object
+ - `update`: when auth information is updated, along with the `global` object.
+
+
+##r Authpanel
 
 We use `@plotdb/block` to simplify and offload authpanel from main pages. It's possible to customize authpanel appearence by extending `auth` block. Following are the `ldview` interface + minimal markup for authpanel script to work:
 

@@ -5,9 +5,14 @@
   })(function(){
     var lc, getGlobal, auth;
     lc = {};
-    getGlobal = proxise(function(){
+    getGlobal = proxise(function(a){
       if (lc.global) {
         return Promise.resolve(lc.global);
+      } else if (lc.fetching) {
+        return;
+      }
+      if (a) {
+        return a.fetch();
       }
     });
     auth = function(opt){
@@ -56,7 +61,9 @@
       if ((ref$ = this._apiRoot)[ref$.length - 1] !== '/') {
         this._apiRoot += '/';
       }
-      this.fetch();
+      if (opt.initFetch == null || opt.initFetch) {
+        this.fetch();
+      }
       return this;
     };
     auth.prototype = import$(Object.create(Object.prototype), {
@@ -101,8 +108,6 @@
             renew: true
           });
         }).then(function(){
-          return this$.fire('logout');
-        }).then(function(){
           return this$.ui.loader.off();
         })['catch'](function(e){
           return this$.fire('error', e);
@@ -121,7 +126,7 @@
         opt == null && (opt = {
           authedOnly: false
         });
-        return getGlobal(opt).then(function(g){
+        return getGlobal(this).then(function(g){
           var p;
           g == null && (g = {});
           if (!opt.authedOnly) {
@@ -144,6 +149,7 @@
         opt == null && (opt = {
           renew: true
         });
+        lc.fetching = true;
         this.ui.loader.on(this.timeout.loader);
         this.watchdog = debounce(this.timeout.failed, function(){
           this$.ui.loader.off();
@@ -171,11 +177,12 @@
           return this$.ui.loader.off();
         }).then(function(g){
           var ref$, e;
+          lc.fetching = false;
           ((ref$ = ld$.fetch).headers || (ref$.headers = {}))['X-CSRF-Token'] = g.csrfToken;
           g.ext = this$.inject(g) || {};
           getGlobal.resolve(JSON.parse(JSON.stringify(lc.global = g)));
           try {
-            this$.fire('change', lc.global);
+            this$.fire('update', lc.global);
           } catch (e$) {
             e = e$;
             this$.fire('error', e);
@@ -226,7 +233,7 @@
           }
           return this$.social.form.parentNode.removeChild(this$.social.form);
         }).then(function(){
-          return this$.fire('change', lc.global);
+          return this$.fire('update', lc.global);
         })['catch'](function(e){
           this$.fire('error', e);
           return Promise.reject(e);

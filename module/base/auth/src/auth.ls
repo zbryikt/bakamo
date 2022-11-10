@@ -6,13 +6,15 @@ lc = {}
 #   wrap it with proxise so all callers can wait for init fetch event to finish.
 # - put it here so it can't be resolved by user from dev console.
 #   user can still modify auth object so we actually can't prevent users from altering this module.
-get-global = proxise -> if lc.global => return Promise.resolve lc.global
+get-global = proxise (a) ->
+  if lc.global => return Promise.resolve lc.global
+  else if lc.fetching => return
+  if a => a.fetch!
 
 auth = (opt={}) ->
   @_manager = opt.manager
   @timeout = {loader: 1000, failed: 10000}
   @evt-handler = {}
-
   @ui = do
     loader: opt.loader or {on: ->, off: ->, cancel: ->}
     authpanel: (tgl, o = {}) ~>
@@ -27,7 +29,7 @@ auth = (opt={}) ->
     
   if !@_api-root => @_api-root = opt.api or "/api/auth"
   if @_api-root[* - 1] != \/ => @_api-root += \/
-  @fetch!
+  if !opt.init-fetch? or opt.init-fetch => @fetch!
   @
 
 auth.prototype = Object.create(Object.prototype) <<< do
@@ -39,8 +41,7 @@ auth.prototype = Object.create(Object.prototype) <<< do
   logout: ->
     @ui.loader.on!
     ld$.fetch "#{@api-root!}logout", {method: \post}, {}
-      .then ~> @fetch {renew: true}
-      .then ~> @fire \logout
+      .then ~> @fetch {renew: true} # fetch fire `update` event for us.
       .then ~> @ui.loader.off!
       .catch (e) ~> @fire \error, e
   reset: ->
@@ -52,7 +53,7 @@ auth.prototype = Object.create(Object.prototype) <<< do
 
   # for retrieving global object in local.
   get: (opt = {authed-only: false}) ->
-    get-global opt .then (g = {}) ~>
+    get-global @ .then (g = {}) ~>
       if !opt.authed-only => return g
       p = (if !g.{}user.key => @ui.authpanel(true, opt) else Promise.resolve(g))
       p.then (g = {}) ->
@@ -61,6 +62,7 @@ auth.prototype = Object.create(Object.prototype) <<< do
 
   # for retrieving global object from server ( or cookie ). this won't trigger sign up ui.
   fetch: (opt = {renew: true}) ->
+    lc.fetching = true
     # if d/global response later then 1000ms, popup a loader
     @ui.loader.on @timeout.loader
     # if it took too long to respond, just hint user about possibly server issue
@@ -90,11 +92,12 @@ auth.prototype = Object.create(Object.prototype) <<< do
         @ui.loader.cancel!
         @ui.loader.off!
       .then (g) ~>
+        lc.fetching = false
         ld$.fetch.{}headers['X-CSRF-Token'] = g.csrfToken
         g.ext = @inject(g) or {}
         get-global.resolve JSON.parse(JSON.stringify(lc.global = g))
         try
-          @fire \change, lc.global
+          @fire \update, lc.global
         catch e
           # error after data fetched. prompt, but still return global
           @fire \error, e; console.log e
@@ -129,7 +132,7 @@ auth.prototype = Object.create(Object.prototype) <<< do
       .finally ~>
         if !(@social.form and @social.form.parentNode) => return
         @social.form.parentNode.removeChild @social.form
-      .then ~> @fire \change, lc.global # after social login
+      .then ~> @fire \update, lc.global # after social login
       .catch (e) ~> @fire \error, e; return Promise.reject(e)
 
 if module? => module.exports = auth
