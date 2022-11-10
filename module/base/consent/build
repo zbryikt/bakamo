@@ -2,7 +2,7 @@
 
 echo "prepare..."
 rm -rf dist
-mkdir -p dist
+mkdir -p dist/base dist/cookie dist/tos
 
 bin=../../../node_modules/.bin
 echo "building consent.ls -> index.js ..."
@@ -11,16 +11,13 @@ echo "minify index.js -> index.min.js ..."
 $bin/uglifyjs dist/index.js -m -c > dist/index.min.js
 
 echo "build consent base ..."
-mkdir -p dist/block/base/0.0.1
-$bin/srcbuild-pug src/block/base/0.0.1/index.pug > dist/block/base/0.0.1/index.html
+$bin/srcbuild-pug src/block/base/index.pug > dist/base/index.html
 
 echo "build cookie consent  ..."
-mkdir -p dist/block/cookie/0.0.1
-$bin/srcbuild-pug src/block/cookie/0.0.1/index.pug > dist/block/cookie/0.0.1/index.html
+$bin/srcbuild-pug src/block/cookie/index.pug > dist/cookie/index.html
 
 echo "build tos consent  ..."
-mkdir -p dist/block/tos/0.0.1
-$bin/srcbuild-pug src/block/tos/0.0.1/index.pug > dist/block/tos/0.0.1/index.html
+$bin/srcbuild-pug src/block/tos/index.pug > dist/tos/index.html
 
 echo "build server files ..."
 $bin/lsc -co dist/lib lib

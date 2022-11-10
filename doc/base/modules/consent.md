@@ -1,4 +1,6 @@
-# Consent Module
+# @servebase/consent
+
+( Under construction )
 
 Consent module collects user consent based on different scenario. It includes following parts:
 
@@ -8,7 +10,7 @@ Consent module collects user consent based on different scenario. It includes fo
    - cache consent result in localStorage.
 
 
-Consent logging should consider following aspect:
+Following items should be considered when doing consent logging:
 
  - consent type and version
    - We can use `@plotdb/block` module to manage this. Accessing consent via ( for example ):
