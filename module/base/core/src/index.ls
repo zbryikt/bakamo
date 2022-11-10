@@ -80,7 +80,7 @@ servebase =
         @user = g.user
         @captcha.init g.captcha
       .then ~>
-        @auth.on \change, (g) ~> @update g
+        @auth.on \update, (g) ~> @update g
         # prepare authpanel. involving @plotdb/block creation.
         # should delay until we really have to trigger ui
         @

@@ -129,7 +129,7 @@
         this$.user = g.user;
         return this$.captcha.init(g.captcha);
       }).then(function(){
-        this$.auth.on('change', function(g){
+        this$.auth.on('update', function(g){
           return this$.update(g);
         });
         return this$;
