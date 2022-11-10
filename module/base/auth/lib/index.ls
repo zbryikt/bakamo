@@ -150,7 +150,7 @@ app.use passport.initialize!
 app.use passport.session!
 
 route.auth
-  ..post \/signup, (req, res, next) ->
+  ..post \/signup, backend.middleware.captcha, (req, res, next) ->
     {username,displayname,password,config} = req.body{username,displayname,password,config}
     if !username or !displayname or password.length < 8 => return next(lderror 400)
     db.user-store.create {username, password} <<< {
@@ -158,7 +158,7 @@ route.auth
     }
       .then (user) !-> req.login user, !-> res.send!
       .catch !-> next(lderror 403)
-  ..post \/login, (req, res, next) ->
+  ..post \/login, backend.middleware.captcha, (req, res, next) ->
     ((err,user,info) <- passport.authenticate \local, _
     if err or !user => return next(err or lderror(1000))
     req.login user, (err) !-> if err => next(err) else res.send!

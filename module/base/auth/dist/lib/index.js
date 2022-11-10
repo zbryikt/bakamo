@@ -249,7 +249,7 @@
     app.use(passport.initialize());
     app.use(passport.session());
     x$ = route.auth;
-    x$.post('/signup', function(req, res, next){
+    x$.post('/signup', backend.middleware.captcha, function(req, res, next){
       var ref$, username, displayname, password, config;
       ref$ = {
         username: (ref$ = req.body).username,
@@ -276,7 +276,7 @@
         next(lderror(403));
       });
     });
-    x$.post('/login', function(req, res, next){
+    x$.post('/login', backend.middleware.captcha, function(req, res, next){
       return passport.authenticate('local', function(err, user, info){
         if (err || !user) {
           return next(err || lderror(1000));
