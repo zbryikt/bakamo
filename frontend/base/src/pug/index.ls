@@ -73,5 +73,5 @@ update = ~>
     @user = g.user
     @view.panel.render!
 
-@auth.on \change, update
+@auth.on \update, update
 
