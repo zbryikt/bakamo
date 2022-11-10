@@ -1,4 +1,4 @@
-# Authentication Subsystem
+# @servebase/auth - Authentication Subsystem
 
 Authentication Subsystem involes following parts:
 
