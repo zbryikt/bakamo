@@ -25,6 +25,9 @@
             return view.render();
           });
         };
+        auth.on('update', function(g){
+          return this$.update(g);
+        });
         view = new ldview({
           root: navtop,
           action: {

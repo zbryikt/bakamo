@@ -13,6 +13,8 @@ if !(navtop = ld$.find('[ld-scope=navtop]',0)) => return
     @ <<< {global: g, user: g.user or {}}
     view.render!
 
+auth.on \update, (g) ~> @update g
+
 view = new ldview do
   root: navtop
   action:
