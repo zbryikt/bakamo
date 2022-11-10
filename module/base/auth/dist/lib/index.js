@@ -30,12 +30,16 @@
       return results$;
     }()).map(function(it){
       var ref$;
-      return [
-        it[0], {
-          sitekey: (ref$ = it[1]).sitekey,
-          enabled: ref$.enabled
-        }
-      ];
+      if (it[0] === 'enabled') {
+        return [it[0], it[1]];
+      } else {
+        return [
+          it[0], {
+            sitekey: (ref$ = it[1]).sitekey,
+            enabled: ref$.enabled
+          }
+        ];
+      }
     }));
     limitSessionAmount = false;
     getUser = function(arg$){

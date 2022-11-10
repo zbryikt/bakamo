@@ -7,7 +7,8 @@ require! <[@servebase/backend/aux ./reset ./verify]>
 (backend) <- ((f) -> module.exports = -> f.call {}, it) _
 {db,app,config,route} = backend
 
-captcha = Object.fromEntries [[k,v] for k,v of config.captcha].map -> [it.0, it.1{sitekey, enabled}]
+captcha = Object.fromEntries [[k,v] for k,v of config.captcha].map ->
+  if it.0 == \enabled => [it.0, it.1] else [it.0, it.1{sitekey, enabled}]
 
 limit-session-amount = false
 
