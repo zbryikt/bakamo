@@ -55,7 +55,7 @@ servebase =
     if ldc? => ldc.action \ldcvmgr, @ldcvmgr
 
     @update = (g) -> @ <<< {global: g, user: (g.user or {})}
-    @auth.on \server-down, @error
+    @auth.on \error, @error
     @auth.on \logout, -> window.location.replace '/'
 
     @manager.init!

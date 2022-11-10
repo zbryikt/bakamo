@@ -96,7 +96,7 @@
       this.update = function(g){
         return this.global = g, this.user = g.user || {}, this;
       };
-      this.auth.on('server-down', this.error);
+      this.auth.on('error', this.error);
       this.auth.on('logout', function(){
         return window.location.replace('/');
       });
