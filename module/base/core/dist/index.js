@@ -81,13 +81,14 @@
       this.error = function(e){
         return err(e);
       };
+      this.erratum = new erratum({
+        handler: err
+      });
       this.auth = new auth({
         manager: this.manager,
         zmgr: this.zmgr,
-        loader: this.loader
-      });
-      this.erratum = new erratum({
-        handler: err
+        loader: this.loader,
+        authpanel: this._cfg.auth ? this._cfg.auth.authpanel : null
       });
       if (typeof ldc != 'undefined' && ldc !== null) {
         ldc.action('ldcvmgr', this.ldcvmgr);

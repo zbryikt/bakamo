@@ -1,0 +1,1 @@
+../../../doc/base/modules/core.md

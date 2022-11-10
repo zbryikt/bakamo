@@ -45,8 +45,12 @@ servebase =
     @error = (e) -> err e
 
     @ <<<
-      auth: new auth manager: @manager, zmgr: @zmgr, loader: @loader
       erratum: new erratum handler: err
+      auth: new auth do
+        manager: @manager
+        zmgr: @zmgr
+        loader: @loader
+        authpanel: if @_cfg.auth => @_cfg.auth.authpanel else null
 
     if ldc? => ldc.action \ldcvmgr, @ldcvmgr
 
