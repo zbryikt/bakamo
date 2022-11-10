@@ -42,8 +42,12 @@ auth.prototype = Object.create(Object.prototype) <<< do
   logout: ->
     @ui.loader.on!
     ld$.fetch "#{@api-root!}logout", {method: \post}, {}
-      .then ~> @fetch {renew: true} # fetch fire `update` event for us.
-      .then ~> @ui.loader.off!
+      .then ~> @fetch {renew: true}
+      .finally ~> @ui.loader.off!
+      .then ~>
+        # even if `@fetch` fires `update` event,
+        # we still fire `logout here to indicate this is an intentional logout.
+        @fire \logout
       .catch (e) ~> @fire \error, e
   reset: ->
     @ui.loader.on!

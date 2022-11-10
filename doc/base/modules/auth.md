@@ -88,6 +88,7 @@ APIs of the auth object:
 
  - `error`: when error occurs during authentication, along with the error object
  - `update`: when auth information is updated, along with the `global` object.
+ - `logout` fired if `auth.logout` is called successfully.
 
 
 ##r Authpanel
@@ -123,6 +124,15 @@ Pass `auth` object when constructing authpanel block:
       {root: document.body, data: {auth: @auth}
     )
       .then ->  ...
+
+
+check `src/base.ls` for sample implementation of authpanel. Its interface should be a function that:
+
+ - accept two parameters:
+   - `toggle`: true / false. toggle on the authpanel if true, otherwise false.
+   - `opt`: options including `lock` and `tab`. see `prompt` api above for detail explanation.
+ - return a Promise which resolves with either null or a `global` object.
+   - check `user.key` to determine if user login successfully.
 
 
 ## backend

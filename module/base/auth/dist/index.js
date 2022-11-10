@@ -109,8 +109,10 @@
           return this$.fetch({
             renew: true
           });
-        }).then(function(){
+        })['finally'](function(){
           return this$.ui.loader.off();
+        }).then(function(){
+          return this$.fire('logout');
         })['catch'](function(e){
           return this$.fire('error', e);
         });

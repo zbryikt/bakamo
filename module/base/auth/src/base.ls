@@ -112,9 +112,10 @@ module.exports =
           return g
         .catch (e) ~>
           console.log e
-          if lderror.id(e) == 1029 => return Promise.reject e
-          if lderror.id(e) == 1004 => return @info "login-exceeded"
+          id = lderror.id e
+          if id >= 500 and id < 599 => return lderror.reject 1007
+          if id == 1029 => return Promise.reject e
+          if id == 1004 => return @info "login-exceeded"
           @info "#{@_tab}-failed"
           @form.fields.password.value = null
           @form.check {n: \password, now: true}
-
