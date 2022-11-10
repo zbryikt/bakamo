@@ -11,3 +11,4 @@ ldc.register \corecfg, <[]>, -> ->
       if name in <[error cover]> => return "/modules/#name/#path"
       return "/modules/block/#name/#path"
     "/assets/lib/#{name}/#{version or 'main'}/#path"
+  auth: authpanel: {ns: \local, name: "authpanel"}
