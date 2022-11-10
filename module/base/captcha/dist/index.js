@@ -43,9 +43,15 @@
     guard: function(arg$){
       var cb;
       cb = arg$.cb;
-      return this.captcha.guard({
-        cb: cb
-      });
+      if (this._cfg && this._cfg.enabled) {
+        return this.captcha.guard({
+          cb: cb
+        });
+      } else {
+        return Promise.resolve({
+          captcha: {}
+        });
+      }
     }
   });
   if (typeof module != 'undefined' && module !== null) {

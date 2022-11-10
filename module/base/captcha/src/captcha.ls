@@ -14,7 +14,9 @@ captcha.prototype = Object.create(Object.prototype) <<< do
       .then (bi) -> bi.attach {root: document.body} .then -> bi.interface!
       .then (cap) ~> @captcha = cap
       .then ~> @captcha.init {cfg: @_cfg, zmgr: @_zmgr}
-  guard: ({cb}) -> @captcha.guard {cb}
+  guard: ({cb}) ->
+    if @_cfg and @_cfg.enabled => @captcha.guard {cb}
+    else Promise.resolve({captcha: {}})
 
 if module? => module.exports = captcha
 else window.captcha = captcha
