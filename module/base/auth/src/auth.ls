@@ -20,7 +20,8 @@ auth = (opt={}) ->
     authpanel: (tgl, o = {}) ~>
       if @_authpanel => return @_authpanel tgl, o
       @ui.loader.on 350
-      @_manager.from {name: "@servebase/auth"}, {root: document.body, data: {auth: @, zmgr: opt.zmgr}}
+      bid = (opt.authpanel or {name: "@servebase/auth"})
+      @_manager.from bid, {root: document.body, data: {auth: @, zmgr: opt.zmgr}}
         .then (p) ~> @_authpanel = p.interface
         .then (i) ~>
           @ui.loader.off!

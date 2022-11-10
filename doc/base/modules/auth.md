@@ -45,6 +45,7 @@ with following constructor options:
  - `loader`: a global ldloader. `auth` uses this to indicate loading status for better UX.
  - `zmgr`: a global zmgr for aligning z-index between widgets.
  - `initFetch`: default true. invoke `fetch` automatically when constructs if true.
+ - `authpanel`: id of the authpanel block to use. optional. use `{name: '@servebase/auth'}` if omitted.
 
 
 APIs of the auth object:

@@ -31,14 +31,16 @@
           cancel: function(){}
         },
         authpanel: function(tgl, o){
+          var bid;
           o == null && (o = {});
           if (this$._authpanel) {
             return this$._authpanel(tgl, o);
           }
           this$.ui.loader.on(350);
-          return this$._manager.from({
+          bid = opt.authpanel || {
             name: "@servebase/auth"
-          }, {
+          };
+          return this$._manager.from(bid, {
             root: document.body,
             data: {
               auth: this$,
