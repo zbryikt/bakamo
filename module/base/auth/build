@@ -15,5 +15,8 @@ $bin/srcbuild-pug src/authpanel.pug > dist/index.html
 echo "build base.pug -> dist/base.html ..."
 $bin/srcbuild-pug src/base.pug > dist/base.html
 
+echo "prepare img files"
+cp -R src/img/ dist/img/
+
 echo "build server files ..."
 $bin/lsc -co dist/lib lib
