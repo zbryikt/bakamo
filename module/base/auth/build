@@ -2,7 +2,7 @@
 
 echo "prepare..."
 rm -rf dist
-mkdir -p dist
+mkdir -p dist/done
 
 bin=../../../node_modules/.bin
 echo "build src/auth.ls -> dist/index.js ..."
@@ -14,6 +14,12 @@ echo "build authpanel.pug -> dist/index.html ..."
 $bin/srcbuild-pug src/authpanel.pug > dist/index.html
 echo "build base.pug -> dist/base.html ..."
 $bin/srcbuild-pug src/base.pug > dist/base.html
+blocks="auth mail-verified oauth-failed passwd-done passwd-reset mail-expire oauth-done passwd-change passwd-expire"
+for name in $blocks; do
+  mkdir -p dist/$name
+  echo "build $name/index.pug -> dist/$name/index.html ..."
+  $bin/srcbuild-pug src/block/$name/index.pug > dist/$name/index.html
+done
 
 echo "prepare img files"
 cp -R src/img/ dist/img/

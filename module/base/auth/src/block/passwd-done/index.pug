@@ -1,0 +1,13 @@
+.w-100.h-100.d-flex.align-items-center.justify-content-center: .text-center
+  script(type="@plotdb/block"): include:lsc index.ls
+  h1(t) title
+  p #[a(href="#",onclick="lda.auth.show('login')",t) letstry] #[span(t) desc]
+  //-img(src="/assets/img/p/auth/reset/key.svg")
+  p
+    div(t) still
+    div #[a(href="/auth/reset/",t) tryagain] #[a(href="#",onclick="lda.ldcvmgr.toggle('contact')",t) contact]
+  .ldcv.ldcvmgr(data-name="logged-in",data-lock="true"): .base.w-640.rwd: .inner.card: .card-body.text-center: .p-4
+    h1(t) logged
+    p.mb-2(t) redirect
+    br
+    .ld.ldld.bare.running.em-1.m-auto

@@ -1,0 +1,50 @@
+.w-100.h-100.d-flex.align-items-center.justify-content-center: div
+  include @/ldview/index.pug
+  script(type="@plotdb/block"): include:lsc index.ls
+  h3.text-center(t) forgot
+  br
+  +scope("password-reset"): form.form.text-left(style="margin:auto;width:400px")
+    .from-group
+      p(t) enter
+      input.form-control.form-control-lg(ld="email",name="email",placeholder="e.g, me@someurl.com")
+      .invalid-feedback(t) invalid
+      .btn.btn-success.btn-block.btn-lg.mt-2.disabled(ld="submit",t) send
+    br
+    br
+    .text-muted: small
+      p(t) note1
+      p
+        span(t) note2_1
+        a.mx-1(href="#",onclick="lda.ldcvmgr.toggle('contact')",t) contact
+        span(t) letushelp
+    .ldcv(ld="not-found"): .base.w-640.rwd: .inner.card: .card-body: .p-4
+      h1.text-center(t) 404
+      .text-center.text-muted.mb-4(t) 404_desc
+      .text-muted
+        p(t) cause
+        ul
+          li(t) cause_1
+          li(t) cause_2
+          li(t) cause_3
+        p
+          span(t) help
+          a.mx-2(href="#",onclick="lda.ldcvmgr.toggle('contact')",t) contact
+          span(t) letushelp
+      br
+      .row
+        .col-md: .btn.btn-lg.btn-primary.btn-block(onclick="lda.ldcvmgr.toggle('contact')",t) contact-alt
+        .col-md: .btn.btn-lg.btn-outline-dark.btn-block(data-ldcv-set="",t) close
+    .ldcv(ld="sent"): .base.w-640.rwd: .inner.card: .card-body: .p-4.my-4
+      .text-center
+        h1(t) sent
+        p(t) sent_desc
+      br
+      //-.my-4.py-4: img#img(src="/assets/img/p/auth/reset/sending-mail.svg")
+      p(t)
+        span(t) toolong_1
+        strong.mx-1(t) spam
+        span(t) toolong_2
+      ul
+        li #[a(href="/auth/passwd/reset/",t) again]
+        li #[a(href="#",onclick="lda.ldcvmgr.toggle('contact')",t) contact]#[span(t) letushelp]
+

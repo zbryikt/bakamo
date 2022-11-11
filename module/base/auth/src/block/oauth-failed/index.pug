@@ -1,0 +1,12 @@
+.p-4.w-480.rwd.mx-auto.h-100
+  script(type="@plotdb/block"): include:lsc index.ls
+  .w-100.h-100.d-flex.align-items-center.justify-content-center: div
+    h1.text-center.my-4(t) title
+    br
+    p(t) desc
+    ul
+      li(t) opt1
+      li(t) opt2
+      li #[a(href="/auth/passwd/reset/",style="color:#09f",target="_blank",rel="noopener noreferrer",t) reset]
+    p(t) contact
+

@@ -1,0 +1,55 @@
+.w-100.h-100.d-flex.align-items-center.justify-content-center: .text-center
+  script(type="@plotdb/block"): include:lsc index.ls
+  h1(t) title
+  p.text-muted.mb-4(t) desc
+  br
+  form#password-reset.form.text-left.m-a(method="POST", style="width:400px")
+    .from-group.mb-3
+      label(t) enter_new
+      input.form-control(name="password",type="password",t,t-placeholder="min8")
+      .invalid-feedback(t) too_weak
+    .from-group.mb-3
+      label(t) enter_again
+      input.form-control(name="confirm",type="password",placeholder="")
+      .invalid-feedback(t) mismatch
+    input.btn.btn-success.btn-block.mt-2.disabled(ld="submit",type="button",t,t-value="setup")
+    br
+    br
+    .text-muted: small
+      p(t) hint1
+      p
+        span(t) hint2_1
+        a.mx-2(href="https://en.wikipedia.org/wiki/Password_strength",
+        target="_blank",rel="noopener noreferrer",t) hint2_2
+        span(t) hint2_3
+
+  .ldcv.ldcvmgr(data-name="done",data-lock="true"): .base.w-640: .inner.card: .card-body: .p-4
+    .text-center: h1(t) done
+    .my-4
+      p(t) note1
+      p
+        span(t) letushelp
+        a.mx-1(href="#",onclick="lda.ldcvmgr.toggle('contact')",t) contact
+        span(t) note2_2
+    br
+    .row
+      .col-sm.mb-1: .btn.btn-lg.btn-block.btn-primary(data-ldcv-set="login",t) login_now
+      .col-sm.mb-1: a.btn.btn-lg.btn-block.btn-outline-secondary(href="/",t) homepage
+  .ldcv.ldcvmgr(data-name="invalid",data-lock="true"): .base.w-640: .inner.card: .card-body: .p-4
+    .text-center
+      h1(t) invalid_code
+      p(t) invalid_desc
+    br
+    .text-muted
+      p
+        span(t) note3_1
+        a.mx-1(href="/auth/passwd/reset/",t) reset_page
+        span(t) note3_2
+      p
+        span(t) note4_1
+        a.mx-1(href="#",onclick="lda.ldcvmgr.toggle('contact')",t) contact
+        span(t) letushelp
+
+    br
+    a.btn.btn-primary.btn-lg.btn-block(href="/auth/passwd/reset/",t) send_again
+
