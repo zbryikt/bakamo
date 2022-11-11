@@ -43,13 +43,15 @@
     guard: function(arg$){
       var cb;
       cb = arg$.cb;
-      if (this._cfg && this._cfg.enabled) {
+      if (this._cfg && (this._cfg.enabled == null || this._cfg.enabled)) {
         return this.captcha.guard({
           cb: cb
         });
       } else {
-        return Promise.resolve({
-          captcha: {}
+        return Promise.resolve().then(function(){
+          return cb({
+            captcha: {}
+          });
         });
       }
     }

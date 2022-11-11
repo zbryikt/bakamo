@@ -31,7 +31,7 @@ captcha =
     @_order = @_order.filter ~> @cfg[it] and @cfg[it].enabled and @cfg[it].sitekey
   guard: (opt = {}) ->
     if !@_order => @order!
-    if !@_order.length => return Promise.resolve!then -> opt.cb!
+    if !@_order.length => return Promise.resolve!then -> opt.cb {captcha: {}}
     _ = (idx = 0) ~>
       if idx >= @_order.length => return lderror.reject 1010
       @verify({name: @_order[idx]} <<< opt)
