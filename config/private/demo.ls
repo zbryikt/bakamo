@@ -46,6 +46,7 @@ module.exports = do
     # when true, all errors handled in `@servebase/backend/error-handler` will be logged with `debug` level
     all-error: false
   auth:
+    # GCP -> API & Services -> Credentials -> OAuth Client ID
     google:
       clientID: '...'
       clientSecret: '...'
