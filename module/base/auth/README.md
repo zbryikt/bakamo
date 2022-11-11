@@ -74,8 +74,8 @@ APIs of the auth object:
  - `prompt(opt)`: shorthand for `ui.authpanel(true, opt)` / toggle authpanel on, with options:
    - `tab`: either `login` or `signup`, indicating tab to show. previous state (or `login`) if omitted.
    - `lock`: if true, force user to not dismiss this panel unless authenticated.
- - `social(opt)`: trigger social login. options:
-   - `name`: social login name. e.g., `facebook`, `google` or `line`.
+ - `oauth(opt)`: trigger oauth login. options:
+   - `name`: oauth login name. e.g., `facebook`, `google` or `line`.
  - `reset()`: reset user cookie by redirecting user to `/auth/reset`.
  - `on(name, cb)`: listen to specific event `name` with callback function `cb`
  - `fire(name, ...args)`: fire event `name` with `args`.
@@ -103,8 +103,8 @@ We use `@plotdb/block` to simplify and offload authpanel from main pages. It's p
       button(ld="switch",data-name="login") Login
       button(ld="switch",data-name="signup") Sign Up
       button(ld="submit") Submit
-      button(ld="social",data-name="facebook") Facebook
-      button(ld="social",data-name="google") Google
+      button(ld="oauth",data-name="facebook") Facebook
+      button(ld="oauth",data-name="google") Google
       div(ld="info", data-name="default")
       div(ld="info", data-name="login-exceeded")
       div(ld="info", data-name="login-failed")
@@ -152,7 +152,7 @@ engine/auth.ls. API endpoints:
      - password
    - POST / `@api/auth/logout` - logout. no params.
    - POST  / `@api/auth/reset` - logout, clear cookie
-   - GET  / `@api/auth/<social>/callback`
+   - GET  / `@api/auth/<oauth>/callback`
  - password reset
    - POST / `@api/auth/passwd`
    - POST / `@api/auth/passwd/:token`

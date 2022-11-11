@@ -207,7 +207,7 @@
       prompt: function(o){
         return this.ui.authpanel(true, o);
       },
-      social: function(arg$){
+      oauth: function(arg$){
         var name, this$ = this;
         name = arg$.name;
         return this.get().then(function(g){
@@ -216,13 +216,13 @@
           if ((g.user || (g.user = {})).key) {
             return g;
           }
-          this$.social.window = window.open('', 'social-login', 'height=640,width=560');
-          this$.social.form = form = ld$.create({
+          this$.oauth.window = window.open('', 'oauth-login', 'height=640,width=560');
+          this$.oauth.form = form = ld$.create({
             name: 'div'
           });
-          form.innerHTML = "<form target=\"social-login\" action=\"" + this$.apiRoot() + name + "/\" method=\"post\">\n  <input type=\"hidden\" name=\"_csrf\" value=\"" + g.csrfToken + "\"/>\n</form>";
+          form.innerHTML = "<form target=\"oauth-login\" action=\"" + this$.apiRoot() + name + "/\" method=\"post\">\n  <input type=\"hidden\" name=\"_csrf\" value=\"" + g.csrfToken + "\"/>\n</form>";
           document.body.appendChild(form);
-          window.socialLogin = login = proxise(function(){
+          window.oauthLogin = login = proxise(function(){
             return ld$.find(form, 'form', 0).submit();
           });
           return login();
@@ -232,10 +232,10 @@
             return Promise.reject(new lderror(1000));
           }
         })['finally'](function(){
-          if (!(this$.social.form && this$.social.form.parentNode)) {
+          if (!(this$.oauth.form && this$.oauth.form.parentNode)) {
             return;
           }
-          return this$.social.form.parentNode.removeChild(this$.social.form);
+          return this$.oauth.form.parentNode.removeChild(this$.oauth.form);
         }).then(function(){
           return this$.fire('update', lc.global);
         })['catch'](function(e){

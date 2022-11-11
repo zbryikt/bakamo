@@ -29,6 +29,7 @@ module.exports =
       action:
         keyup: input: ({node, evt}) ~> if evt.keyCode == 13 => @submit!
         click:
+          oauth: ({node}) ~> @_auth.oauth {name: node.getAttribute \data-name}
           submit: ({node}) ~> @submit!
           switch: ({node}) ~>
             @tab node.getAttribute \data-name

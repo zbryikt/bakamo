@@ -119,25 +119,25 @@ auth.prototype = Object.create(Object.prototype) <<< do
         new Promise (res, rej) ->
 
   prompt: (o) -> @ui.authpanel true, o
-  social: ({name}) ->
+  oauth: ({name}) ->
     @get!
       .then (g = {}) ~>
         if g.{}user.key => return g
-        # before social login
-        @social.window = window.open '', 'social-login', 'height=640,width=560'
-        @social.form = form = ld$.create name: \div
+        # before oauth login
+        @oauth.window = window.open '', 'oauth-login', 'height=640,width=560'
+        @oauth.form = form = ld$.create name: \div
         form.innerHTML = """
-        <form target="social-login" action="#{@api-root!}#name/" method="post">
+        <form target="oauth-login" action="#{@api-root!}#name/" method="post">
           <input type="hidden" name="_csrf" value="#{g.csrf-token}"/>
         </form>"""
         document.body.appendChild form
-        window.social-login = login = proxise(-> ld$.find(form, 'form', 0).submit!)
+        window.oauth-login = login = proxise(-> ld$.find(form, 'form', 0).submit!)
         login!
       .then (g = {}) -> if !g.{}user.key => Promise.reject new lderror(1000)
       .finally ~>
-        if !(@social.form and @social.form.parentNode) => return
-        @social.form.parentNode.removeChild @social.form
-      .then ~> @fire \update, lc.global # after social login
+        if !(@oauth.form and @oauth.form.parentNode) => return
+        @oauth.form.parentNode.removeChild @oauth.form
+      .then ~> @fire \update, lc.global # after oauth login
       .catch (e) ~> @fire \error, e; return Promise.reject(e)
 
 if module? => module.exports = auth

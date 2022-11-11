@@ -202,9 +202,10 @@
     });
     ['local', 'google', 'facebook', 'line'].forEach(function(name){
       var x$;
-      if ((config.auth || (config.auth = {}))[name]) {
-        strategy[name](config.auth[name]);
+      if (!(config.auth || (config.auth = {}))[name]) {
+        return;
       }
+      strategy[name](config.auth[name]);
       x$ = route.auth;
       x$.post("/" + name, passport.authenticate(name, {
         scope: ['profile', 'openid', 'email']
