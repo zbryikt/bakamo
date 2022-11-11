@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "@plotdb/colors": "^0.0.3",
-    "@plotdb/srcbuild": "^0.0.55",
+    "@plotdb/srcbuild": "^0.0.56",
     "@plotdb/suuid": "^0.5.1",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
@@ -60,7 +60,7 @@
     "i18next-http-middleware": "^3.0.6",
     "js-yaml": "^3.14.0",
     "jsonwebtoken": "^8.5.1",
-    "lderror": "^2.3.1",
+    "lderror": "^2.3.3",
     "livescript": "^1.6.0",
     "ls-lint": "^0.1.2",
     "marked": "^4.0.10",
