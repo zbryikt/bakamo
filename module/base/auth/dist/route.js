@@ -2,18 +2,12 @@
 (function(){
   var route;
   route = function(o){
-    var supportedActions, hash, n, k, ref$;
+    var supportedActions, n, k, ref$;
     o == null && (o = {});
     supportedActions = ['auth', 'mail-expire', 'mail-verified', 'oauth-done', 'oauth-failed', 'passwd-change', 'passwd-expire', 'passwd-done', 'passwd-reset'];
-    hash = {};
-    (window.location.search || "").replace(/^\?/, '').split('&').map(function(it){
-      return decodeURIComponent(it).split('=');
-    }).map(function(it){
-      return hash[it[0]] = it[1];
-    });
     if (!(n = (function(){
       var results$ = [];
-      for (k in hash) {
+      for (k in httputil.qs()) {
         results$.push(k);
       }
       return results$;
