@@ -29,7 +29,13 @@ module.exports =
       action:
         keyup: input: ({node, evt}) ~> if evt.keyCode == 13 => @submit!
         click:
-          oauth: ({node}) ~> @_auth.oauth {name: node.getAttribute \data-name}
+          oauth: ({node}) ~>
+            @_auth.oauth {name: node.getAttribute \data-name}
+              .then (g) ~>
+                debounce 350, ~> @info \default
+                @form.reset!
+                @ldcv.authpanel.set g
+                ldnotify.send "success", t("login successfully")
           submit: ({node}) ~> @submit!
           switch: ({node}) ~>
             @tab node.getAttribute \data-name

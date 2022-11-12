@@ -27,7 +27,7 @@ auth = (opt={}) ->
           @ui.loader.off!
           i tgl, o
     timeout: -> new Promise (res, rej) -> # do nothing
-    
+
   if !@_api-root => @_api-root = opt.api or "/api/auth"
   if @_api-root[* - 1] != \/ => @_api-root += \/
   if !opt.init-fetch? or opt.init-fetch => @fetch!
@@ -132,12 +132,11 @@ auth.prototype = Object.create(Object.prototype) <<< do
         </form>"""
         document.body.appendChild form
         window.oauth-login = login = proxise(-> ld$.find(form, 'form', 0).submit!)
-        login!
-      .then (g = {}) -> if !g.{}user.key => Promise.reject new lderror(1000)
+        login!then ~> @fetch {renew: true}
       .finally ~>
         if !(@oauth.form and @oauth.form.parentNode) => return
         @oauth.form.parentNode.removeChild @oauth.form
-      .then ~> @fire \update, lc.global # after oauth login
+      .then (g = {}) -> if !g.{}user.key => Promise.reject new lderror(1000) else return g
       .catch (e) ~> @fire \error, e; return Promise.reject(e)
 
 if module? => module.exports = auth

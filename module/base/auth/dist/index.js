@@ -225,19 +225,23 @@
           window.oauthLogin = login = proxise(function(){
             return ld$.find(form, 'form', 0).submit();
           });
-          return login();
-        }).then(function(g){
-          g == null && (g = {});
-          if (!(g.user || (g.user = {})).key) {
-            return Promise.reject(new lderror(1000));
-          }
+          return login().then(function(){
+            return this$.fetch({
+              renew: true
+            });
+          });
         })['finally'](function(){
           if (!(this$.oauth.form && this$.oauth.form.parentNode)) {
             return;
           }
           return this$.oauth.form.parentNode.removeChild(this$.oauth.form);
-        }).then(function(){
-          return this$.fire('update', lc.global);
+        }).then(function(g){
+          g == null && (g = {});
+          if (!(g.user || (g.user = {})).key) {
+            return Promise.reject(new lderror(1000));
+          } else {
+            return g;
+          }
         })['catch'](function(e){
           this$.fire('error', e);
           return Promise.reject(e);
