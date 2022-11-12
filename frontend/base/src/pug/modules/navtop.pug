@@ -10,11 +10,11 @@
           .dropdown-item(ld="set-lng",data-name="en") EN
           .dropdown-item(ld="set-lng",data-name="zh-TW") 中
       .d-none(ld="unauthed")
-        .btn.btn-text(ld="login") Login
-        .btn.btn-text(ld="signup") Sign Up
+        .btn.btn-text(ld="t login") navtop.login
+        .btn.btn-text(ld="t signup") navtop.signup
       .dropdown.d-none(ld="authed")
         .btn.btn-text.dropdown-toggle(data-toggle="dropdown") #[span(ld="avatar")]
         .dropdown-menu.dropdown-menu-right
           .dropdown-item(ld="displayname")
           .dropdown-divider
-          .dropdown-item(ld="logout") Logout
+          .dropdown-item(ld="t logout") navtop.logout
