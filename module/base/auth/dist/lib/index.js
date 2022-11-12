@@ -214,8 +214,8 @@
         scope: ['profile', 'openid', 'email']
       }));
       x$.get("/" + name + "/callback", passport.authenticate(name, {
-        successRedirect: '/auth/done.html',
-        failureRedirect: '/auth/failed.html'
+        successRedirect: '/auth?oauth-done',
+        failureRedirect: '/auth?oauth-failed'
       }));
       return x$;
     });
@@ -301,12 +301,6 @@
     x$.post('/logout', function(req, res){
       return req.logout(function(){
         res.send();
-      });
-    });
-    app.get('/auth', function(req, res){
-      aux.clearCookie(req, res);
-      return req.logout(function(){
-        res.render("auth/index.pug");
       });
     });
     app.get('/auth/reset', function(req, res){

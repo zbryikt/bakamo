@@ -125,8 +125,8 @@ route.auth.get \/info, (req, res) ~>
   route.auth
     ..post "/#name", passport.authenticate name, {scope: <[profile openid email]>}
     ..get "/#name/callback", passport.authenticate name, do
-      successRedirect: \/auth/done.html
-      failureRedirect: \/auth/failed.html
+      successRedirect: \/auth?oauth-done
+      failureRedirect: \/auth?oauth-failed
 
 passport.serializeUser (u,done) !->
   db.user-store.serialize u .then (v) !-> done null, v
@@ -169,18 +169,13 @@ route.auth
     )(req, res, next)
   ..post \/logout, (req, res) -> req.logout(!-> res.send!)
 
-app.get \/auth, (req, res) ->
+# identical to `/auth` but if it's more semantic clear.
+app.get \/auth/reset, (req, res) ->
   aux.clear-cookie req, res
   <-! req.logout _
   # by rendering instead of redirecting, we can keep the URL as is.
   # in this case a reload after authenticaed will help refresh that page
   # frontend should determine current URL and redirect to landing page if necessary to prevent infinite loop
-  res.render "auth/index.pug"
-
-# identical to `/auth` but if it's more semantic clear.
-app.get \/auth/reset, (req, res) ->
-  aux.clear-cookie req, res
-  <-! req.logout _
   res.render "auth/index.pug"
 
 # this must not be guarded by csrf since it's used to recover csrf token.
