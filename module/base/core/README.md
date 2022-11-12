@@ -67,6 +67,9 @@ Both the option in `servebase.config` or the `corecfg` ldc module are something 
 
  - an object. In this case, it should be an object with following fields:
    - `manager`: a `@plotdb/block` block manager. Optional, it will replace the default manager if provided.
+   - `auth`: an object to customize auth behavior, with following fields:
+     - `authpanel`: block id of the authpanel to use.
+   - `locales`: i18n resource objects for core modules translation (such as navtop )
  - a function. In this case, it will be called with `core` context and should return an object defined above.
 
 `servebase.config` should always be called only once and before any possible core initialization to prevent inconsistent behavior.

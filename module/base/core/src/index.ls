@@ -61,12 +61,13 @@ servebase =
     @manager.init!
       # to optimize, we may delay or completely ignore i18n
       # since not every service need i18n
-      .then ->
+      .then ~>
         if !i18n? => return
         Promise.resolve!
           .then -> i18n.init supportedLng: <[en zh-TW]>, fallbackLng: \zh-TW, fallbackNS: '', defaultNS: ''
           .then -> if i18nextBrowserLanguageDetector? => i18n.use i18nextBrowserLanguageDetector
-          .then ->
+          .then ~>
+            for k,v of (@_cfg.locales or {}) => i18n.add-resource-bundle k, '', v, true, true
             lng = (
               (if httputil? => (httputil.qs(\lng) or httputil.cookie(\lng)) else null) or
               navigator.language or navigator.userLanguage

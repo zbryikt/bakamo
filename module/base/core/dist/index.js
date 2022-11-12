@@ -116,7 +116,11 @@
             return i18n.use(i18nextBrowserLanguageDetector);
           }
         }).then(function(){
-          var lng;
+          var k, ref$, v, lng;
+          for (k in ref$ = this$._cfg.locales || {}) {
+            v = ref$[k];
+            i18n.addResourceBundle(k, '', v, true, true);
+          }
           lng = (typeof httputil != 'undefined' && httputil !== null ? httputil.qs('lng') || httputil.cookie('lng') : null) || navigator.language || navigator.userLanguage;
           console.log("[@servebase/core][i18n] use language: ", lng);
           return i18n.changeLanguage(lng);
