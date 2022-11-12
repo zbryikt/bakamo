@@ -118,11 +118,11 @@
         }).then(function(){
           var lng;
           lng = (typeof httputil != 'undefined' && httputil !== null ? httputil.qs('lng') || httputil.cookie('lng') : null) || navigator.language || navigator.userLanguage;
-          console.log("use language: ", lng);
+          console.log("[@servebase/core][i18n] use language: ", lng);
           return i18n.changeLanguage(lng);
         }).then(function(){
           i18n.on('languageChanged', function(lng){
-            console.log("language changed to " + lng + " / cookie updated");
+            console.log("[@servebase/core][i18n] language changed to " + lng + " / cookie updated");
             return httputil.cookie('lng', lng);
           });
           return block.i18n.use(i18n);

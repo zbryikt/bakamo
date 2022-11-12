@@ -71,11 +71,11 @@ servebase =
               (if httputil? => (httputil.qs(\lng) or httputil.cookie(\lng)) else null) or
               navigator.language or navigator.userLanguage
             )
-            console.log "use language: ", lng
+            console.log "[@servebase/core][i18n] use language: ", lng
             i18n.changeLanguage lng
           .then ->
             i18n.on \languageChanged, (lng) ->
-              console.log "language changed to #lng / cookie updated"
+              console.log "[@servebase/core][i18n] language changed to #lng / cookie updated"
               httputil.cookie \lng, lng
             block.i18n.use i18n
       .then ~>
