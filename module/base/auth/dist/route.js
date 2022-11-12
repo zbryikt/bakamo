@@ -2,16 +2,24 @@
 (function(){
   var route;
   route = function(o){
-    var supportedActions, n, k, ref$;
+    var supportedActions, hash, n, k, ref$;
     o == null && (o = {});
     supportedActions = ['auth', 'mail-expire', 'mail-verified', 'oauth-done', 'oauth-failed', 'passwd-change', 'passwd-expire', 'passwd-done', 'passwd-reset'];
-    if (!((n = (function(){
+    hash = {};
+    (window.location.search || "").replace(/^\?/, '').split('&').map(function(it){
+      return decodeURIComponent(it).split('=');
+    }).map(function(it){
+      return hash[it[0]] = it[1];
+    });
+    if (!(n = (function(){
       var results$ = [];
-      for (k in httputil.qs()) {
+      for (k in hash) {
         results$.push(k);
       }
       return results$;
-    }())[0]) && in$(n, supportedActions))) {
+    }()).filter(function(it){
+      return in$(it, supportedActions);
+    })[0])) {
       n = 'auth';
     }
     return this._manager.from((ref$ = import$({
