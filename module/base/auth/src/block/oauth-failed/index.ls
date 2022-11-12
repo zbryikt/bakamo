@@ -6,7 +6,7 @@ module.exports =
       "opt1": "Try alternative login methods (email, password or use social login)"
       "opt2": "Check spelling of your email / password"
       "reset": "Reset Password"
-      "contqact": "You can contact us directly and let us help you."
+      "contact": "You can contact us directly and let us help you."
     "zh-TW":
       "title": "登入失敗"
       "desc": "您可能已經用其他方法登入過了。請再試試："
