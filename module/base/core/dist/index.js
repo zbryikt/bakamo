@@ -122,8 +122,14 @@
           return i18n.changeLanguage(lng);
         }).then(function(){
           i18n.on('languageChanged', function(lng){
-            console.log("[@servebase/core][i18n] language changed to " + lng + " / cookie updated");
-            return httputil.cookie('lng', lng);
+            if (typeof httputil != 'undefined' && httputil !== null) {
+              console.log("[@servebase/core][i18n] language changed to " + lng + " / cookie updated");
+              return httputil.cookie('lng', lng, {
+                path: '/'
+              });
+            } else {
+              return console.log("[@servebase/core][i18n] language changed to " + lng + " / no httputil, skip cookie update");
+            }
           });
           return block.i18n.use(i18n);
         });

@@ -75,8 +75,11 @@ servebase =
             i18n.changeLanguage lng
           .then ->
             i18n.on \languageChanged, (lng) ->
-              console.log "[@servebase/core][i18n] language changed to #lng / cookie updated"
-              httputil.cookie \lng, lng
+              if httputil? =>
+                console.log "[@servebase/core][i18n] language changed to #lng / cookie updated"
+                httputil.cookie \lng, lng, {path: \/}
+              else
+                console.log "[@servebase/core][i18n] language changed to #lng / no httputil, skip cookie update"
             block.i18n.use i18n
       .then ~>
         # PERF TODO block.i18n.use and manager.init are quite fast.
