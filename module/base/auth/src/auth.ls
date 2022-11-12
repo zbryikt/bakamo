@@ -63,7 +63,8 @@ auth.prototype = Object.create(Object.prototype) <<< do
         if !opt.authed-only => return g
         # @ui.authpanel may be overwritten and incorrectly return sth other than g
         # thus we fetch it again.
-        if !g.{}user.key => @ui.authpanel(true, opt).then -> get-global @
+        return if g.user.key => g
+        else @ui.authpanel(true, opt).then -> get-global @
       .then (g = {}) ->
         if opt.authed-only and !g.{}user.key => return Promise.reject(new lderror(1000))
         return g

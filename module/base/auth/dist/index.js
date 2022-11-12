@@ -135,11 +135,11 @@
           if (!opt.authedOnly) {
             return g;
           }
-          if (!(g.user || (g.user = {})).key) {
-            return this$.ui.authpanel(true, opt).then(function(){
+          return g.user.key
+            ? g
+            : this$.ui.authpanel(true, opt).then(function(){
               return getGlobal(this);
             });
-          }
         }).then(function(g){
           g == null && (g = {});
           if (opt.authedOnly && !(g.user || (g.user = {})).key) {
