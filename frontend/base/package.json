@@ -29,7 +29,7 @@
     "@loadingio/transition.css": "^3.0.0",
     "@plotdb/block": "^4.7.5",
     "@plotdb/csscope": "^4.0.8",
-    "@plotdb/httputil": "^0.0.3",
+    "@plotdb/httputil": "^0.0.4",
     "@plotdb/rescope": "^4.1.7",
     "@plotdb/semver": "^0.0.3",
     "@sentry/tracing": "^6.19.7",
