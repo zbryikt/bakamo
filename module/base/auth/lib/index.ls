@@ -178,6 +178,13 @@ app.get \/auth/reset, (req, res) ->
   # frontend should determine current URL and redirect to landing page if necessary to prevent infinite loop
   res.render "auth/index.pug"
 
+app.post \/api/auth/clear, aux.signedin, backend.middleware.captcha, (req, res) ->
+  db.query "delete from session where owner = $1", [req.user.key]
+    .then ->
+      aux.clear-cookie req, res
+      <-! req.logout _
+      res.send!
+
 # this must not be guarded by csrf since it's used to recover csrf token.
 app.post \/api/auth/reset, (req, res) ->
   aux.clear-cookie req, res

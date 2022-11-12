@@ -309,6 +309,14 @@
         res.render("auth/index.pug");
       });
     });
+    app.post('/api/auth/clear', aux.signedin, backend.middleware.captcha, function(req, res){
+      return db.query("delete from session where owner = $1", [req.user.key]).then(function(){
+        aux.clearCookie(req, res);
+        return req.logout(function(){
+          res.send();
+        });
+      });
+    });
     app.post('/api/auth/reset', function(req, res){
       aux.clearCookie(req, res);
       return req.logout(function(){

@@ -11,6 +11,11 @@
     signup: ~> @auth.prompt {tab: \signup} .then -> update!
     login: ~> @auth.prompt {tab: \login} .then -> update!
     logout: ~> @auth.logout!then -> update!
+    wipe: ~>
+      core.captcha
+        .guard cb: ->
+          ld$.fetch "/api/auth/clear", {method: \POST}
+        .then -> window.location.href = \/
     "mail-verify": ->
       core.loader.on!
       core.captcha
