@@ -2,8 +2,8 @@ module.exports =
   pkg:
     i18n:
       en:
-        "title": "Password Reset Link Expired"
-        "desc": "It has been a while since the link was created, thus it has expired for security reason."
+        "title": "Verification Link Expired"
+        "desc": "It has been a while since the link was created, thus it's expired for security reason."
         "toolong": "Too long before you received the mail?"
         "try": "You can try"
         "again": "send it again"
