@@ -11,6 +11,16 @@
     signup: ~> @auth.prompt {tab: \signup} .then -> update!
     login: ~> @auth.prompt {tab: \login} .then -> update!
     logout: ~> @auth.logout!then -> update!
+    "mail-verify": ->
+      core.loader.on!
+      core.captcha
+        .guard cb: (captcha) ->
+          ld$.fetch \/api/auth/mail/verify, {method: \POST}, {json: {captcha}}
+        .then -> debounce 1000
+        .finally -> core.loader.off!
+        .then -> ldnotify.send \success, \sent.
+        .catch -> core.ldcvmgr.toggle \error
+
     reauth: ~> @auth.logout!then ~> update! .then ~> @auth.prompt true, {tab: \login} .then -> update!
     notify: ~> ldnotify.send <[success warning danger dark light]>[Math.floor(Math.random! * 5)], "some test text"
     "password-reset": ~>
