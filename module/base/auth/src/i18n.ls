@@ -36,7 +36,7 @@ i18n-resource =
         title: 'Failed to Sign Up'
         desc: 'You may have signed up before, or there is a typo. You can:'
         hint: [
-          'instead of `sign up`, try `login`'
+          'instead of sign up, try login'
           'try longer password'
           'try login with social accounts.'
           'try with incognito mode without VPN'
@@ -45,8 +45,8 @@ i18n-resource =
         title: 'Failed to Login'
         desc: 'Maybe incorrect email/password, different methods or never signed up before. You can: '
         hint: [
-          'try with different email / password / sign in methods'
-          'make sure no typo in your email / password'
+          'try other login methods'
+          'check typos in your input'
           'switch to Sign Up and try again'
           'try with incognito mode without VPN'
         ]
