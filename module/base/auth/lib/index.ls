@@ -20,7 +20,9 @@ get-user = ({username, password, method, detail, create, cb, req}) ->
           # by default disabled - session amount limitation
           if limit-session-amount and ((r.[]rows.0 or {}).count or 1) > 1 => cb lderror(1004), null, {message: ''}
           else cb null, (user <<< {ip: aux.ip(req)})
-    .catch !-> cb lderror(1012), null, {message: ''}
+    .catch (e) ->
+      e = if lderror.id(e) => e else lderror 500
+      cb e, null, {message: ''}
 
 strategy = do
   local: (opt) ->

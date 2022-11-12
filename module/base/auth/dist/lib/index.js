@@ -62,8 +62,11 @@
             return cb(null, (user.ip = aux.ip(req), user));
           }
         });
-      })['catch'](function(){
-        cb(lderror(1012), null, {
+      })['catch'](function(e){
+        e = lderror.id(e)
+          ? e
+          : lderror(500);
+        return cb(e, null, {
           message: ''
         });
       });
