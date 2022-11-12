@@ -14,7 +14,7 @@ module.exports =
           "You won't receive the password reset mail if it's not the email you used to sign up before."
           "If you don't remember the email address you used, please"
         ]
-        "letushelp": " and let us help you."
+        "letushelp": "and let us help you."
         "contact": "contact us directly"
         "contact-alt": "contact us"
         "close": "close window"
@@ -29,7 +29,7 @@ module.exports =
           "There are typos when you signed up."
         ]
         sent:
-          title: "Password Reset Link Sent"
+          title: "Reset Link Sent"
           desc: "It will be arrived soon. Please check your inbox later"
         wait: [
           "Sometimes mail just went directly into spam folder so please don't forget to check the "

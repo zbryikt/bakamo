@@ -58,10 +58,13 @@ auth.prototype = Object.create(Object.prototype) <<< do
 
   # for retrieving global object in local.
   get: (opt = {authed-only: false}) ->
-    get-global @ .then (g = {}) ~>
-      if !opt.authed-only => return g
-      p = (if !g.{}user.key => @ui.authpanel(true, opt) else Promise.resolve(g))
-      p.then (g = {}) ->
+    get-global @
+      .then (g = {}) ~>
+        if !opt.authed-only => return g
+        # @ui.authpanel may be overwritten and incorrectly return sth other than g
+        # thus we fetch it again.
+        if !g.{}user.key => @ui.authpanel(true, opt).then -> get-global @
+      .then (g = {}) ->
         if opt.authed-only and !g.{}user.key => return Promise.reject(new lderror(1000))
         return g
 

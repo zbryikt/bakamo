@@ -131,21 +131,21 @@
           authedOnly: false
         });
         return getGlobal(this).then(function(g){
-          var p;
           g == null && (g = {});
           if (!opt.authedOnly) {
             return g;
           }
-          p = !(g.user || (g.user = {})).key
-            ? this$.ui.authpanel(true, opt)
-            : Promise.resolve(g);
-          return p.then(function(g){
-            g == null && (g = {});
-            if (opt.authedOnly && !(g.user || (g.user = {})).key) {
-              return Promise.reject(new lderror(1000));
-            }
-            return g;
-          });
+          if (!(g.user || (g.user = {})).key) {
+            return this$.ui.authpanel(true, opt).then(function(){
+              return getGlobal(this);
+            });
+          }
+        }).then(function(g){
+          g == null && (g = {});
+          if (opt.authedOnly && !(g.user || (g.user = {})).key) {
+            return Promise.reject(new lderror(1000));
+          }
+          return g;
         });
       },
       fetch: function(opt){
