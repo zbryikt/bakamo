@@ -41,7 +41,7 @@ module.exports =
         submit: ({node}) ~>
           node.classList.toggle \disabled, !(@ready)
         "submit-text": ({node}) ~>
-          node.innerText = t(if @_tab == \login => \Login else 'Sign Up')
+          node.innerText = t(if @_tab == \login => \login else 'signup')
         displayname: ({node}) ~> node.classList.toggle \d-none, @_tab == \login
         info: ({node}) ~>
           hide = (node.getAttribute(\data-name) != @_info)
@@ -109,7 +109,7 @@ module.exports =
           debounce 350, ~> @info \default
           @form.reset!
           @ldcv.authpanel.set g
-          ldnotify.send "success", "login successfully"
+          ldnotify.send "success", t("login successfully")
           return g
         .catch (e) ~>
           console.log e
