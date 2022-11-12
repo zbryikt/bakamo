@@ -162,6 +162,14 @@ engine/auth.ls. API endpoints:
    - GET  / `@app/auth/mail/verify/:token`
 
 
+### Common Errors
+
+ - 1015 - bad parameters
+ - 1012 - permission denied
+ - 1034 - user not found
+ - 500 - internal server error
+
+
 ## config
 
  - session cookie age
