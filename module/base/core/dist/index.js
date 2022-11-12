@@ -121,6 +121,10 @@
           console.log("use language: ", lng);
           return i18n.changeLanguage(lng);
         }).then(function(){
+          i18n.on('languageChanged', function(lng){
+            console.log("language changed to " + lng + " / cookie updated");
+            return httputil.cookie('lng', lng);
+          });
           return block.i18n.use(i18n);
         });
       }).then(function(){

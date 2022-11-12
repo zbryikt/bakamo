@@ -73,7 +73,11 @@ servebase =
             )
             console.log "use language: ", lng
             i18n.changeLanguage lng
-          .then -> block.i18n.use i18n
+          .then ->
+            i18n.on \languageChanged, (lng) ->
+              console.log "language changed to #lng / cookie updated"
+              httputil.cookie \lng, lng
+            block.i18n.use i18n
       .then ~>
         # PERF TODO block.i18n.use and manager.init are quite fast.
         # we may provide an anonymous initialization
