@@ -25,7 +25,7 @@ user-store.prototype = Object.create(Object.prototype) <<< do
     if !(is-email username) => return Promise.reject new lderror(1015)
     @db.query "select * from users where username = $1", [username]
       .then (ret = {}) ~>
-        if !(user = ret.[]rows.0) and !create => return Promise.reject(new lderror(1012))
+        if !(user = ret.[]rows.0) and !create => return lderror.reject 1034
         if !user => return @create {username, password, method, detail}
         if !(method == \local or user.method == \local) =>
           delete user.password
