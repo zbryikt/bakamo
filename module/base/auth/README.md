@@ -84,6 +84,33 @@ APIs of the auth object:
  - `setUi`: (TBD/deprecated) change ui widget configured in constructor option `ui`.
 
 
+### Auth Route
+
+By default the URL path `/auth/` is used as the main access point for auth related requests. This page is left for developers to implement, and should accept a single query string as the action of request, such as:
+
+    https://mysite/auth/?passwd-reset
+
+ Without action it should popup authpanel by default. Following actions should be supported:
+
+ - `auth`: show authpanel. default behavior.
+ - `oauth-done`: oauth authentication is done.
+ - `oauth-failed`: oauth authentication is failed.
+ - `mail-expire`: mail verification expired.
+ - `mail-verified`: mail verified.
+ - `passwd-reset`: for user to request password reset link
+ - `passwd-change`: for user to change password from reset link
+ - `passwd-expire`: password reset linek expired.
+ - `passwd-done`: password reset is done.
+
+`@servebase/auth` provides blocks for above actions and a corresponding router in `route.js`, which can be used after `route.js` included with:
+
+    a = new auth!
+    a.route!
+
+Check sample site `frontend/base/src/pug/auth/index.pug` for an working example.
+
+
+
 ### Events
 
  - `error`: when error occurs during authentication, along with the error object
@@ -120,8 +147,8 @@ Pass `auth` object when constructing authpanel block:
 
     @auth = new auth!
     manager.from(
-      {name: "auth"},
-      {root: document.body, data: {auth: @auth}
+      {name: "@servebase/auth"},
+      {root: document.body, data: {auth: @auth, zmgr: zmgr}
     )
       .then ->  ...
 
@@ -136,6 +163,8 @@ check `src/base.ls` for sample implementation of authpanel. Its interface should
 
 
 ## backend
+
+By default, the URL path `/auth/` and `/api/auth/` is used for communication between frontend and backend.
 
 
 engine/auth.ls. API endpoints:
@@ -160,6 +189,9 @@ engine/auth.ls. API endpoints:
  - email verification
    - POST / `@api/auth/mail/verify`
    - GET  / `@app/auth/mail/verify/:token`
+ - oauth login
+   - POST / `@api/auth/<name>`
+   - GET / `@api/auth/<name>/callback`
 
 
 ### Common Errors
@@ -170,7 +202,7 @@ engine/auth.ls. API endpoints:
  - 500 - internal server error
 
 
-## config
+## config (TBD)
 
  - session cookie age
  - username pattern ( email? )
