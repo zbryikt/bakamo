@@ -77,6 +77,14 @@
             }
           },
           handler: {
+            t: function(arg$){
+              var node;
+              node = arg$.node;
+              if (core.i18n) {
+                console.log(core.i18n.t(node.textContent), node.textContent);
+                return node.innerText = core.i18n.t(node.textContent);
+              }
+            },
             admin: function(arg$){
               var node;
               node = arg$.node;

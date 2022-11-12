@@ -35,6 +35,7 @@ view = new ldview do
         .map (n) -> n.getAttribute(\data-alias) or n.innerText.trim!
         .0 or lng
   handler:
+    t: ({node}) -> if core.i18n => node.innerText = core.i18n.t(node.textContent)
     admin: ({node}) ~> node.classList.toggle \d-none, !@user.staff
     unauthed: ({node}) ~> node.classList.toggle \d-none, !!@user.key
     authed: ({node}) ~> node.classList.toggle \d-none, !@user.key
