@@ -37,7 +37,7 @@ route.app.get \/auth/mail/verify/:token, (req, res) ->
   if !(token = req.params.token) => return lderror.reject 400
   db.query "select owner,time from mailverifytoken where token = $1", [token]
     .then (r={})->
-      if !r.[]rows.length => return lderror.reject 403
+      if !r.[]rows.length => return lderror.reject 1013
       lc.obj = r.rows.0
       db.query "delete from mailverifytoken where owner = $1", [lc.obj.owner]
     .then ->
@@ -51,12 +51,12 @@ route.app.get \/auth/mail/verify/:token, (req, res) ->
           if !(u = r.[]rows.0) => return
           u.verified = lc.verified
           db.query """
-          update sessions set detail = jsonb_set(detail, '{passport,user}', ($1)::jsonb)
+          update session set detail = jsonb_set(detail, '{passport,user}', ($1)::jsonb)
           where (detail->'passport'->'user'->>'key')::int = $2
           """, [JSON.stringify(u), lc.obj.owner]
     .then ->
-      res.redirect \/auth/mail/verified/
+      res.redirect \/auth/?mail-verified
     .catch (e) ->
       if lderror.id(e) != 1013 => Promise.reject e
-      else res.redirect \/auth/mail/expire/
+      else res.redirect \/auth/?mail-expire
 

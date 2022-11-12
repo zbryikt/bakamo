@@ -68,7 +68,7 @@
       return db.query("select owner,time from mailverifytoken where token = $1", [token]).then(function(r){
         r == null && (r = {});
         if (!(r.rows || (r.rows = [])).length) {
-          return lderror.reject(403);
+          return lderror.reject(1013);
         }
         lc.obj = r.rows[0];
         return db.query("delete from mailverifytoken where owner = $1", [lc.obj.owner]);
@@ -96,15 +96,15 @@
             return;
           }
           u.verified = lc.verified;
-          return db.query("update sessions set detail = jsonb_set(detail, '{passport,user}', ($1)::jsonb)\nwhere (detail->'passport'->'user'->>'key')::int = $2", [JSON.stringify(u), lc.obj.owner]);
+          return db.query("update session set detail = jsonb_set(detail, '{passport,user}', ($1)::jsonb)\nwhere (detail->'passport'->'user'->>'key')::int = $2", [JSON.stringify(u), lc.obj.owner]);
         });
       }).then(function(){
-        return res.redirect('/auth/mail/verified/');
+        return res.redirect('/auth/?mail-verified');
       })['catch'](function(e){
         if (lderror.id(e) !== 1013) {
           return Promise.reject(e);
         } else {
-          return res.redirect('/auth/mail/expire/');
+          return res.redirect('/auth/?mail-expire');
         }
       });
     });
