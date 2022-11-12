@@ -202,6 +202,11 @@ engine/auth.ls. API endpoints:
  - 500 - internal server error
 
 
+## Additional Notes
+
+`/me/settings/` is used as the link to users' setting pages. This should be configurable (TODO)
+
+
 ## config (TBD)
 
  - session cookie age

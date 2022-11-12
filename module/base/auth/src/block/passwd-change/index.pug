@@ -29,7 +29,7 @@
       p(t) note.0
       p
         span(t) note.1
-        a.mx-1(href="#",onclick="lda.ldcvmgr.toggle('contact')",t) contact
+        a.mx-1.clickable(onclick="lda.ldcvmgr.toggle('contact')",t) contact
         span(t) letushelp
     br
     .row
@@ -43,13 +43,13 @@
     .text-muted
       p
         span(t) note.2.0
-        a.mx-1(href="/auth/passwd/reset/",t) reset page
+        a.mx-1(href="/auth/?passwd-reset",t) reset page
         span(t) note.2.1
       p
         span(t) note.3
-        a.mx-1(href="#",onclick="lda.ldcvmgr.toggle('contact')",t) contact
+        a.mx-1.clickable(onclick="lda.ldcvmgr.toggle('contact')",t) contact
         span(t) letushelp
 
     br
-    a.btn.btn-primary.btn-lg.btn-block(href="/auth/passwd/reset/",t) send again
+    a.btn.btn-primary.btn-lg.btn-block(href="/auth/?passwd-reset",t) send again
 
