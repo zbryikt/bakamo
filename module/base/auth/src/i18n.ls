@@ -27,10 +27,10 @@ i18n-resource =
       def:
         title: 'Sign In'
         desc: [
-          "is your account. If you are representative of your team, try using"
+          "is your account. If you are the representative of your team, try using"
           "a team-shared"
           "email address."
-          "You can access features requiring an account after signing in."
+          "Some features require you signing in before using."
         ]
       sfail:
         title: 'Sign Up Failed'
@@ -43,7 +43,7 @@ i18n-resource =
         ]
       lfail:
         title: 'Login Failed'
-        desc: 'Maybe incorrect email/password, different methods or never signed up before. You can: '
+        desc: 'Maybe incorrect email/password, different methods used before or never signed up. You can: '
         hint: [
           'try other login methods'
           'check typos in your input'
@@ -54,7 +54,7 @@ i18n-resource =
         note: [
           'If it keeps failing, you can try with'
           'this link'
-          'to sign in which reset your session'
+          'to sign in with your session reset'
         ]
       exceed:
         title: 'Failed to Sign in'
