@@ -13,7 +13,7 @@ ldc.register \locales, <[]>, ->
 
 ldc.register \corecfg, <[locales]>, ({locales}) -> ->
   # corecfg function will be run in `core` context.
-  locales: locales
+  i18n: locales: locales
   manager: new block.manager registry: ({ns, name, version, path, type}) ~>
     # access @global.version in core context
     # only customized core will show following registry detail

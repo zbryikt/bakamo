@@ -21,7 +21,7 @@
       return this._cfg = o;
     },
     _init: function(o){
-      var i18n, err, this$ = this;
+      var i18n, that, ref$, err, this$ = this;
       servebase._inited = true;
       if (o != null) {
         servebase._cfg = o;
@@ -68,7 +68,9 @@
           path: "0.html"
         }
       });
-      this.i18n = i18n = this._cfg.i18n || (typeof i18next != 'undefined' && i18next !== null ? i18next : undefined);
+      this.i18n = i18n = (that = ((ref$ = this._cfg).i18n || (ref$.i18n = {})).driver)
+        ? that
+        : typeof i18next != 'undefined' && i18next !== null ? i18next : undefined;
       err = new lderror.handler({
         handler: function(n, e){
           return this$.ldcvmgr.get({
@@ -101,27 +103,32 @@
         return window.location.replace('/');
       });
       return this.manager.init().then(function(){
+        var i18ncfg;
         if (i18n == null) {
           return;
         }
+        i18ncfg = this$._cfg.i18n.cfg || {
+          supportedLng: ['en', 'zh-TW'],
+          fallbackLng: 'zh-TW',
+          fallbackNS: '',
+          defaultNS: ''
+        };
         return Promise.resolve().then(function(){
-          return i18n.init({
-            supportedLng: ['en', 'zh-TW'],
-            fallbackLng: 'zh-TW',
-            fallbackNS: '',
-            defaultNS: ''
-          });
+          return i18n.init(i18ncfg);
         }).then(function(){
           if (typeof i18nextBrowserLanguageDetector != 'undefined' && i18nextBrowserLanguageDetector !== null) {
             return i18n.use(i18nextBrowserLanguageDetector);
           }
         }).then(function(){
           var k, ref$, v, lng;
-          for (k in ref$ = this$._cfg.locales || {}) {
+          for (k in ref$ = this$._cfg.i18n.locales || {}) {
             v = ref$[k];
             i18n.addResourceBundle(k, '', v, true, true);
           }
           lng = (typeof httputil != 'undefined' && httputil !== null ? httputil.qs('lng') || httputil.cookie('lng') : null) || navigator.language || navigator.userLanguage;
+          if (!in$(lng, i18ncfg.supportedLng)) {
+            lng = i18ncfg.fallbackLng || i18ncfg.supportedLng[0] || 'en';
+          }
           console.log("[@servebase/core][i18n] use language: ", lng);
           return i18n.changeLanguage(lng);
         }).then(function(){
@@ -167,5 +174,10 @@
     module.exports = servebase;
   } else if (typeof window != 'undefined' && window !== null) {
     window.servebase = servebase;
+  }
+  function in$(x, xs){
+    var i = -1, l = xs.length >>> 0;
+    while (++i < l) if (x === xs[i]) return true;
+    return false;
   }
 }).call(this);

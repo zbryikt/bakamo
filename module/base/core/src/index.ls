@@ -39,7 +39,7 @@ servebase =
       loader: new ldloader class-name: "ldld full", auto-z: true, base-z: null, zmgr: @zmgr.scope zmgr.splash
       captcha: new captcha manager: @manager, zmgr: @zmgr.scope zmgr.splash
       ldcvmgr: new ldcvmgr manager: @manager, error-cover: {ns: \local, name: "error", path: "0.html"}
-      i18n: i18n = @_cfg.i18n or if i18next? => i18next else undefined
+      i18n: i18n = if @_cfg.{}i18n.driver => that else if i18next? => i18next else undefined
 
     err = new lderror.handler handler: (n, e) ~> @ldcvmgr.get {ns: \local, name: \error, path: "#n.html"}, e
     @error = (e) -> err e
@@ -63,15 +63,19 @@ servebase =
       # since not every service need i18n
       .then ~>
         if !i18n? => return
+        i18ncfg = @_cfg.i18n.cfg or {
+          supportedLng: <[en zh-TW]>, fallbackLng: \zh-TW, fallbackNS: '', defaultNS: ''
+        }
         Promise.resolve!
-          .then -> i18n.init supportedLng: <[en zh-TW]>, fallbackLng: \zh-TW, fallbackNS: '', defaultNS: ''
+          .then -> i18n.init i18ncfg
           .then -> if i18nextBrowserLanguageDetector? => i18n.use i18nextBrowserLanguageDetector
           .then ~>
-            for k,v of (@_cfg.locales or {}) => i18n.add-resource-bundle k, '', v, true, true
+            for k,v of (@_cfg.i18n.locales or {}) => i18n.add-resource-bundle k, '', v, true, true
             lng = (
               (if httputil? => (httputil.qs(\lng) or httputil.cookie(\lng)) else null) or
               navigator.language or navigator.userLanguage
             )
+            if !(lng in i18ncfg.supportedLng) => lng = i18ncfg.fallbackLng or i18ncfg.supportedLng.0 or \en
             console.log "[@servebase/core][i18n] use language: ", lng
             i18n.changeLanguage lng
           .then ->

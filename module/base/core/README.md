@@ -69,7 +69,19 @@ Both the option in `servebase.config` or the `corecfg` ldc module are something 
    - `manager`: a `@plotdb/block` block manager. Optional, it will replace the default manager if provided.
    - `auth`: an object to customize auth behavior, with following fields:
      - `authpanel`: block id of the authpanel to use.
-   - `locales`: i18n resource objects for core modules translation (such as navtop )
+   - `i18n`: optional i18n related configs. if provided, should be an object with following fields:
+     - `locales`: i18n resource objects for core modules translation (such as navtop )
+     - `cfg`: optional i18n module configuration.
+       - if provided, following fields should be defined:
+         - `supportedLng`: list of supported languages. e.g.,  ["en", "zh-TW"]
+         - `fallbackLng`: fallback language. e.g.,  `en`
+         - `fallbackNS`: fallback namespace.
+         - `defaultNS`: default namespace.
+       - if omitted, following config will be used:
+
+             {supportedLng: ["en, "zh-TW"], fallbackLng: "zh-TW", fallbackNS: "", defaultNS: ""}
+
+     - `driver`: optional i18n module object. if omitted, i18next will be used if available.
  - a function. In this case, it will be called with `core` context and should return an object defined above.
 
 `servebase.config` should always be called only once and before any possible core initialization to prevent inconsistent behavior.
