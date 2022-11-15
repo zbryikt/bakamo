@@ -14,8 +14,8 @@ i18n-resource =
     required: 'requried field'
     input:
       email:
-        hint: 'invalid email address'
-        invalid: 'your email address, as account name'
+        hint: 'your email address, as account name'
+        invalid: 'invalid email address'
       displayname:
         hint: "such as 'Paris Hillton'"
       passwd:
