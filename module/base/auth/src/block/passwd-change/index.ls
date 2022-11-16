@@ -1,5 +1,6 @@
 module.exports =
   pkg:
+    dependencies: [{name: \ldform}]
     i18n:
       en:
         title: "Reset Your Password"
@@ -75,10 +76,11 @@ module.exports =
           desc: "您所使用的密碼重設連結無效。"
         "reset page": "密碼重設頁"
         "send again": "再寄一次"
-  init: ->
+  init: ({ctx}) ->
     ({core}) <~ servebase.corectx _
     <~ core.init!then _
     {auth, loader, ldcvmgr, captcha, error} = core
+    {ldform} = ctx
     if !document.querySelector(\#password-reset) => return
     view = new ldview do
       root: document.body
