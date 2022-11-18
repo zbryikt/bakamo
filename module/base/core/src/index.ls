@@ -38,7 +38,12 @@ servebase =
     @ <<<
       loader: new ldloader class-name: "ldld full", auto-z: true, base-z: null, zmgr: @zmgr.scope zmgr.splash
       captcha: new captcha manager: @manager, zmgr: @zmgr.scope zmgr.splash
-      ldcvmgr: new ldcvmgr manager: @manager, error-cover: {ns: \local, name: "error", path: "0.html"}
+      ldcvmgr: new ldcvmgr(
+        manager: @manager
+        error-cover: {ns: \local, name: "error", path: "0.html"}
+        zmgr: @zmgr
+        base-z: zmgr.modal
+      )
       i18n: i18n = if @_cfg.{}i18n.driver => that else if i18next? => i18next else undefined
 
     err = new lderror.handler handler: (n, e) ~> @ldcvmgr.get {ns: \local, name: \error, path: "#n.html"}, e

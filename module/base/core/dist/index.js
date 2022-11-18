@@ -66,7 +66,9 @@
           ns: 'local',
           name: "error",
           path: "0.html"
-        }
+        },
+        zmgr: this.zmgr,
+        baseZ: zmgr.modal
       });
       this.i18n = i18n = (that = ((ref$ = this._cfg).i18n || (ref$.i18n = {})).driver)
         ? that
