@@ -14,7 +14,7 @@ module.exports =
   init: ({ctx, root, data, t}) ->
     {ldview, ldnotify, curegex, ldform} = ctx
     ({core}) <~ servebase.corectx _
-    <-(~>it.apply @mod = @mod({core} <<< ctx)) _
+    <-(~>it.apply @mod = @mod({core, t} <<< ctx)) _
     @ldcv = ldcv = {}
     @_auth = data.auth
     iroot = ld$.find(root, '.ldcv[data-name=authpanel]', 0)
@@ -76,7 +76,7 @@ module.exports =
     else @mod.auth.fetch!then (g) -> @mod.ldcv.authpanel.set g
 
   mod: (ctx) ->
-    {core, ldview, ldnotify, curegex} = ctx
+    {core, ldview, ldnotify, curegex, t} = ctx
     tab: (tab) ->
       if /failed/.exec(@_info) => @_info = \default
       @_tab = tab
@@ -126,3 +126,4 @@ module.exports =
           @info "#{@_tab}-failed"
           @form.fields.password.value = null
           @form.check {n: \password, now: true}
+          if !id => throw e
