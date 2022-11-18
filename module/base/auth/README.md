@@ -62,6 +62,7 @@ APIs of the auth object:
        - without `authedOnly`, a `global` object for anonymous user will be returned.
      - `tab`: see `prompt(opt)` below.
      - `lock`: see `prompt(opt)` below.
+     - `redirect`: see `prompt(opt)` below.
    - difference between `get` and `fetch`:
      - `get` returns local stored global object.
      - `fetch` retrieve data from cookie or server (with `renew`)
@@ -74,6 +75,7 @@ APIs of the auth object:
  - `prompt(opt)`: shorthand for `ui.authpanel(true, opt)` / toggle authpanel on, with options:
    - `tab`: either `login` or `signup`, indicating tab to show. previous state (or `login`) if omitted.
    - `lock`: if true, force user to not dismiss this panel unless authenticated.
+   - `redirect`: indicating that this panel is triggered by redireting, instead of a explicit action of login.
  - `oauth(opt)`: trigger oauth login. options:
    - `name`: oauth login name. e.g., `facebook`, `google` or `line`.
  - `reset()`: reset user cookie by redirecting user to `/auth/reset`.
@@ -157,7 +159,7 @@ check `src/base.ls` for sample implementation of authpanel. Its interface should
 
  - accept two parameters:
    - `toggle`: true / false. toggle on the authpanel if true, otherwise false.
-   - `opt`: options including `lock` and `tab`. see `prompt` api above for detail explanation.
+   - `opt`: options including `lock`, `tab` and `redirect`. see `prompt` api above for detail explanation.
  - return a Promise which resolves with either null or a `global` object.
    - check `user.key` to determine if user login successfully.
 

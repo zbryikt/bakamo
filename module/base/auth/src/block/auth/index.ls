@@ -1,5 +1,5 @@
 module.exports =
-  init: ->
+  init: (o) ->
     ({core}) <- servebase.corectx _
     <- core.init!then _
     {auth} = core
@@ -13,7 +13,10 @@ module.exports =
             <- new Promise _ # never resolve
             # user is indeed logged in. simply redirect to landing page
             window.location.replace '/'
-      .then -> auth.prompt lock: true  # oherwise trigger login panel
+      .then ->
+        # oherwise trigger login panel
+        # config can be modified by block `data` field.
+        auth.prompt({lock: true} <<< (o.data or {}))
       # user will be here only if they login in this page.
       # however, this may be redirected by middlewares such as `signedin` -
       # in this case URL will still be the URL guarded by `signedin`. so we simply reload

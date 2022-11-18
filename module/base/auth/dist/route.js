@@ -2,7 +2,7 @@
 (function(){
   var route;
   route = function(o){
-    var supportedActions, n, k, ref$;
+    var supportedActions, n, k, redirect, ref$;
     o == null && (o = {});
     supportedActions = ['auth', 'mail-expire', 'mail-verified', 'oauth-done', 'oauth-failed', 'passwd-change', 'passwd-expire', 'passwd-done', 'passwd-reset'];
     if (!(n = (function(){
@@ -16,10 +16,15 @@
     })[0])) {
       n = 'auth';
     }
+    redirect = !window.location.pathname.startsWith('/auth');
     return this._manager.from((ref$ = import$({
       name: "@servebase/auth"
     }, o.bid || {}), ref$.path = n, ref$), {
-      root: o.root || document.body
+      root: o.root || document.body,
+      data: {
+        lock: redirect,
+        redirect: redirect
+      }
     });
   };
   if (typeof auth != 'undefined' && auth !== null) {
