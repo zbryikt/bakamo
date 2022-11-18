@@ -42,7 +42,7 @@
     "i18next-browser-languagedetector": "^6.1.4",
     "ldbutton": "^2.0.1",
     "ldcover": "^3.2.1",
-    "ldcvmgr": "^0.0.12",
+    "ldcvmgr": "^0.0.13",
     "lderror": "^2.3.3",
     "ldfolder": "^0.0.9",
     "ldform": "^0.1.2",
