@@ -2,7 +2,7 @@ require! <[fs chokidar lderror jsonwebtoken express-session passport passport-lo
 require! <[passport-facebook]>
 require! <[passport-google-oauth20]>
 require! <[passport-line-auth]>
-require! <[@servebase/backend/aux ./reset ./verify]>
+require! <[@servebase/backend/aux ./passwd ./mail]>
 
 (backend) <- ((f) -> module.exports = -> f.call {}, it) _
 {db,app,config,route} = backend
@@ -154,12 +154,17 @@ app.use passport.initialize!
 app.use passport.session!
 
 route.auth
-  ..post \/signup, backend.middleware.captcha, (req, res, next) ->
+  ..post \/signup, backend.middleware.captcha, (req, res, next) ~>
     {username,displayname,password,config} = req.body{username,displayname,password,config}
     if !username or !displayname or password.length < 8 => return next(lderror 400)
     db.user-store.create {username, password} <<< {
       method: \local, detail: {displayname}, config: (config or {})
     }
+      .then (user) ~>
+        @mail.verify {req, user}
+          .catch (err) ~>
+            # only log here so user can continue to login.
+            backend.log-mail.error {err}, "send mail verification mail failed (#username)".red
       .then (user) !-> req.login user, !-> res.send!
       .catch !-> next(lderror 403)
   ..post \/login, backend.middleware.captcha, (req, res, next) ->
@@ -191,7 +196,9 @@ app.post \/api/auth/reset, (req, res) ->
   <-! req.logout _
   res.send!
 
-reset backend
-verify backend
+@passwd = passwd backend
+@mail = mail backend
+@passwd.route!
+@mail.route!
 
 @
