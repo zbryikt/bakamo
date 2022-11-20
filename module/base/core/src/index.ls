@@ -44,6 +44,7 @@ servebase =
         zmgr: @zmgr
         base-z: zmgr.modal
       )
+      # TODO we should at least provide a dummy i18n so i18n.t will work
       i18n: i18n = if @_cfg.{}i18n.driver => that else if i18next? => i18next else undefined
 
     err = new lderror.handler handler: (n, e) ~> @ldcvmgr.get {ns: \local, name: \error, path: "#n.html"}, e
