@@ -326,6 +326,11 @@
         });
       });
     });
+    app.post('/api/auth/clear/:uid', aux.isAdmin, function(req, res){
+      return db.query("delete from session where owner = $1", [req.params.uid]).then(function(){
+        return res.send();
+      });
+    });
     app.post('/api/auth/reset', function(req, res){
       aux.clearCookie(req, res);
       return req.logout(function(){
