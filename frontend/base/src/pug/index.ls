@@ -11,6 +11,21 @@
     signup: ~> @auth.prompt {tab: \signup} .then -> update!
     login: ~> @auth.prompt {tab: \login} .then -> update!
     logout: ~> @auth.logout!then -> update!
+    wipe: ~>
+      core.captcha
+        .guard cb: ->
+          ld$.fetch "/api/auth/clear", {method: \POST}
+        .then -> window.location.href = \/
+    "mail-verify": ->
+      core.loader.on!
+      core.captcha
+        .guard cb: (captcha) ->
+          ld$.fetch \/api/auth/mail/verify, {method: \POST}, {json: {captcha}}
+        .then -> debounce 1000
+        .finally -> core.loader.off!
+        .then -> ldnotify.send \success, \sent.
+        .catch -> core.ldcvmgr.toggle \error
+
     reauth: ~> @auth.logout!then ~> update! .then ~> @auth.prompt true, {tab: \login} .then -> update!
     notify: ~> ldnotify.send <[success warning danger dark light]>[Math.floor(Math.random! * 5)], "some test text"
     "password-reset": ~>
@@ -53,6 +68,10 @@
                   console.error "accessing /api/demo/post with captcha failed: ", it
                   Promise.reject it
         .catch -> alert "captcha verification failed"
+  init:
+    discuss: ({node}) ~>
+      @manager.from {name: \@servebase/discuss}, {root: node} .then ->
+
   text: do
     username: ~> @user.username or 'n/a'
     userid: ~> @user.key or 'n/a'
@@ -69,5 +88,5 @@ update = ~>
     @user = g.user
     @view.panel.render!
 
-@auth.on \change, update
+@auth.on \update, update
 

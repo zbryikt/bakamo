@@ -25,7 +25,7 @@ user-store.prototype = Object.create(Object.prototype) <<< do
     if !(is-email username) => return Promise.reject new lderror(1015)
     @db.query "select * from users where username = $1", [username]
       .then (ret = {}) ~>
-        if !(user = ret.[]rows.0) and !create => return Promise.reject(new lderror(1012))
+        if !(user = ret.[]rows.0) and !create => return lderror.reject 1034
         if !user => return @create {username, password, method, detail}
         if !(method == \local or user.method == \local) =>
           delete user.password
@@ -47,7 +47,7 @@ user-store.prototype = Object.create(Object.prototype) <<< do
       .then ~> if method == \local => @hashing(password) else password
       .then (password) ~>
         displayname = if detail => detail.displayname or detail.username
-        if !displayname => displayname = username.replace(/@.+$/, "")
+        if !displayname => displayname = username.replace(/@[^@]+$/, "")
         config.{}consent.cookie = new Date!getTime!
         user = { username, password, method, displayname, detail, config, createdtime: new Date! }
         @db.query """

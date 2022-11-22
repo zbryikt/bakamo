@@ -13,7 +13,8 @@ module.exports =
     ]
   init: ({ctx, root, data, t}) ->
     {ldview, ldnotify, curegex, ldform} = ctx
-    <-(~>it.apply @mod = @mod(ctx)) _
+    ({core}) <~ servebase.corectx _
+    <-(~>it.apply @mod = @mod({core, t} <<< ctx)) _
     @ldcv = ldcv = {}
     @_auth = data.auth
     iroot = ld$.find(root, '.ldcv[data-name=authpanel]', 0)
@@ -28,6 +29,13 @@ module.exports =
       action:
         keyup: input: ({node, evt}) ~> if evt.keyCode == 13 => @submit!
         click:
+          oauth: ({node}) ~>
+            @_auth.oauth {name: node.getAttribute \data-name}
+              .then (g) ~>
+                debounce 350, ~> @info \default
+                @form.reset!
+                @ldcv.authpanel.set g
+                ldnotify.send "success", t("login successfully")
           submit: ({node}) ~> @submit!
           switch: ({node}) ~>
             @tab node.getAttribute \data-name
@@ -39,7 +47,7 @@ module.exports =
         submit: ({node}) ~>
           node.classList.toggle \disabled, !(@ready)
         "submit-text": ({node}) ~>
-          node.innerText = t(if @_tab == \login => \Login else 'Sign Up')
+          node.innerText = t(if @_tab == \login => \login else 'signup')
         displayname: ({node}) ~> node.classList.toggle \d-none, @_tab == \login
         info: ({node}) ~>
           hide = (node.getAttribute(\data-name) != @_info)
@@ -68,7 +76,7 @@ module.exports =
     else @mod.auth.fetch!then (g) -> @mod.ldcv.authpanel.set g
 
   mod: (ctx) ->
-    {ldview, ldnotify, curegex} = ctx
+    {core, ldview, ldnotify, curegex, t} = ctx
     tab: (tab) ->
       if /failed/.exec(@_info) => @_info = \default
       @_tab = tab
@@ -88,8 +96,9 @@ module.exports =
       @ldld.on!
         .then -> debounce 1000
         .then ~>
-          data = {}
-          ld$.fetch "#{@_auth.api-root!}#{@_tab}", {method: \POST}, {json: body}
+          core.captcha.guard cb: (captcha) ~>
+            body <<< {captcha}
+            ld$.fetch "#{@_auth.api-root!}#{@_tab}", {method: \POST}, {json: body}
         .catch (e) ~>
           if lderror.id(e) != 1005 => return Promise.reject e
           # 1005 csrftoken mismatch - try recoverying directly by reset session
@@ -106,13 +115,15 @@ module.exports =
           debounce 350, ~> @info \default
           @form.reset!
           @ldcv.authpanel.set g
-          ldnotify.send "success", "login successfully"
+          ldnotify.send "success", t("login successfully")
           return g
         .catch (e) ~>
           console.log e
-          if lderror.id(e) == 1029 => return Promise.reject e
-          if lderror.id(e) == 1004 => return @info "login-exceeded"
+          id = lderror.id e
+          if id >= 500 and id < 599 => return lderror.reject 1007
+          if id == 1029 => return Promise.reject e
+          if id == 1004 => return @info "login-exceeded"
           @info "#{@_tab}-failed"
           @form.fields.password.value = null
           @form.check {n: \password, now: true}
-
+          if !id => throw e

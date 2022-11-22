@@ -10,9 +10,8 @@ include /modules/common.pug
     p You can try again later or #[a(href="#",onclick="lda.ldcvmgr.toggle('contact')") contact us] to see if there is anything we can do for you.
     .my-4.rounded.p-2.bg-light
       .text-muted Error Detail:
-      .row.mb-y
-        .col-sm error id: #[span.font-weight-bold(ld="id")]
-        .col-sm error uuid: #[span.font-weight-bold(ld="uuid")]
+      div error id: #[span.font-weight-bold(ld="id")]
+      div error uuid: #[span.font-weight-bold(ld="uuid")]
       .text-truncate.w-100 message: #[span.font-weight-bold(ld="message")]
     br
     .row

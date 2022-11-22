@@ -18,6 +18,7 @@ site-wise navigation menu dynamics
  - `unauthed`: show if it's an anonymous user
  - `authed` show if current user is signed in.
  - `avatar`: show user avatar. default to `/assets/avatar/#{uid}`
+ - `t`: indicating that this tag should be translated. `textContent` of this tag will be used as key.
 
 
 ## Class Transition

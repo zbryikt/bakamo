@@ -1,4 +1,4 @@
-require! <[redis util]>
+require! <[redis]>
 
 redis-node = (opt = {}) ->
   @opt = opt

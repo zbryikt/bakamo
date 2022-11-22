@@ -1,6 +1,7 @@
 node_modules
 *.log
 secret.*
+secret
 .*.swp
 .swp
 config/gen
@@ -23,3 +24,4 @@ module/version/index.pug
 config/**/local.*
 !frontend/web
 frontend/web/static/assets/lib
+dev/srcbuild/static/

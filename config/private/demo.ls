@@ -1,4 +1,11 @@
 module.exports = do
+  # verbose name for user, such as in mail title, etc.
+  #  - if omitted, `hostname` below or `aux.hostname(req)` should be used instead.
+  sitename: 'servebase'
+  # optional domain name.
+  #  - dev can still infer domain name in used by `aux.hostname(req)` if omitted,
+  #    however this should be used if provided.
+  domain: 'serve.base'
   port: 8901
   limit: '20mb'
   i18n:
@@ -6,6 +13,7 @@ module.exports = do
     lng: <[en zh-TW]>
     ns: <[default]>
   base: 'base'
+  srcbuild: [] # value in `base` will be added by default
   redis:
     enabled: false
     url: \redis://localhost:6379
@@ -38,6 +46,7 @@ module.exports = do
     # when true, all errors handled in `@servebase/backend/error-handler` will be logged with `debug` level
     all-error: false
   auth:
+    # GCP -> API & Services -> Credentials -> OAuth Client ID
     google:
       clientID: '...'
       clientSecret: '...'
@@ -54,3 +63,6 @@ module.exports = do
     mailgun: auth:
       domain: '...'
       api_key: '...'
+  # additional information passing to client side via api/auth/info.
+  # use `global.config` to access this object.
+  client: {}

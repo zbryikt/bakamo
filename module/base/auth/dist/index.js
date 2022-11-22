@@ -5,9 +5,14 @@
   })(function(){
     var lc, getGlobal, auth;
     lc = {};
-    getGlobal = proxise(function(){
+    getGlobal = proxise(function(a){
       if (lc.global) {
         return Promise.resolve(lc.global);
+      } else if (lc.fetching) {
+        return;
+      }
+      if (a) {
+        return a.fetch();
       }
     });
     auth = function(opt){
@@ -26,14 +31,16 @@
           cancel: function(){}
         },
         authpanel: function(tgl, o){
+          var bid;
           o == null && (o = {});
           if (this$._authpanel) {
             return this$._authpanel(tgl, o);
           }
           this$.ui.loader.on(350);
-          return this$._manager.from({
+          bid = opt.authpanel || {
             name: "@servebase/auth"
-          }, {
+          };
+          return this$._manager.from(bid, {
             root: document.body,
             data: {
               auth: this$,
@@ -56,7 +63,9 @@
       if ((ref$ = this._apiRoot)[ref$.length - 1] !== '/') {
         this._apiRoot += '/';
       }
-      this.fetch();
+      if (opt.initFetch == null || opt.initFetch) {
+        this.fetch();
+      }
       return this;
     };
     auth.prototype = import$(Object.create(Object.prototype), {
@@ -94,16 +103,16 @@
       logout: function(){
         var this$ = this;
         this.ui.loader.on();
-        return ld$.fetch(this.apiRoot() + "/logout", {
+        return ld$.fetch(this.apiRoot() + "logout", {
           method: 'post'
         }, {}).then(function(){
           return this$.fetch({
             renew: true
           });
+        })['finally'](function(){
+          return this$.ui.loader.off();
         }).then(function(){
           return this$.fire('logout');
-        }).then(function(){
-          return this$.ui.loader.off();
         })['catch'](function(e){
           return this$.fire('error', e);
         });
@@ -121,22 +130,22 @@
         opt == null && (opt = {
           authedOnly: false
         });
-        return getGlobal(opt).then(function(g){
-          var p;
+        return getGlobal(this).then(function(g){
           g == null && (g = {});
           if (!opt.authedOnly) {
             return g;
           }
-          p = !(g.user || (g.user = {})).key
-            ? this$.ui.authpanel(true, opt)
-            : Promise.resolve(g);
-          return p.then(function(g){
-            g == null && (g = {});
-            if (opt.authedOnly && !(g.user || (g.user = {})).key) {
-              return Promise.reject(new lderror(1000));
-            }
-            return g;
-          });
+          return g.user.key
+            ? g
+            : this$.ui.authpanel(true, opt).then(function(){
+              return getGlobal(this);
+            });
+        }).then(function(g){
+          g == null && (g = {});
+          if (opt.authedOnly && !(g.user || (g.user = {})).key) {
+            return Promise.reject(new lderror(1000));
+          }
+          return g;
         });
       },
       fetch: function(opt){
@@ -144,6 +153,7 @@
         opt == null && (opt = {
           renew: true
         });
+        lc.fetching = true;
         this.ui.loader.on(this.timeout.loader);
         this.watchdog = debounce(this.timeout.failed, function(){
           this$.ui.loader.off();
@@ -171,11 +181,12 @@
           return this$.ui.loader.off();
         }).then(function(g){
           var ref$, e;
+          lc.fetching = false;
           ((ref$ = ld$.fetch).headers || (ref$.headers = {}))['X-CSRF-Token'] = g.csrfToken;
           g.ext = this$.inject(g) || {};
           getGlobal.resolve(JSON.parse(JSON.stringify(lc.global = g)));
           try {
-            this$.fire('change', lc.global);
+            this$.fire('update', lc.global);
           } catch (e$) {
             e = e$;
             this$.fire('error', e);
@@ -183,7 +194,6 @@
           }
           return lc.global;
         })['catch'](function(e){
-          console.log(">", lderror(e));
           if (lderror.id(e) === 1029) {
             return Promise.reject(e);
           }
@@ -197,7 +207,7 @@
       prompt: function(o){
         return this.ui.authpanel(true, o);
       },
-      social: function(arg$){
+      oauth: function(arg$){
         var name, this$ = this;
         name = arg$.name;
         return this.get().then(function(g){
@@ -206,28 +216,32 @@
           if ((g.user || (g.user = {})).key) {
             return g;
           }
-          this$.social.window = window.open('', 'social-login', 'height=640,width=560');
-          this$.social.form = form = ld$.create({
+          this$.oauth.window = window.open('', 'oauth-login', 'height=640,width=560');
+          this$.oauth.form = form = ld$.create({
             name: 'div'
           });
-          form.innerHTML = "<form target=\"social-login\" action=\"" + this$.apiRoot() + name + "/\" method=\"post\">\n  <input type=\"hidden\" name=\"_csrf\" value=\"" + g.csrfToken + "\"/>\n</form>";
+          form.innerHTML = "<form target=\"oauth-login\" action=\"" + this$.apiRoot() + name + "/\" method=\"post\">\n  <input type=\"hidden\" name=\"_csrf\" value=\"" + g.csrfToken + "\"/>\n</form>";
           document.body.appendChild(form);
-          window.socialLogin = login = proxise(function(){
+          window.oauthLogin = login = proxise(function(){
             return ld$.find(form, 'form', 0).submit();
           });
-          return login();
+          return login().then(function(){
+            return this$.fetch({
+              renew: true
+            });
+          });
+        })['finally'](function(){
+          if (!(this$.oauth.form && this$.oauth.form.parentNode)) {
+            return;
+          }
+          return this$.oauth.form.parentNode.removeChild(this$.oauth.form);
         }).then(function(g){
           g == null && (g = {});
           if (!(g.user || (g.user = {})).key) {
             return Promise.reject(new lderror(1000));
+          } else {
+            return g;
           }
-        })['finally'](function(){
-          if (!(this$.social.form && this$.social.form.parentNode)) {
-            return;
-          }
-          return this$.social.form.parentNode.removeChild(this$.social.form);
-        }).then(function(){
-          return this$.fire('change', lc.global);
         })['catch'](function(e){
           this$.fire('error', e);
           return Promise.reject(e);

@@ -6,28 +6,31 @@ lc = {}
 #   wrap it with proxise so all callers can wait for init fetch event to finish.
 # - put it here so it can't be resolved by user from dev console.
 #   user can still modify auth object so we actually can't prevent users from altering this module.
-get-global = proxise -> if lc.global => return Promise.resolve lc.global
+get-global = proxise (a) ->
+  if lc.global => return Promise.resolve lc.global
+  else if lc.fetching => return
+  if a => a.fetch!
 
 auth = (opt={}) ->
   @_manager = opt.manager
   @timeout = {loader: 1000, failed: 10000}
   @evt-handler = {}
-
   @ui = do
     loader: opt.loader or {on: ->, off: ->, cancel: ->}
     authpanel: (tgl, o = {}) ~>
       if @_authpanel => return @_authpanel tgl, o
       @ui.loader.on 350
-      @_manager.from {name: "@servebase/auth"}, {root: document.body, data: {auth: @, zmgr: opt.zmgr}}
+      bid = (opt.authpanel or {name: "@servebase/auth"})
+      @_manager.from bid, {root: document.body, data: {auth: @, zmgr: opt.zmgr}}
         .then (p) ~> @_authpanel = p.interface
         .then (i) ~>
           @ui.loader.off!
           i tgl, o
     timeout: -> new Promise (res, rej) -> # do nothing
-    
+
   if !@_api-root => @_api-root = opt.api or "/api/auth"
   if @_api-root[* - 1] != \/ => @_api-root += \/
-  @fetch!
+  if !opt.init-fetch? or opt.init-fetch => @fetch!
   @
 
 auth.prototype = Object.create(Object.prototype) <<< do
@@ -38,10 +41,13 @@ auth.prototype = Object.create(Object.prototype) <<< do
   set-ui: -> @ui <<< (it or {}) # TBD. seems not needed anymore.
   logout: ->
     @ui.loader.on!
-    ld$.fetch "#{@api-root!}/logout", {method: \post}, {}
+    ld$.fetch "#{@api-root!}logout", {method: \post}, {}
       .then ~> @fetch {renew: true}
-      .then ~> @fire \logout
-      .then ~> @ui.loader.off!
+      .finally ~> @ui.loader.off!
+      .then ~>
+        # even if `@fetch` fires `update` event,
+        # we still fire `logout here to indicate this is an intentional logout.
+        @fire \logout
       .catch (e) ~> @fire \error, e
   reset: ->
     @ui.loader.on!
@@ -52,15 +58,20 @@ auth.prototype = Object.create(Object.prototype) <<< do
 
   # for retrieving global object in local.
   get: (opt = {authed-only: false}) ->
-    get-global opt .then (g = {}) ~>
-      if !opt.authed-only => return g
-      p = (if !g.{}user.key => @ui.authpanel(true, opt) else Promise.resolve(g))
-      p.then (g = {}) ->
+    get-global @
+      .then (g = {}) ~>
+        if !opt.authed-only => return g
+        # @ui.authpanel may be overwritten and incorrectly return sth other than g
+        # thus we fetch it again.
+        return if g.user.key => g
+        else @ui.authpanel(true, opt).then -> get-global @
+      .then (g = {}) ->
         if opt.authed-only and !g.{}user.key => return Promise.reject(new lderror(1000))
         return g
 
   # for retrieving global object from server ( or cookie ). this won't trigger sign up ui.
   fetch: (opt = {renew: true}) ->
+    lc.fetching = true
     # if d/global response later then 1000ms, popup a loader
     @ui.loader.on @timeout.loader
     # if it took too long to respond, just hint user about possibly server issue
@@ -90,11 +101,12 @@ auth.prototype = Object.create(Object.prototype) <<< do
         @ui.loader.cancel!
         @ui.loader.off!
       .then (g) ~>
+        lc.fetching = false
         ld$.fetch.{}headers['X-CSRF-Token'] = g.csrfToken
         g.ext = @inject(g) or {}
         get-global.resolve JSON.parse(JSON.stringify(lc.global = g))
         try
-          @fire \change, lc.global
+          @fire \update, lc.global
         catch e
           # error after data fetched. prompt, but still return global
           @fire \error, e; console.log e
@@ -111,25 +123,24 @@ auth.prototype = Object.create(Object.prototype) <<< do
         new Promise (res, rej) ->
 
   prompt: (o) -> @ui.authpanel true, o
-  social: ({name}) ->
+  oauth: ({name}) ->
     @get!
       .then (g = {}) ~>
         if g.{}user.key => return g
-        # before social login
-        @social.window = window.open '', 'social-login', 'height=640,width=560'
-        @social.form = form = ld$.create name: \div
+        # before oauth login
+        @oauth.window = window.open '', 'oauth-login', 'height=640,width=560'
+        @oauth.form = form = ld$.create name: \div
         form.innerHTML = """
-        <form target="social-login" action="#{@api-root!}#name/" method="post">
+        <form target="oauth-login" action="#{@api-root!}#name/" method="post">
           <input type="hidden" name="_csrf" value="#{g.csrf-token}"/>
         </form>"""
         document.body.appendChild form
-        window.social-login = login = proxise(-> ld$.find(form, 'form', 0).submit!)
-        login!
-      .then (g = {}) -> if !g.{}user.key => Promise.reject new lderror(1000)
+        window.oauth-login = login = proxise(-> ld$.find(form, 'form', 0).submit!)
+        login!then ~> @fetch {renew: true}
       .finally ~>
-        if !(@social.form and @social.form.parentNode) => return
-        @social.form.parentNode.removeChild @social.form
-      .then ~> @fire \change, lc.global # after social login
+        if !(@oauth.form and @oauth.form.parentNode) => return
+        @oauth.form.parentNode.removeChild @oauth.form
+      .then (g = {}) -> if !g.{}user.key => Promise.reject new lderror(1000) else return g
       .catch (e) ~> @fire \error, e; return Promise.reject(e)
 
 if module? => module.exports = auth

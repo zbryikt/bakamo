@@ -1,0 +1,13 @@
+div
+  plug(name="widget")
+  script(type="@plotdb/block"): :lsc
+    module.exports =
+      init: ({root}) ->
+        @ldcv = new ldcover {
+          root: root.querySelector('.ldcv')
+          escape: false
+        }
+      interface: ->
+        #get: ~> @ldcv.get!
+        @ldcv
+

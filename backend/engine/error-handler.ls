@@ -1,7 +1,20 @@
 require! <[lderror @plotdb/suuid ./aux]>
 
 (backend) <- (->module.exports = it)  _
-{config} = backend
+
+# for serving a friendly error page if it's not an API and prevent looping error
+route490 = (req, res, err) ->
+  if !/^\/api/.exec(req.originalUrl) and !/^\/err\/490/.exec(req.originalUrl) =>
+    # cookie domain: webmasters.stackexchange.com/questions/55790
+    #  - no domain: request-host will be used
+    #  - with domain: start with a dot. similar to *.some.site
+    ## with http header - rely on browsers to redirect. cookie ignored.
+    # if err.redirect => return res.redirect 302, err.redirect
+    ## with reversed proxy - will need a reversed proxy to take affect
+    res.set {"Content-Type": "text/html", "X-Accel-Redirect": err.redirect or \/err/490}
+  else delete err.redirect
+  res.cookie \lderror, JSON.stringify(err), {maxAge: 60000, httpOnly: false, secure: true, sameSite: \Strict}
+  return res.status 490 .send err
 
 handler = (err, req, res, next) ->
   # 1. custom error by various package - handle by case and wrapped in lderror
@@ -20,9 +33,11 @@ handler = (err, req, res, next) ->
     # delegate csrf token mismatch to lderror handling
     if err.code == \EBADCSRFTOKEN => err = lderror 1005
     err.uuid = suuid!
-    if backend.config.log.all-error =>
+    err <<< {_detail: user: (req.user or {}).key or 0, ip: aux.ip(req), url: req.originalUrl}
+    # log every single error except those will be logged below ( has id + log = true )
+    if backend.config.log.all-error and !(lderror.id(err) and err.log) =>
       backend.log-error.debug(
-        {err: err <<< {_detail: user: (req.user or {}).key or 0, ip: aux.ip(req), url: req.originalUrl}}
+        {err: err}
         "error logged in error handler (lderror id #{lderror.id(err)})"
       )
     if lderror.id(err) =>
@@ -33,18 +48,8 @@ handler = (err, req, res, next) ->
         exception logged [URL: #{req.originalUrl}] #{if err.message => ': ' + err.message else ''} #{err.uuid}
         """.red
       delete err.stack
-      # serve a friendly error page if it's not an API and prevent looping error
-      if !/^\/api/.exec(req.originalUrl) and !/^\/err\/490/.exec(req.originalUrl) =>
-        # cookie domain: webmasters.stackexchange.com/questions/55790
-        #  - no domain: request-host will be used
-        #  - with domain: start with a dot. similar to *.some.site
-        ## with http header - rely on browsers to redirect. cookie ignored.
-        # if err.redirect => return res.redirect 302, err.redirect
-        ## with reversed proxy - will need a reversed proxy to take affect
-        res.set {"Content-Type": "text/html", "X-Accel-Redirect": err.redirect or \/err/490}
-      else delete err.redirect
-      res.cookie \lderror, JSON.stringify(err), {maxAge: 60000, httpOnly: false, secure: true, sameSite: \Strict}
-      return res.status 490 .send err
+      return route490 req, res, err
+
     else if (err instanceof URIError) and "#{err.stack}".startsWith('URIError: Failed to decode param') =>
       # errors to be ignored, due to un-skippable error like body json parsing issue
       return res.status 400 .send err
@@ -52,7 +57,15 @@ handler = (err, req, res, next) ->
   catch e
     req.log.error {err: e}, "exception occurred while handling other exceptions".red
     req.log.error "original exception follows:".red
+
+  # --- take care of unhandled exceptions ---
   req.log.error {err}, "unhandled exception occurred [URL: #{req.originalUrl}] #{if err.message => ': ' + err.message else ''} #{err.uuid}".red
-  res.status 500 .send err{id, name, uuid}
+  # filter and leave only core fields to prevent from credential leaking
+  err = err{id,name,uuid}
+  # either (error without id) or (nested exception, may be lderror) goes here.
+  # let user know it's 500 if id is not explicitly provided.
+  if !(err.name? and err.id?) => err <<< name: \lderror, id: 500
+  # friendly error page, see above for code explanaition.
+  return route490 req, res, err
 
 return handler

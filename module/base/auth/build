@@ -2,17 +2,32 @@
 
 echo "prepare..."
 rm -rf dist
-mkdir -p dist
+mkdir -p dist/done
 
+bin=../../../node_modules/.bin
 echo "build src/auth.ls -> dist/index.js ..."
-./node_modules/.bin/lsc -cp src/auth.ls > dist/index.js
+$bin/lsc -cp src/auth.ls > dist/index.js
 echo "minify dist/index.js -> dist/index.min.js ..."
-./node_modules/.bin/uglifyjs dist/index.js > dist/index.min.js
+$bin/uglifyjs dist/index.js > dist/index.min.js
+
+echo "build src/route.ls -> dist/route.js ..."
+$bin/lsc -cp src/route.ls > dist/route.js
+echo "minify dist/route.js -> dist/route.min.js ..."
+$bin/uglifyjs dist/route.js > dist/route.min.js
 
 echo "build authpanel.pug -> dist/index.html ..."
-./node_modules/.bin/srcbuild-pug src/authpanel.pug > dist/index.html
+$bin/srcbuild-pug src/authpanel.pug > dist/index.html
 echo "build base.pug -> dist/base.html ..."
-./node_modules/.bin/srcbuild-pug src/base.pug > dist/base.html
+$bin/srcbuild-pug src/base.pug > dist/base.html
+blocks="auth mail-verified oauth-failed passwd-done passwd-reset mail-expire oauth-done passwd-change passwd-expire"
+for name in $blocks; do
+  mkdir -p dist/$name
+  echo "build $name/index.pug -> dist/$name/index.html ..."
+  $bin/srcbuild-pug src/block/$name/index.pug > dist/$name/index.html
+done
+
+echo "prepare img files"
+cp -R src/img/ dist/img/
 
 echo "build server files ..."
-node_modules/.bin/lsc -co dist/lib lib
+$bin/lsc -co dist/lib lib

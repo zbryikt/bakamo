@@ -2,12 +2,15 @@ require! <[fs chokidar lderror jsonwebtoken express-session passport passport-lo
 require! <[passport-facebook]>
 require! <[passport-google-oauth20]>
 require! <[passport-line-auth]>
-require! <[@servebase/backend/aux ./reset ./verify]>
+require! <[@servebase/backend/aux ./passwd ./mail]>
 
-(backend) <- ((f) -> module.exports = auth-module = -> f.call {}, it) _
+(backend) <- ((f) -> module.exports = -> f.call {}, it) _
 {db,app,config,route} = backend
 
-captcha = Object.fromEntries [[k,v] for k,v of config.captcha].map -> [it.0, it.1{sitekey, enabled}]
+captcha = Object.fromEntries [[k,v] for k,v of config.captcha].map ->
+  if it.0 == \enabled => [it.0, it.1] else [it.0, it.1{sitekey, enabled}]
+
+limit-session-amount = false
 
 get-user = ({username, password, method, detail, create, cb, req}) ->
   db.user-store.get {username, password, method, detail, create}
@@ -15,9 +18,11 @@ get-user = ({username, password, method, detail, create, cb, req}) ->
       db.query "select count(ip) from session where owner = $1 group by ip", [user.key]
         .then (r={}) ->
           # by default disabled - session amount limitation
-          if false and ((r.[]rows.0 or {}).count or 1) > 1 => cb lderror(1004), null, {message: ''}
+          if limit-session-amount and ((r.[]rows.0 or {}).count or 1) > 1 => cb lderror(1004), null, {message: ''}
           else cb null, (user <<< {ip: aux.ip(req)})
-    .catch !-> cb lderror(1012), null, {message: ''}
+    .catch (e) ->
+      e = if lderror.id(e) => e else lderror 500
+      cb e, null, {message: ''}
 
 strategy = do
   local: (opt) ->
@@ -109,17 +114,19 @@ route.auth.get \/info, (req, res) ~>
     user: if req.user => req.user{key, config, displayname, verified, username, staff} else {}
     captcha: captcha
     version: @version
+    config: backend.config.client or {}
   })
   res.cookie 'global', payload, { path: '/', secure: true }
   res.send payload
 
-<[local google facebook line]>.map (name) ->
-  if config{}auth[name] => strategy[name](config.auth[name])
+<[local google facebook line]>.for-each (name) ->
+  if !config{}auth[name] => return
+  strategy[name](config.auth[name])
   route.auth
     ..post "/#name", passport.authenticate name, {scope: <[profile openid email]>}
     ..get "/#name/callback", passport.authenticate name, do
-      successRedirect: \/auth/done.html
-      failureRedirect: \/auth/failed.html
+      successRedirect: \/auth?oauth-done
+      failureRedirect: \/auth?oauth-failed
 
 passport.serializeUser (u,done) !->
   db.user-store.serialize u .then (v) !-> done null, v
@@ -133,7 +140,7 @@ app.use (req, res, next) ->
   cs = c.split /;/ .filter -> /^connect.sid=/.exec(it.trim!)
   return if cs.length > 1 => next {code: \SESSIONCORRUPTED} else next!
 
-app.use backend.session = session = express-session do
+app.use backend.session = express-session do
   secret: config.session.secret
   resave: true
   saveUninitialized: true
@@ -147,42 +154,51 @@ app.use passport.initialize!
 app.use passport.session!
 
 route.auth
-  ..post \/signup, (req, res, next) ->
+  ..post \/signup, backend.middleware.captcha, (req, res, next) ~>
     {username,displayname,password,config} = req.body{username,displayname,password,config}
     if !username or !displayname or password.length < 8 => return next(lderror 400)
     db.user-store.create {username, password} <<< {
       method: \local, detail: {displayname}, config: (config or {})
     }
-      .then (user) !-> req.logIn user, !-> res.send!
+      .then (user) ~>
+        @mail.verify {req, user}
+          .catch (err) ~>
+            # only log here so user can continue to login.
+            backend.log-mail.error {err}, "send mail verification mail failed (#username)".red
+      .then (user) !-> req.login user, !-> res.send!
       .catch !-> next(lderror 403)
-  ..post \/login, (req, res, next) ->
+  ..post \/login, backend.middleware.captcha, (req, res, next) ->
     ((err,user,info) <- passport.authenticate \local, _
     if err or !user => return next(err or lderror(1000))
-    req.logIn user, (err) !-> if err => next(err) else res.send!
+    req.login user, (err) !-> if err => next(err) else res.send!
     )(req, res, next)
-  ..post \/logout, (req, res) -> req.logout!; res.send!
+  ..post \/logout, (req, res) -> req.logout(!-> res.send!)
 
-app.get \/auth, (req, res) ->
+# identical to `/auth` but if it's more semantic clear.
+app.get \/auth/reset, (req, res) ->
   aux.clear-cookie req, res
-  req.logout!
+  <-! req.logout _
   # by rendering instead of redirecting, we can keep the URL as is.
   # in this case a reload after authenticaed will help refresh that page
   # frontend should determine current URL and redirect to landing page if necessary to prevent infinite loop
   res.render "auth/index.pug"
 
-# identical to `/auth` but if it's more semantic clear.
-app.get \/auth/reset, (req, res) ->
-  aux.clear-cookie req, res
-  req.logout!
-  res.render "auth/index.pug"
+app.post \/api/auth/clear, aux.signedin, backend.middleware.captcha, (req, res) ->
+  db.query "delete from session where owner = $1", [req.user.key]
+    .then ->
+      aux.clear-cookie req, res
+      <-! req.logout _
+      res.send!
 
 # this must not be guarded by csrf since it's used to recover csrf token.
 app.post \/api/auth/reset, (req, res) ->
   aux.clear-cookie req, res
-  req.logout!
+  <-! req.logout _
   res.send!
 
-reset backend
-verify backend
+@passwd = passwd backend
+@mail = mail backend
+@passwd.route!
+@mail.route!
 
 @

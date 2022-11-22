@@ -66,7 +66,7 @@
         var user;
         ret == null && (ret = {});
         if (!(user = (ret.rows || (ret.rows = []))[0]) && !create) {
-          return Promise.reject(new lderror(1012));
+          return lderror.reject(1034);
         }
         if (!user) {
           return this$.create({
@@ -117,7 +117,7 @@
         var displayname, user;
         displayname = detail ? detail.displayname || detail.username : void 8;
         if (!displayname) {
-          displayname = username.replace(/@.+$/, "");
+          displayname = username.replace(/@[^@]+$/, "");
         }
         (config.consent || (config.consent = {})).cookie = new Date().getTime();
         user = {

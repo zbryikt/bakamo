@@ -1,0 +1,11 @@
+{
+  "author": "zbryikt",
+  "name": "@servebase/pugutil",
+  "license": "MIT",
+  "version": "0.0.1",
+  "description": "",
+  "keywords": [],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

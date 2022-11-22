@@ -1,0 +1,6 @@
+mixin register-locals(name = "exports")
+  if locals
+    script(type="module").
+      ldc.register("viewlocals", [], function() {
+        return !{escjson(locals[name] || null)}
+      });

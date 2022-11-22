@@ -21,7 +21,7 @@
       return this._cfg = o;
     },
     _init: function(o){
-      var i18n, err, this$ = this;
+      var i18n, that, ref$, err, this$ = this;
       servebase._inited = true;
       if (o != null) {
         servebase._cfg = o;
@@ -66,9 +66,13 @@
           ns: 'local',
           name: "error",
           path: "0.html"
-        }
+        },
+        zmgr: this.zmgr,
+        baseZ: zmgr.modal
       });
-      this.i18n = i18n = this._cfg.i18n || (typeof i18next != 'undefined' && i18next !== null ? i18next : undefined);
+      this.i18n = i18n = (that = ((ref$ = this._cfg).i18n || (ref$.i18n = {})).driver)
+        ? that
+        : typeof i18next != 'undefined' && i18next !== null ? i18next : undefined;
       err = new lderror.handler({
         handler: function(n, e){
           return this$.ldcvmgr.get({
@@ -81,13 +85,14 @@
       this.error = function(e){
         return err(e);
       };
+      this.erratum = new erratum({
+        handler: err
+      });
       this.auth = new auth({
         manager: this.manager,
         zmgr: this.zmgr,
-        loader: this.loader
-      });
-      this.erratum = new erratum({
-        handler: err
+        loader: this.loader,
+        authpanel: this._cfg.auth ? this._cfg.auth.authpanel : null
       });
       if (typeof ldc != 'undefined' && ldc !== null) {
         ldc.action('ldcvmgr', this.ldcvmgr);
@@ -95,31 +100,50 @@
       this.update = function(g){
         return this.global = g, this.user = g.user || {}, this;
       };
-      this.auth.on('server-down', this.error);
+      this.auth.on('error', this.error);
       this.auth.on('logout', function(){
         return window.location.replace('/');
       });
       return this.manager.init().then(function(){
+        var i18ncfg;
         if (i18n == null) {
           return;
         }
+        i18ncfg = this$._cfg.i18n.cfg || {
+          supportedLng: ['en', 'zh-TW'],
+          fallbackLng: 'zh-TW',
+          fallbackNS: '',
+          defaultNS: ''
+        };
         return Promise.resolve().then(function(){
-          return i18n.init({
-            supportedLng: ['en', 'zh-TW'],
-            fallbackLng: 'zh-TW',
-            fallbackNS: '',
-            defaultNS: ''
-          });
+          return i18n.init(i18ncfg);
         }).then(function(){
           if (typeof i18nextBrowserLanguageDetector != 'undefined' && i18nextBrowserLanguageDetector !== null) {
             return i18n.use(i18nextBrowserLanguageDetector);
           }
         }).then(function(){
-          var lng;
+          var k, ref$, v, lng;
+          for (k in ref$ = this$._cfg.i18n.locales || {}) {
+            v = ref$[k];
+            i18n.addResourceBundle(k, '', v, true, true);
+          }
           lng = (typeof httputil != 'undefined' && httputil !== null ? httputil.qs('lng') || httputil.cookie('lng') : null) || navigator.language || navigator.userLanguage;
-          console.log("use language: ", lng);
+          if (!in$(lng, i18ncfg.supportedLng)) {
+            lng = i18ncfg.fallbackLng || i18ncfg.supportedLng[0] || 'en';
+          }
+          console.log("[@servebase/core][i18n] use language: ", lng);
           return i18n.changeLanguage(lng);
         }).then(function(){
+          i18n.on('languageChanged', function(lng){
+            if (typeof httputil != 'undefined' && httputil !== null) {
+              console.log("[@servebase/core][i18n] language changed to " + lng + " / cookie updated");
+              return httputil.cookie('lng', lng, {
+                path: '/'
+              });
+            } else {
+              return console.log("[@servebase/core][i18n] language changed to " + lng + " / no httputil, skip cookie update");
+            }
+          });
           return block.i18n.use(i18n);
         });
       }).then(function(){
@@ -129,7 +153,7 @@
         this$.user = g.user;
         return this$.captcha.init(g.captcha);
       }).then(function(){
-        this$.auth.on('change', function(g){
+        this$.auth.on('update', function(g){
           return this$.update(g);
         });
         return this$;
@@ -152,5 +176,10 @@
     module.exports = servebase;
   } else if (typeof window != 'undefined' && window !== null) {
     window.servebase = servebase;
+  }
+  function in$(x, xs){
+    var i = -1, l = xs.length >>> 0;
+    while (++i < l) if (x === xs[i]) return true;
+    return false;
   }
 }).call(this);

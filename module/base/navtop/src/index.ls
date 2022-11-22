@@ -13,6 +13,8 @@ if !(navtop = ld$.find('[ld-scope=navtop]',0)) => return
     @ <<< {global: g, user: g.user or {}}
     view.render!
 
+auth.on \update, (g) ~> @update g
+
 view = new ldview do
   root: navtop
   action:
@@ -33,6 +35,7 @@ view = new ldview do
         .map (n) -> n.getAttribute(\data-alias) or n.innerText.trim!
         .0 or lng
   handler:
+    t: ({node}) -> if core.i18n => node.innerText = core.i18n.t(node.textContent)
     admin: ({node}) ~> node.classList.toggle \d-none, !@user.staff
     unauthed: ({node}) ~> node.classList.toggle \d-none, !!@user.key
     authed: ({node}) ~> node.classList.toggle \d-none, !@user.key
@@ -40,7 +43,7 @@ view = new ldview do
 
 bar = view.get \root
 dotst = (bar.getAttribute(\data-classes) or "").split(';').map(->it.split(' ').filter(->it))
-tst-tgt = ld$.find document, bar.getAttribute(\data-pivot), 0
+tst-tgt = if bar.getAttribute(\data-pivot) => ld$.find(document, that, 0) else null
 if !(dotst.length and tst-tgt) => return
 (new IntersectionObserver (->
   if !(n = it.0) => return

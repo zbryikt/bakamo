@@ -1,4 +1,4 @@
-require! <[fs yargs express @plotdb/colors path pino lderror pino-http util body-parser csurf]>
+require! <[fs yargs express @plotdb/colors path pino lderror pino-http body-parser csurf]>
 require! <[i18next-http-middleware]>
 require! <[@plotdb/srcbuild]>
 require! <[@plotdb/srcbuild/dist/view/pug]>
@@ -81,7 +81,7 @@ backend.prototype = Object.create(Object.prototype) <<< do
 
     srcbuild.lsp((@config.build or {}) <<< {
       logger, i18n,
-      base: @feroot
+      base: Array.from(new Set([@feroot] ++ (@config.srcbuild or [])))
       bundle: {configFile: path.join(@feroot, 'bundle.json'), relative-path: true}
       asset: {srcdir: 'src/pug', desdir: 'static'}
     })
@@ -93,6 +93,7 @@ backend.prototype = Object.create(Object.prototype) <<< do
         @log-server = @log.child {module: \server}
         @log-build = @log.child {module: \build}
         @log-mail = @log.child {module: \mail}
+        @log-i18n = @log.child {module: \i18n}
         if @config.mail =>
           @mail-queue = new mail-queue {logger: @log-mail, base: @config.base} <<< (@config.mail or {})
 
@@ -107,7 +108,7 @@ backend.prototype = Object.create(Object.prototype) <<< do
 
         i18n-enabled = @config.i18n and (@config.i18n.enabled or !(@config.i18n.enabled?))
         @config.{}i18n.enabled = i18n-enabled
-        i18n @config.i18n
+        i18n.apply @, [@config.i18n]
       .then ~> @i18n = it
       .then ~>
         if !(@config.redis and @config.redis.enabled) => return
@@ -163,7 +164,7 @@ backend.prototype = Object.create(Object.prototype) <<< do
 
         @route.app = aux.routecatch app
         @route.extapi = aux.routecatch express.Router {mergeParams: true}
-        @route.api = api = aux.routecatch express.Router {mergeParams: true}
+        @route.api = aux.routecatch express.Router {mergeParams: true}
         @route.auth = aux.routecatch express.Router {mergeParams: true}
         @route.consent = aux.routecatch express.Router {mergeParams: true}
 

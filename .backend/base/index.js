@@ -3,14 +3,13 @@
   (function(it){
     return module.exports = it;
   })(function(backend){
-    var db, config, ref$, api, app, fs, path, lderror, express, aux, demoApi, demoApp;
-    db = backend.db, config = backend.config, ref$ = backend.route, api = ref$.api, app = ref$.app;
+    var config, ref$, api, app, fs, path, express, aux, demoApi, demoApp;
+    config = backend.config, ref$ = backend.route, api = ref$.api, app = ref$.app;
     if (config.base !== 'base') {
       return;
     }
     fs = require('fs');
     path = require('path');
-    lderror = require('lderror');
     express = require('express');
     aux = require('@servebase/backend/aux');
     demoApi = aux.routecatch(express.Router({

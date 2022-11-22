@@ -1,189 +1,102 @@
-doctype html
-html(lang="en")
-  include @/@loadingio/bootstrap.ext/index.pug
-  include @/ldview/index.pug
-
-  head
-    meta(charset="utf-8")
-    title Serverbase
-    meta(name="description", content="servebase sample page")
-    meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    base(href="/")
-    +css([
-      {name: "bootstrap", path: "dist/css/bootstrap.min.css"},
-      {name: "@loadingio/bootstrap.ext"},
-      {name: "ldcover"},
-      {name: "ldloader"},
-      {name: "ldiconfont", path: "ldif.min.css"},
-      {name: "ldbutton"},
-      {name: "@loadingio/loading.css", path: "loading.min.css"},
-      {name: "@loadingio/transition.css", path: "transition.min.css"},
-      {name: "ldnotify"}
-    ])
-    style(type="text/css"): :stylus
-      @font-face {
-        font-family: 'ldi';
-        font-weight: normal;
-        font-style: normal;
-        src: url('assets/lib/ldiconfont/main/ldif.ttf') format('truetype');
-      }
-      .navtop
-        transition: color .35s linear, background .35s linear
-      .nav-light
-        background: rgba(255,255,255,.5)
-      .nav-light .btn-text
-        color: #222
-      .nav-dark
-        background: rgba(0,0,0,.5)
-      .nav-dark .btn-text
-        color: #eee
-
-      
-  body
-
-    .ldcv.mini.bottom.left.right(data-name="cookie-consent"): .base: .inner.p-2.px-3
-      .d-flex.justify-content-center.align-items-center
-        .mr-1 By continuing to browse, you agree to our use of cookies.
-        .d-none.d-lg-block For more details please check our privacy policy.
-        .d-none.d-md-block.ml-4
+extends /base.pug
+block body
+  .ldcv.mini.bottom.left.right(data-name="cookie-consent"): .base: .inner.p-2.px-3
+    .d-flex.justify-content-center.align-items-center
+      .mr-1 By continuing to browse, you agree to our use of cookies.
+      .d-none.d-lg-block For more details please check our privacy policy.
+      .d-none.d-md-block.ml-4
+      div
+        a.btn.border.mr-2.my-1.py-0(href="/privacy/") Details
+        .btn.border.my-1.py-0(data-ldcv-set="") OK
+  include /modules/navtop.pug
+  .w-1024.rwd.mx-auto.py-4
+    .row
+      .col-md.mb-4
+        h4 Authentication
+        hr
         div
-          a.btn.border.mr-2.my-1.py-0(href="/privacy/") Details
-          .btn.border.my-1.py-0(data-ldcv-set="") OK
+          b Current Status
+          p(ld="status") Not login
+        div
+          b User Name
+          p(ld="username") n/a
+        div
+          b User Id
+          p(ld="userid") n/a
+        .btn.btn-primary.mr-2(ld="signup not-signed") Sign Up
+        .btn.btn-primary.mr-2(ld="login not-signed") Login
+        .btn.btn-primary.mr-2.d-none(ld="logout signed") Logout
+        .btn.btn-primary.mr-2.d-none(ld="wipe signed") Wipe
+        .btn.btn-primary.mr-2(ld="reauth") Re-auth
+        .btn.btn-primary.mr-2.d-none(ld="mail-verify signed") Verify Mail
+        +nbr(2)
+        .btn.btn-outline-secondary.mr-2(ld="notify") Send notify
+        .btn.btn-outline-secondary.mr-2(ld="captcha") Captcha
+        .btn.btn-outline-secondary.mr-2(ld="captcha",data-type="all") Captcha (All)
+        .card.my-2: .card-body
+          div(ld="hcaptcha")
+          .btn.btn-outline-secondary(ld="hcaptcha-done") Submit
+        .card.my-2: .card-body
+          .btn.btn-outline-secondary(ld="post-test") Post Test Data
 
-    //-#captcha.ldcv: .base: .inner.p-4: div
-    +scope("navtop").position-fixed.w-100.z-fixed(styl="top:0")
-      .navtop(ld="root",data-classes="nav-dark;nav-light",data-pivot="#pivot")
-        .py-2.px-4.d-flex.align-items-center
-          .flex-grow-1
-          .btn-group.dropdown.mr-4
-            .btn.btn-sm.btn-outline-dark(ld="lng") EN
-            .btn.btn-sm.btn-outline-dark.dropdown-toggle(data-toggle="dropdown"): i.i-globe
-            .dropdown-menu.dropdown-menu-right
-              .dropdown-item(ld="set-lng",data-name="en") EN
-              .dropdown-item(ld="set-lng",data-name="zh-TW") 中
-          .d-none(ld="unauthed")
-            .btn.btn-text(ld="login") Login
-            .btn.btn-text(ld="signup") Sign Up
-          .dropdown.d-none(ld="authed")
-            .btn.btn-text.dropdown-toggle(data-toggle="dropdown") #[span(ld="avatar")]
-            .dropdown-menu.dropdown-menu-right
-              .dropdown-item(ld="displayname")
-              .dropdown-divider
-              .dropdown-item(ld="logout") Logout
+        .input-group.my-2
+          input.form-control(ld="password-reset-email")
+          .input-group-append
+            .btn.btn-outline-secondary(ld="password-reset") Send Password Reset Link
+        .d-flex.g-2
+          .btn.btn-outline-secondary(
+          onclick='lda.ldcvmgr.get({ns: "local", name: "sample"})') Sample Block
+          .btn.btn-outline-secondary(ld="error") Sample Error
+          .btn.btn-outline-secondary(ld="unhandled-rejection") Unhandled Rejection
 
-    .w-1024.rwd.mx-auto.py-4
-      .row
-        .col-md.mb-4
-          h4 Authentication
+      .col-md.mb-4
+
+        div(ld="admin",ld-scope)
+          h4 Admin Operations
           hr
-          div
-            b Current Status
-            p(ld="status") Not login
-          div
-            b User Name
-            p(ld="username") n/a
-          div
-            b User Id
-            p(ld="userid") n/a
-          .btn.btn-primary.mr-2(ld="signup not-signed") Sign Up
-          .btn.btn-primary.mr-2(ld="login not-signed") Login
-          .btn.btn-primary.mr-2.d-none(ld="logout signed") Logout
-          .btn.btn-primary(ld="reauth") Re-auth
-          +nbr(2)
-          .btn.btn-outline-secondary.mr-2(ld="notify") Send notify
-          .btn.btn-outline-secondary.mr-2(ld="captcha") Captcha
-          .btn.btn-outline-secondary.mr-2(ld="captcha",data-type="all") Captcha (All)
-          .card.my-2: .card-body
-            div(ld="hcaptcha")
-            .btn.btn-outline-secondary(ld="hcaptcha-done") Submit
-          .card.my-2: .card-body
-            .btn.btn-outline-secondary(ld="post-test") Post Test Data
-
-          .input-group.my-2
-            input.form-control(ld="password-reset-email")
+          .d-flex.mb-2.g-2
+            .btn.btn-sm.btn-primary(ld="throttle-reset") Throttle Reset
+            .btn.btn-sm.btn-primary(ld="local-storage-reset") Local Storage Reset
+          br
+          b Search User
+          .input-group.mb-2
+            input.form-control(ld="keyword",placeholder="email or user key ... ",aria-label="keyword")
             .input-group-append
-              .btn.btn-outline-secondary(ld="password-reset") Send Password Reset Link
-          .d-flex.g-2
-            .btn.btn-outline-secondary(
-            onclick='lda.ldcvmgr.get({ns: "local", name: "sample"})') Sample Block
-            .btn.btn-outline-secondary(ld="error") Sample Error
-            .btn.btn-outline-secondary(ld="unhandled-rejection") Unhandled Rejection
-
-        .col-md.mb-4
-
-          div(ld="admin",ld-scope)
-            h4 Admin Operations
+              .btn.btn-outline-secondary(ld="search") Search
+          .pb-4
+            .text-center.p-4(ld="nouser") no user found
+            .list-group.shadow-sm: .list-group-item.p-1.d-flex(ld-each="user")
+              .btn(ld="username")
+              .btn(ld="displayname")
+              .flex-grow-1
+              .dropdown(ld="dropdown")
+                .btn.dropdown-toggle(data-toggle="dropdown") Action
+                .dropdown-menu.shadow-sm.dropdown-menu-right
+                  .dropdown-item(ld="su") Su
+                  .dropdown-item(ld="change-email") Change Email
+                  .dropdown-item(ld="change-password") Change Password
+                  .dropdown-item(ld="random-password") Random Password
+                  .dropdown-item(ld="force-logout") Force Logout
+                  .dropdown-item(ld="delete-user") Delete User
+          div
+            h5 Add User
             hr
-            .d-flex.mb-2.g-2
-              .btn.btn-sm.btn-primary(ld="throttle-reset") Throttle Reset
-              .btn.btn-sm.btn-primary(ld="local-storage-reset") Local Storage Reset
-            br
-            b Search User
-            .input-group.mb-2
-              input.form-control(ld="keyword",placeholder="email or user key ... ",aria-label="keyword")
-              .input-group-append
-                .btn.btn-outline-secondary(ld="search") Search
-            .pb-4
-              .text-center.p-4(ld="nouser") no user found
-              .list-group.shadow-sm: .list-group-item.p-1.d-flex(ld-each="user")
-                .btn(ld="username")
-                .btn(ld="displayname")
-                .flex-grow-1
-                .dropdown(ld="dropdown")
-                  .btn.dropdown-toggle(data-toggle="dropdown") Action
-                  .dropdown-menu.shadow-sm.dropdown-menu-right
-                    .dropdown-item(ld="su") Su
-                    .dropdown-item(ld="change-email") Change Email
-                    .dropdown-item(ld="change-password") Change Password
-                    .dropdown-item(ld="random-password") Random Password
-                    .dropdown-item(ld="force-logout") Force Logout
-                    .dropdown-item(ld="delete-user") Delete User
-            div
-              h5 Add User
-              hr
-              .form-group
-                b username
-                input.form-control(ld="adduser.username",aria-label="username")
-              .form-group
-                b displayname
-                input.form-control(ld="adduser.displayname",aria-label="displayname")
-              .form-group
-                b password #[span.text-sm / left empty for auto generation]
-                input.form-control(ld="adduser.password",type="password",aria-label="password")
-              .btn.btn-primary(ld="adduser") Add User
-    +nbr(5)
-    #pivot: +nbr(50)
-    //-+script([ {name: "@sentry/tracing", version: "main", path: "build/bundle.tracing.min.js"} ])
+            .form-group
+              b username
+              input.form-control(ld="adduser.username",aria-label="username")
+            .form-group
+              b displayname
+              input.form-control(ld="adduser.displayname",aria-label="displayname")
+            .form-group
+              b password #[span.text-sm / left empty for auto generation]
+              input.form-control(ld="adduser.password",type="password",aria-label="password")
+            .btn.btn-primary(ld="adduser") Add User
+  +nbr(2)
+  #pivot
+  .w-1024.rwd.mx-auto.p-4.shadow.rounded.border: div(ld="discuss")
+  +nbr(50)
 
-    +script([
-      {name: "bootstrap.native", version: "main", path: "dist/bootstrap-native-v4.min.js"},
-      {name: "i18next", version: "main", path: "dist/umd/i18next.min.js"},
-      {name: "i18next-browser-languagedetector", path: "/dist/umd/i18nextBrowserLanguageDetector.min.js"},
-      {name: "zmgr", version: "main"},
-      {name: "@loadingio/ldquery", version: "main"},
-      {name: "proxise", version: "main"},
-      {name: "@loadingio/debounce.js", version: "main"},
-      {name: "@plotdb/semver", version: "main"},
-      {name: "@plotdb/rescope", version: "main"},
-      {name: "@plotdb/csscope", version: "main"},
-      {name: "@plotdb/block", version: "main"},
-      {name: "ldcover", version: "main"},
-      {name: "ldform", version: "main"},
-      {name: "curegex", version: "main", path: "curegex.min.js"},
-      {name: "ldview", version: "main"},
-      {name: "ldloader", version: "main"},
-      {name: "lderror", version: "main"},
-      {name: "ldnotify", version: "main"},
-      {name: "ldcvmgr", version: "main"},
-      {name: "@loadingio/ldc", version: "main"},
-      {name: "@servebase/auth", version: "main"},
-      {name: "@servebase/consent", version: "main"},
-      {name: "@servebase/captcha", version: "main"},
-      {name: "@servebase/erratum", version: "main"},
-      {name: "@servebase/core", version: "main"},
-      {name: "@servebase/navtop", version: "main"},
-      {url: "/js/site.min.js"}
-    ])
-    script(type="module")
-      include:lsc index.ls
-      include:lsc admin.ls
+block script
+  script(type="module")
+    include:lsc index.ls
+    include:lsc admin.ls

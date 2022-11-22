@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+echo "prepare..."
+rm -rf dist
+mkdir -p dist
+
+bin=../../../node_modules/.bin
+echo "build src/index.ls -> dist/index.js ..."
+$bin/lsc -cp src/index.ls > dist/index.js
+echo "minify dist/index.js -> dist/index.min.js ..."
+$bin/uglifyjs dist/index.js > dist/index.min.js
+
+echo "build index.pug -> dist/index.html ..."
+$bin/srcbuild-pug src/index.pug > dist/index.html
+
+echo "build server files ..."
+$bin/lsc -co dist/lib lib

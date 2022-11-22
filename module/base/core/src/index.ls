@@ -38,38 +38,60 @@ servebase =
     @ <<<
       loader: new ldloader class-name: "ldld full", auto-z: true, base-z: null, zmgr: @zmgr.scope zmgr.splash
       captcha: new captcha manager: @manager, zmgr: @zmgr.scope zmgr.splash
-      ldcvmgr: new ldcvmgr manager: @manager, error-cover: {ns: \local, name: "error", path: "0.html"}
-      i18n: i18n = @_cfg.i18n or if i18next? => i18next else undefined
+      ldcvmgr: new ldcvmgr(
+        manager: @manager
+        error-cover: {ns: \local, name: "error", path: "0.html"}
+        zmgr: @zmgr
+        base-z: zmgr.modal
+      )
+      # TODO we should at least provide a dummy i18n so i18n.t will work
+      i18n: i18n = if @_cfg.{}i18n.driver => that else if i18next? => i18next else undefined
 
     err = new lderror.handler handler: (n, e) ~> @ldcvmgr.get {ns: \local, name: \error, path: "#n.html"}, e
     @error = (e) -> err e
 
     @ <<<
-      auth: new auth manager: @manager, zmgr: @zmgr, loader: @loader
       erratum: new erratum handler: err
+      auth: new auth do
+        manager: @manager
+        zmgr: @zmgr
+        loader: @loader
+        authpanel: if @_cfg.auth => @_cfg.auth.authpanel else null
 
     if ldc? => ldc.action \ldcvmgr, @ldcvmgr
 
     @update = (g) -> @ <<< {global: g, user: (g.user or {})}
-    @auth.on \server-down, @error
+    @auth.on \error, @error
     @auth.on \logout, -> window.location.replace '/'
 
     @manager.init!
       # to optimize, we may delay or completely ignore i18n
       # since not every service need i18n
-      .then ->
+      .then ~>
         if !i18n? => return
+        i18ncfg = @_cfg.i18n.cfg or {
+          supportedLng: <[en zh-TW]>, fallbackLng: \zh-TW, fallbackNS: '', defaultNS: ''
+        }
         Promise.resolve!
-          .then -> i18n.init supportedLng: <[en zh-TW]>, fallbackLng: \zh-TW, fallbackNS: '', defaultNS: ''
+          .then -> i18n.init i18ncfg
           .then -> if i18nextBrowserLanguageDetector? => i18n.use i18nextBrowserLanguageDetector
-          .then ->
+          .then ~>
+            for k,v of (@_cfg.i18n.locales or {}) => i18n.add-resource-bundle k, '', v, true, true
             lng = (
               (if httputil? => (httputil.qs(\lng) or httputil.cookie(\lng)) else null) or
               navigator.language or navigator.userLanguage
             )
-            console.log "use language: ", lng
+            if !(lng in i18ncfg.supportedLng) => lng = i18ncfg.fallbackLng or i18ncfg.supportedLng.0 or \en
+            console.log "[@servebase/core][i18n] use language: ", lng
             i18n.changeLanguage lng
-          .then -> block.i18n.use i18n
+          .then ->
+            i18n.on \languageChanged, (lng) ->
+              if httputil? =>
+                console.log "[@servebase/core][i18n] language changed to #lng / cookie updated"
+                httputil.cookie \lng, lng, {path: \/}
+              else
+                console.log "[@servebase/core][i18n] language changed to #lng / no httputil, skip cookie update"
+            block.i18n.use i18n
       .then ~>
         # PERF TODO block.i18n.use and manager.init are quite fast.
         # we may provide an anonymous initialization
@@ -80,7 +102,7 @@ servebase =
         @user = g.user
         @captcha.init g.captcha
       .then ~>
-        @auth.on \change, (g) ~> @update g
+        @auth.on \update, (g) ~> @update g
         # prepare authpanel. involving @plotdb/block creation.
         # should delay until we really have to trigger ui
         @

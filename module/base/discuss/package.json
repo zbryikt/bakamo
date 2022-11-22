@@ -1,0 +1,17 @@
+{
+  "name": "@servebase/discuss",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@plotdb/srcbuild": "^0.0.55",
+    "livescript": "^1.6.0",
+    "uglify-js": "^3.13.1"
+  }
+}

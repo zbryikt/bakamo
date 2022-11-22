@@ -1,8 +1,8 @@
-require! <[fs marked]>
+require! <[marked]>
 
-unescape = (text) -> text.replace /\&\#[0-9]*;|&amp;/g, (code) ->
+unescape = (text) -> text.replace /\&\#\d*;|&amp;/g, (code) ->
   if /amp/.exec(code) => return \&
-  return String.fromCharCode(code.match(/[0-9]+/))
+  return String.fromCharCode(code.match(/\d+/))
 
 option = do
   html: breaks: true, renderer: new marked.Renderer!

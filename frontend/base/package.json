@@ -16,6 +16,8 @@
     "../../module/base/erratum",
     "../../module/base/core",
     "../../module/base/navtop",
+    "../../module/base/pugutil",
+    "../../module/base/discuss",
     "../../module/base/connector"
   ],
   "dependencies": {
@@ -25,8 +27,9 @@
     "@loadingio/ldquery": "^3.0.4",
     "@loadingio/loading.css": "^3.1.0",
     "@loadingio/transition.css": "^3.0.0",
-    "@plotdb/block": "^4.6.2",
+    "@plotdb/block": "^4.7.5",
     "@plotdb/csscope": "^4.0.8",
+    "@plotdb/httputil": "^0.0.5",
     "@plotdb/rescope": "^4.1.7",
     "@plotdb/semver": "^0.0.3",
     "@sentry/tracing": "^6.19.7",
@@ -39,8 +42,8 @@
     "i18next-browser-languagedetector": "^6.1.4",
     "ldbutton": "^2.0.1",
     "ldcover": "^3.2.1",
-    "ldcvmgr": "^0.0.12",
-    "lderror": "^2.3.1",
+    "ldcvmgr": "^0.0.13",
+    "lderror": "^2.3.3",
     "ldfolder": "^0.0.9",
     "ldform": "^0.1.2",
     "ldiconfont": "^0.2.3",
@@ -62,6 +65,7 @@
       "@loadingio/loading.css",
       "@loadingio/transition.css",
       "@loadingio/ldc",
+      "@plotdb/httputil",
       "@plotdb/rescope",
       "@plotdb/csscope",
       "@plotdb/semver",
@@ -84,6 +88,10 @@
       },
       {
         "name": "@servebase/core",
+        "dir": "dist"
+      },
+      {
+        "name": "@servebase/discuss",
         "dir": "dist"
       },
       {

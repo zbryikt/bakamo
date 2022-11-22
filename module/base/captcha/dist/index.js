@@ -43,9 +43,17 @@
     guard: function(arg$){
       var cb;
       cb = arg$.cb;
-      return this.captcha.guard({
-        cb: cb
-      });
+      if (this._cfg && (this._cfg.enabled == null || this._cfg.enabled)) {
+        return this.captcha.guard({
+          cb: cb
+        });
+      } else {
+        return Promise.resolve().then(function(){
+          return cb({
+            captcha: {}
+          });
+        });
+      }
     }
   });
   if (typeof module != 'undefined' && module !== null) {

@@ -4,7 +4,12 @@
 erratum = (o = {}) ->
   if !window? => console.warn "[@servebase/erratum] no window to listen to error/rejection"
   window.addEventListener \error, (evt) ~> @error-handler(evt)
-  window.addEventListener \unhandledrejection, (evt) ~> @rejection-handler(evt)
+  window.addEventListener \unhandledrejection, (evt) ~>
+    try
+      @rejection-handler(evt)
+    catch e
+      # rejection-handler may throw error again, which triggers error event.
+      # catch and ignore it to prevent duplicated errors.
   if o.handler => @handler = o.handler
   @
 
@@ -12,7 +17,7 @@ erratum.prototype = Object.create(Object.prototype) <<<
   handler: (e) ->
   error-handler: (evt) ->
     if !(lderror.event-handler.error evt) => @handler evt.error
-  rejection-handler: (evt) -> 
+  rejection-handler: (evt) ->
     if !(lderror.event-handler.rejection evt) => @handler evt.reason
   test: (o = {}) ->
     if o.bare => @_test o
