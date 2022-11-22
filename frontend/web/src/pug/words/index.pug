@@ -1,0 +1,12 @@
+extends /base.pug
+block head
+  style(type="text/css"): include:stylus index.styl
+block body
+  .w-1024.rwd.mx-auto
+    .words
+      .word(ld-each="word")
+        .eng(ld="eng")
+        .chi(ld="chi")
+
+block script
+  script(type="module"): include:lsc index.ls
