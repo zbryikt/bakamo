@@ -215,6 +215,7 @@ pug_html = pug_html + "\u003Cdiv class=\"navbar navbar-expand-lg navbar-light fi
 }
 }, "navtop");
 pug_mixins["nbr"](2);
+pug_html = pug_html + "\u003Cdiv ld=\"output\"\u003E\u003C\u002Fdiv\u003E";
 pug_mixins["script"]([
       {name: "bootstrap.native", path: "dist/bootstrap-native-v4.min.js"},
       {name: "proxise"},
@@ -242,7 +243,7 @@ pug_mixins["script"]([
       {name: "@servebase/navtop"},
       {url: "/js/site.min.js"}
     ]);
-pug_html = pug_html + "\u003C\u002Fbody\u003E\u003C\u002Fhtml\u003E";
+pug_html = pug_html + "\u003Cscript type=\"module\"\u003E(function(n){return n.apply({})})(function(){var e=this;return servebase.corectx(function(n){var r;r=n.core;return r.init().then(function(){var t;t=new ldview({root:document.body,text:{output:function(n){var t;t=n.node;return e.output||\"n\u002Fa\"}}});return r.ldcvmgr.get({ns:\"local\",name:\"scanner\"}).then(function(n){e.output=n;return t.render()})})})});\u003C\u002Fscript\u003E\u003C\u002Fbody\u003E\u003C\u002Fhtml\u003E";
     }.call(this, "Array" in locals_for_with ?
         locals_for_with.Array :
         typeof Array !== 'undefined' ? Array : undefined, "JSON" in locals_for_with ?

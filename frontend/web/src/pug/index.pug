@@ -1,3 +1,7 @@
 extends /base.pug
 block body
   +nbr(2)
+  div(ld="output")
+  //-#output
+block script
+  script(type="module"): include:lsc index.ls
