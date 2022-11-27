@@ -18,5 +18,3 @@ api.get \/code/:isbn, (req, res) ->
       return if !(v and v.ok) => lderror.reject 404 else v.json!
     .then (ret) -> res.send ret
 
-
-
