@@ -1,6 +1,6 @@
 require! <[fs yargs express @plotdb/colors path pino lderror pino-http body-parser csurf]>
 require! <[i18next-http-middleware]>
-require! <[@plotdb/srcbuild]>
+require! <[@plotdb/srcbuild @plotdb/block jsdom]>
 require! <[@plotdb/srcbuild/dist/view/pug]>
 require! <[./error-handler ./redis-node ./mail-queue ./i18n ./aux ./db/postgresql]>
 require! <[@servebase/auth @servebase/consent @servebase/captcha]>
@@ -43,6 +43,11 @@ default-config = do
   port: 3000
   session: max-age: 365 * 86400 * 1000
 
+# for @plotdb/block in node context
+dom = new jsdom.JSDOM "<DOCTYPE html><html><body></body></html>"
+[win, doc] = [dom.window, dom.window.document]
+block.env win
+
 backend = (opt = {}) ->
   @opt = opt
   @ <<< do
@@ -79,10 +84,17 @@ backend.prototype = Object.create(Object.prototype) <<< do
   watch: ({logger, i18n}) ->
     if !(@config.build and @config.build.enabled) => return
 
+    mgr = ({base}) ->
+      new block.manager registry: (d) ->
+        path = d.path or if d.type == \block => \index.html
+        else if d.type == \js => \index.min.js
+        else \index.min.css
+        return base + "/static/assets/lib/#{d.name}/#{d.version or \main}/#path"
+
     srcbuild.lsp((@config.build or {}) <<< {
       logger, i18n,
       base: Array.from(new Set([@feroot] ++ (@config.srcbuild or [])))
-      bundle: {configFile: path.join(@feroot, 'bundle.json'), relative-path: true}
+      bundle: {configFile: 'bundle.json', relative-path: true, manager: mgr}
       asset: {srcdir: 'src/pug', desdir: 'static'}
     })
 
