@@ -190,6 +190,9 @@ app.post \/api/auth/clear, aux.signedin, backend.middleware.captcha, (req, res) 
       <-! req.logout _
       res.send!
 
+app.post \/api/auth/clear/:uid, aux.is-admin, (req, res) ->
+  db.query "delete from session where owner = $1", [req.params.uid] .then -> res.send!
+
 # this must not be guarded by csrf since it's used to recover csrf token.
 app.post \/api/auth/reset, (req, res) ->
   aux.clear-cookie req, res

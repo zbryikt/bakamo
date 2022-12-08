@@ -25,3 +25,4 @@ config/**/local.*
 !frontend/web
 frontend/web/static/assets/lib
 dev/srcbuild/static/
+.bundle-dep

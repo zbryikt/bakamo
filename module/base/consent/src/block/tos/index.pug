@@ -1,4 +1,5 @@
 div
+  include @/@servebase/pugutil/dist/ui.pug
   script(type="@plotdb/block"): include:lsc index.ls
   style(type="text/css"): include:stylus index.styl
   .ldcv.scroll(plug="widget")
@@ -8,7 +9,7 @@ div
           .flex-grow-1
             .mb-2 #[span(t) continue] #[span ...]
             h4.m-0(t) make sure
-          div: i.clickable.i-close(data-ldcv-set="")
+          div: +i.clickable.i-close(data-ldcv-set="")
         .flex-grow-1
           object.d-none.w-100.h-100.flex-grow-1.border.mb-2(ld="link",data="about:blank",type="application/pdf")
             embed.w-100.border(ld="link",src="about:blank",type="application/pdf")

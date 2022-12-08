@@ -1,4 +1,10 @@
 {
+  "block": {
+    "auth": [
+      {"name": "@servebase/auth", "path": "base.html"},
+      {"name": "@servebase/auth", "path": "index.html"}
+    ]
+  },
   "css": {
     "vendor": [
       "static/assets/lib/bootstrap/main/dist/css/bootstrap.min.css",
@@ -56,7 +62,6 @@
       "static/assets/lib/@servebase/consent/main/index.min.js",
       "static/assets/lib/@servebase/captcha/main/index.min.js",
       "static/assets/lib/@servebase/core/main/index.min.js"
-
     ]
   }
 }
