@@ -1,7 +1,15 @@
 extends /base.pug
 block body
-  +nbr(2)
-  div(ld="output")
-  //-#output
+  .w-1024.rwd.mx-auto
+    .reads
+      .read(ld-each="read")
+        div(ld="name")
+        div(ld="date")
+    hr
+    .input-group
+      input.form-control(ld="isbn")
+      .input-group-append: .btn.btn-outline-secondary(ld="query") Query
+    .btn.btn-outline-secondary(ld="scan") Scan
+
 block script
   script(type="module"): include:lsc index.ls

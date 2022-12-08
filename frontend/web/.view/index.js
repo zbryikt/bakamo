@@ -215,8 +215,10 @@ pug_html = pug_html + "\u003Cdiv class=\"navbar navbar-expand-lg navbar-light fi
 }
 }, "navtop");
 pug_mixins["nbr"](2);
-pug_html = pug_html + "\u003Cdiv ld=\"output\"\u003E\u003C\u002Fdiv\u003E";
+pug_html = pug_html + "\u003Cdiv class=\"w-1024 rwd mx-auto\"\u003E\u003Cdiv class=\"reads\"\u003E\u003Cdiv class=\"read\" ld-each=\"read\"\u003E\u003Cdiv ld=\"name\"\u003E\u003C\u002Fdiv\u003E\u003Cdiv ld=\"date\"\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003Chr\u003E\u003Cdiv class=\"input-group\"\u003E\u003Cinput class=\"form-control\" ld=\"isbn\"\u003E\u003Cdiv class=\"input-group-append\"\u003E\u003Cdiv class=\"btn btn-outline-secondary\" ld=\"query\"\u003EQuery\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"btn btn-outline-secondary\" ld=\"scan\"\u003EScan\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
 pug_mixins["script"]([
+      {name: "i18next", path: "dist/umd/i18next.min.js"},
+      {name: "i18next-browser-languagedetector", path: "dist/umd/i18nextBrowserLanguageDetector.min.js"},
       {name: "bootstrap.native", path: "dist/bootstrap-native-v4.min.js"},
       {name: "proxise"},
       {name: "@loadingio/debounce.js"},
@@ -243,7 +245,7 @@ pug_mixins["script"]([
       {name: "@servebase/navtop"},
       {url: "/js/site.min.js"}
     ]);
-pug_html = pug_html + "\u003Cscript type=\"module\"\u003E(function(n){return n.apply({})})(function(){var e=this;return servebase.corectx(function(n){var r;r=n.core;return r.init().then(function(){var t;t=new ldview({root:document.body,text:{output:function(n){var t;t=n.node;return e.output||\"n\u002Fa\"}}});return r.ldcvmgr.get({ns:\"local\",name:\"scanner\"}).then(function(n){e.output=n;return t.render()})})})});\u003C\u002Fscript\u003E\u003C\u002Fbody\u003E\u003C\u002Fhtml\u003E";
+pug_html = pug_html + "\u003Cscript type=\"module\"\u003E(function(n){return n.apply({})})(function(){return servebase.corectx(function(n){var e;e=n.core;return e.init().then(function(){var t,r,o,u;t=function(n){var t,e;t=n.isbn;e={list:[t]};return ld$.fetch(\"\u002Fapi\u002Fbook\",{method:\"POST\"},{type:\"json\",json:e}).then(function(n){if(!(n&&n[0])){return}r[n[0].key]=n[0];o.push({key:Math.random(),book:n[0].key});return u.render()})};r={};o=[];return u=new ldview({root:document.body,action:{click:{query:function(){return t({isbn:u.get(\"isbn\").value})},scan:function(){return e.ldcvmgr.get({ns:\"local\",name:\"scanner\"}).then(function(n){return t({isbn:n})})}}},handler:{read:{list:function(){return o},key:function(n){return n.key},view:{text:{name:function(n){var t;t=n.ctx;return r[t.book].title},date:function(){return Date.now()}}}}}})})})});\u003C\u002Fscript\u003E\u003C\u002Fbody\u003E\u003C\u002Fhtml\u003E";
     }.call(this, "Array" in locals_for_with ?
         locals_for_with.Array :
         typeof Array !== 'undefined' ? Array : undefined, "JSON" in locals_for_with ?

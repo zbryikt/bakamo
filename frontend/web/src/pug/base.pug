@@ -18,6 +18,8 @@ html
     include /modules/navtop.pug
     block body
     +script([
+      {name: "i18next", path: "dist/umd/i18next.min.js"},
+      {name: "i18next-browser-languagedetector", path: "dist/umd/i18nextBrowserLanguageDetector.min.js"},
       {name: "bootstrap.native", path: "dist/bootstrap-native-v4.min.js"},
       {name: "proxise"},
       {name: "@loadingio/debounce.js"},

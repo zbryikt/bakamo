@@ -148,13 +148,13 @@ function ellipsis(str, len) {
   return ((str || '').substring(0, len || 200) + (((str || '').length > (len || 200)) ? '...' : ''));
 }
 
-
-
-
-
-
-
-
+pug_mixins["nbr"] = pug_interp = function(count){
+var block = (this && this.block), attributes = (this && this.attributes) || {};
+for (var i = 0; i < count; i++)
+{
+pug_html = pug_html + "\u003Cbr\u003E";
+}
+};
 
 
 
@@ -214,8 +214,11 @@ block: function(){
 pug_html = pug_html + "\u003Cdiv class=\"navbar navbar-expand-lg navbar-light fixed-top\" ld=\"root\"\u003E\u003Cdiv class=\"collapse navbar-collapse\"\u003E\u003Ca class=\"d-flex align-items-center\" href=\"\u002F\" style=\"font-size:24px;line-height:1em\"\u003E\u003Cdiv class=\"font-weight-bold text-sm text-dark\"\u003EBAKAMO\u003C\u002Fdiv\u003E\u003C\u002Fa\u003E\u003Cdiv class=\"ml-auto\"\u003E\u003Cul class=\"navbar-nav ml-4\"\u003E\u003Cli class=\"nav-item d-none\" ld=\"unauthed login\"\u003E\u003Ca class=\"nav-link\"\u003E登入\u003C\u002Fa\u003E\u003C\u002Fli\u003E\u003Cli class=\"nav-item d-none\" ld=\"unauthed signup\"\u003E\u003Ca class=\"nav-link\"\u003E註冊\u003C\u002Fa\u003E\u003C\u002Fli\u003E\u003Cli class=\"nav-item dropdown d-none\" ld=\"authed profile\"\u003E\u003Ca class=\"nav-link dropdown-toggle\" href=\"#\" data-toggle=\"dropdown\"\u003E\u003Ci class=\"i-user\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E\u003Cdiv class=\"dropdown-menu dropdown-menu-right shadow-sm\"\u003E\u003Ca class=\"dropdown-item\" href=\"\u002Fme\u002Fsettings\u002F\"\u003E\u003Cdiv class=\"align-middle text-capitalize text-ellipsis\" ld=\"displayname\"\u003EGreeting!\u003C\u002Fdiv\u003E\u003Cdiv class=\"text-sm align-middle text-ellipsis\" ld=\"username\"\u003E...\u003C\u002Fdiv\u003E\u003C\u002Fa\u003E\u003Cdiv class=\"dropdown-divider\"\u003E\u003C\u002Fdiv\u003E\u003Ca class=\"dropdown-item\" href=\"\u002Fme\u002Fsettings\u002F\"\u003E設定\u003C\u002Fa\u003E\u003Cdiv class=\"dropdown-divider\"\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"dropdown-item text-danger\" ld=\"logout\"\u003E登出\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fli\u003E\u003C\u002Ful\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
 }
 }, "navtop");
+pug_mixins["nbr"](2);
 pug_html = pug_html + "\u003Cdiv class=\"w-1024 rwd mx-auto\"\u003E\u003Cdiv class=\"words\"\u003E\u003Cdiv class=\"word\" ld-each=\"word\"\u003E\u003Cdiv class=\"eng\" ld=\"eng\"\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"chi\" ld=\"chi\"\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
 pug_mixins["script"]([
+      {name: "i18next", path: "dist/umd/i18next.min.js"},
+      {name: "i18next-browser-languagedetector", path: "dist/umd/i18nextBrowserLanguageDetector.min.js"},
       {name: "bootstrap.native", path: "dist/bootstrap-native-v4.min.js"},
       {name: "proxise"},
       {name: "@loadingio/debounce.js"},
