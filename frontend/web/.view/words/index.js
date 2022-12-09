@@ -201,7 +201,7 @@ prefix.currentName = parentName;
 
 
 
-pug_html = pug_html + "\u003Chtml\u003E\u003Chead\u003E\u003Cmeta charset=\"utf-8\"\u003E\u003Ctitle\u003EBAKAMO\u003C\u002Ftitle\u003E";
+pug_html = pug_html + "\u003Chtml\u003E\u003Chead\u003E\u003Cmeta charset=\"utf-8\"\u003E\u003Cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003E\u003Ctitle\u003EBAKAMO\u003C\u002Ftitle\u003E";
 pug_mixins["css"]([
       {name: "bootstrap", path: "dist/css/bootstrap.min.css"},
       {name: "@loadingio/bootstrap.ext"},
@@ -243,6 +243,8 @@ pug_mixins["script"]([
       {name: "@servebase/core"},
       {name: "@servebase/connector"},
       {name: "@servebase/navtop"},
+      {name: "@undecaf/zbar-wasm", path: "dist/index.js"},
+      {name: "@undecaf/barcode-detector-polyfill", path: "dist/index.js"},
       {url: "/js/site.min.js"}
     ]);
 pug_html = pug_html + "\u003Cscript type=\"module\"\u003E(function(n){return n.apply({})})(function(){var t=this;return servebase.corectx(function(n){var e,r;e=n.core;t.words=[];r=new ldview({root:document,initRender:false,handler:{word:{list:function(){return t.words},key:function(n){return n[0]},view:{text:{eng:function(n){var e,r;e=n.node,r=n.ctx;return r[0]},chi:function(n){var e,r;e=n.node,r=n.ctx;return r[1]}}}}}});return ld$.fetch(\"\u002Fassets\u002Fdata\u002Fwords.json\",{method:\"GET\"},{type:\"json\"}).then(function(n){t.words=n.filter(function(n){return n[0].length\u003C5});return r.render()})})});\u003C\u002Fscript\u003E\u003C\u002Fbody\u003E\u003C\u002Fhtml\u003E";

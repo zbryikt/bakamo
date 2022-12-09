@@ -4,6 +4,7 @@ include /modules/common.pug
 html
   head
     meta(charset="utf-8")
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
     title BAKAMO
     block var
     block prehead
@@ -44,6 +45,8 @@ html
       {name: "@servebase/core"},
       {name: "@servebase/connector"},
       {name: "@servebase/navtop"},
+      {name: "@undecaf/zbar-wasm", path: "dist/index.js"},
+      {name: "@undecaf/barcode-detector-polyfill", path: "dist/index.js"},
       {url: "/js/site.min.js"}
     ])
     block script

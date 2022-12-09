@@ -1,7 +1,7 @@
 .ldcv: .base: .inner.position-relative
   script(type="@plotdb/block"): include:lsc index.ls
   style(type="text/css"): include:stylus index.styl
-  video(ld="video")
+  video(ld="video",autoplay,playsinline)
   .text-lg(ld="close",data-ldcv-set=""): i.i-close
   .d-none(ld="info")
     .text-sm(ld="isbn")

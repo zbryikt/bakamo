@@ -201,7 +201,7 @@ prefix.currentName = parentName;
 
 
 
-pug_html = pug_html + "\u003Chtml\u003E\u003Chead\u003E\u003Cmeta charset=\"utf-8\"\u003E\u003Ctitle\u003EBAKAMO\u003C\u002Ftitle\u003E";
+pug_html = pug_html + "\u003Chtml\u003E\u003Chead\u003E\u003Cmeta charset=\"utf-8\"\u003E\u003Cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"\u003E\u003Ctitle\u003EBAKAMO\u003C\u002Ftitle\u003E";
 pug_mixins["css"]([
       {name: "bootstrap", path: "dist/css/bootstrap.min.css"},
       {name: "@loadingio/bootstrap.ext"},
@@ -243,6 +243,8 @@ pug_mixins["script"]([
       {name: "@servebase/core"},
       {name: "@servebase/connector"},
       {name: "@servebase/navtop"},
+      {name: "@undecaf/zbar-wasm", path: "dist/index.js"},
+      {name: "@undecaf/barcode-detector-polyfill", path: "dist/index.js"},
       {url: "/js/site.min.js"}
     ]);
 pug_html = pug_html + "\u003Cscript type=\"module\"\u003E(function(n){return n.apply({})})(function(){return servebase.corectx(function(n){var e;e=n.core;return e.init().then(function(){var t,r,o,u;t=function(n){var t,e;t=n.isbn;e={list:[t]};return ld$.fetch(\"\u002Fapi\u002Fbook\",{method:\"POST\"},{type:\"json\",json:e}).then(function(n){if(!(n&&n[0])){return}r[n[0].key]=n[0];o.push({key:Math.random(),book:n[0].key});return u.render()})};r={};o=[];return u=new ldview({root:document.body,action:{click:{query:function(){return t({isbn:u.get(\"isbn\").value})},scan:function(){return e.ldcvmgr.get({ns:\"local\",name:\"scanner\"}).then(function(n){return t({isbn:n})})}}},handler:{read:{list:function(){return o},key:function(n){return n.key},view:{text:{name:function(n){var t;t=n.ctx;return r[t.book].title},date:function(){return Date.now()}}}}}})})})});\u003C\u002Fscript\u003E\u003C\u002Fbody\u003E\u003C\u002Fhtml\u003E";

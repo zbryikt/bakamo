@@ -1,3 +1,6 @@
+if (window.BarcodeDetector == null) {
+  window.BarcodeDetector = barcodeDetectorPolyfill.BarcodeDetectorPolyfill;
+}
 ldc.register(['viewlocals', 'core', 'navtop'], function(arg$){
   var viewlocals, navtop, core;
   viewlocals = arg$.viewlocals, navtop = arg$.navtop, core = arg$.core;

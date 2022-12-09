@@ -1,0 +1,9 @@
+name: bakamo
+ip: 127.0.0.1
+port: 8903
+hostname: bakamo.loco
+root: /Users/tkirby/workspace/bakamo/server/frontend/web/static/
+cert:
+  crt: /Users/tkirby/workspace/devsuite/cert/bakamo.loco/server.crt
+  key: /Users/tkirby/workspace/devsuite/cert/bakamo.loco/server.key
+nginxCfgDir: /opt/homebrew/etc/nginx
