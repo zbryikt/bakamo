@@ -35,8 +35,11 @@
       this.zmgr = new zmgr();
       this.manager = this._cfg.manager || new block.manager({
         registry: function(arg$){
-          var ns, name, version, path, type;
-          ns = arg$.ns, name = arg$.name, version = arg$.version, path = arg$.path, type = arg$.type;
+          var ns, url, name, version, path, type, that;
+          ns = arg$.ns, url = arg$.url, name = arg$.name, version = arg$.version, path = arg$.path, type = arg$.type;
+          if (that = url) {
+            return that;
+          }
           path = path || (type === 'block'
             ? 'index.html'
             : type ? "index.min." + type : 'index.min.js');
