@@ -10,6 +10,7 @@ rootdir = path.join(libdir, '../..')
 routes = fs.readdir-sync path.join(libdir, '..')
   .filter -> !(it in <[engine README.md]>)
   .map -> path.join(libdir, '..', it)
+  .filter -> fs.exists-sync path.join(it, 'index.js') or fs.exists-sync path.join(it, 'index.ls')
   .map -> require it
 
 argv = yargs
@@ -84,12 +85,15 @@ backend.prototype = Object.create(Object.prototype) <<< do
   watch: ({logger, i18n}) ->
     if !(@config.build and @config.build.enabled) => return
 
-    mgr = ({base}) ->
-      new block.manager registry: (d) ->
-        path = d.path or if d.type == \block => \index.html
-        else if d.type == \js => \index.min.js
-        else \index.min.css
-        return base + "/static/assets/lib/#{d.name}/#{d.version or \main}/#path"
+    if @config.build.{}block.manager =>
+      mgr = require path.join(rootdir, @config.build.block.manager)
+    else
+      mgr = ({base}) ->
+        new block.manager registry: (d) ->
+          path = d.path or if d.type == \block => \index.html
+          else if d.type == \js => \index.min.js
+          else \index.min.css
+          return base + "/static/assets/lib/#{d.name}/#{d.version or \main}/#path"
 
     srcbuild.lsp((@config.build or {}) <<< {
       logger, i18n,

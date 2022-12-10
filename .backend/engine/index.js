@@ -31,6 +31,8 @@
     return !(it === 'engine' || it === 'README.md');
   }).map(function(it){
     return path.join(libdir, '..', it);
+  }).filter(function(it){
+    return fs.existsSync(path.join(it, 'index.js')) || fs.existsSync(path.join(it, 'index.ls'));
   }).map(function(it){
     return require(it);
   });
@@ -142,24 +144,28 @@
       });
     },
     watch: function(arg$){
-      var logger, i18n, mgr, ref$;
+      var logger, i18n, ref$, mgr;
       logger = arg$.logger, i18n = arg$.i18n;
       if (!(this.config.build && this.config.build.enabled)) {
         return;
       }
-      mgr = function(arg$){
-        var base;
-        base = arg$.base;
-        return new block.manager({
-          registry: function(d){
-            var path;
-            path = d.path || (d.type === 'block'
-              ? 'index.html'
-              : d.type === 'js' ? 'index.min.js' : 'index.min.css');
-            return base + ("/static/assets/lib/" + d.name + "/" + (d.version || 'main') + "/" + path);
-          }
-        });
-      };
+      if (((ref$ = this.config.build).block || (ref$.block = {})).manager) {
+        mgr = require(path.join(rootdir, this.config.build.block.manager));
+      } else {
+        mgr = function(arg$){
+          var base;
+          base = arg$.base;
+          return new block.manager({
+            registry: function(d){
+              var path;
+              path = d.path || (d.type === 'block'
+                ? 'index.html'
+                : d.type === 'js' ? 'index.min.js' : 'index.min.css');
+              return base + ("/static/assets/lib/" + d.name + "/" + (d.version || 'main') + "/" + path);
+            }
+          });
+        };
+      }
       return srcbuild.lsp((ref$ = this.config.build || {}, ref$.logger = logger, ref$.i18n = i18n, ref$.base = Array.from(new Set([this.feroot].concat(this.config.srcbuild || []))), ref$.bundle = {
         configFile: 'bundle.json',
         relativePath: true,

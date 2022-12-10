@@ -29,6 +29,9 @@ module.exports = do
     enabled: true
     watcher: do
       ignored: ['\/\..*\.swp$', '^static/assets/img']
+    block:
+      # the block manager used to find module files. optional, fallback to default one if omitted.
+      manager: 'path/to/block/manager'
   session:
     secret: 'this-is-a-sample-secret-please-update-it'
     max-age: 365 * 86400 * 1000
