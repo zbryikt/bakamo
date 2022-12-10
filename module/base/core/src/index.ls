@@ -27,7 +27,8 @@ servebase =
     @ <<<
       zmgr: new zmgr!
       manager: @_cfg.manager or new block.manager do
-        registry: ({ns, name, version, path, type}) ->
+        registry: ({ns, url, name, version, path, type}) ->
+          if url => return that
           path = path or if type == \block => \index.html
           else if type => "index.min.#type" else 'index.min.js'
           if ns == \local =>
