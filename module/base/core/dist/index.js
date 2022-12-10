@@ -21,7 +21,7 @@
       return this._cfg = o;
     },
     _init: function(o){
-      var i18n, that, ref$, err, this$ = this;
+      var i18n, that, ref$, ethr, err, this$ = this;
       servebase._inited = true;
       if (o != null) {
         servebase._cfg = o;
@@ -76,8 +76,34 @@
       this.i18n = i18n = (that = ((ref$ = this._cfg).i18n || (ref$.i18n = {})).driver)
         ? that
         : typeof i18next != 'undefined' && i18next !== null ? i18next : undefined;
+      ethr = {
+        t: 0,
+        c: 0
+      };
       err = new lderror.handler({
         handler: function(n, e){
+          /*
+          melt down mechanism - prevent infinite errors. errors limited to 4 in 500ms / 11 in 2s
+          any unhandled error/rejection may trigger this handler again, which causes infinite errors
+          e.g., Promise.reject(Promise.reject(new Error())) in @plotdb/block `_fetch`
+          generate an additional rejection which is impossible to be caught.
+          this bug in @plotdb/block is fixed, however in case of any possible bugs in the future -
+          melt down mechanism is required.
+          */
+          var t;
+          t = Date.now();
+          if (ethr.t < t - 2000) {
+            ethr.t = t;
+            ethr.c = 0;
+          } else if (!ethr.t) {
+            compose$({
+              t: t,
+              c: 0
+            }, ethr);
+          } else if (ethr.t > t - 2000 && ethr.c > 10 || ethr.t > t - 500 && ethr.c > 3) {
+            return alert("something is wrong; please reload and try again");
+          }
+          ethr.c = (ethr.c || 0) + 1;
           return this$.ldcvmgr.get({
             ns: 'local',
             name: 'error',
@@ -179,6 +205,17 @@
     module.exports = servebase;
   } else if (typeof window != 'undefined' && window !== null) {
     window.servebase = servebase;
+  }
+  function compose$() {
+    var functions = arguments;
+    return function() {
+      var i, result;
+      result = functions[0].apply(this, arguments);
+      for (i = 1; i < functions.length; ++i) {
+        result = functions[i](result);
+      }
+      return result;
+    };
   }
   function in$(x, xs){
     var i = -1, l = xs.length >>> 0;

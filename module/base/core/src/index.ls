@@ -48,7 +48,23 @@ servebase =
       # TODO we should at least provide a dummy i18n so i18n.t will work
       i18n: i18n = if @_cfg.{}i18n.driver => that else if i18next? => i18next else undefined
 
-    err = new lderror.handler handler: (n, e) ~> @ldcvmgr.get {ns: \local, name: \error, path: "#n.html"}, e
+    ethr = t: 0, c: 0
+    err = new lderror.handler handler: (n, e) ~>
+      /*
+      melt down mechanism - prevent infinite errors. errors limited to 4 in 500ms / 11 in 2s
+      any unhandled error/rejection may trigger this handler again, which causes infinite errors
+      e.g., Promise.reject(Promise.reject(new Error())) in @plotdb/block `_fetch`
+      generate an additional rejection which is impossible to be caught.
+      this bug in @plotdb/block is fixed, however in case of any possible bugs in the future -
+      melt down mechanism is required.
+      */
+      t = Date.now!
+      if ethr.t < t - 2000 => ethr <<< t: t, c: 0
+      else if !ethr.t => ethr << t: t, c: 0
+      else if ethr.t > t - 2000 and ethr.c > 10 or ethr.t > t - 500 and ethr.c > 3 =>
+        return alert "something is wrong; please reload and try again"
+      ethr.c = (ethr.c or 0) + 1
+      @ldcvmgr.get {ns: \local, name: \error, path: "#n.html"}, e
     @error = (e) -> err e
 
     @ <<<
