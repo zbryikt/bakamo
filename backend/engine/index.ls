@@ -44,11 +44,6 @@ default-config = do
   port: 3000
   session: max-age: 365 * 86400 * 1000
 
-# for @plotdb/block in node context
-dom = new jsdom.JSDOM "<DOCTYPE html><html><body></body></html>"
-[win, doc] = [dom.window, dom.window.document]
-block.env win
-
 backend = (opt = {}) ->
   @opt = opt
   @ <<< do
@@ -88,6 +83,10 @@ backend.prototype = Object.create(Object.prototype) <<< do
     if @config.build.{}block.manager =>
       mgr = require path.join(rootdir, @config.build.block.manager)
     else
+      # for @plotdb/block in node context
+      dom = new jsdom.JSDOM "<DOCTYPE html><html><body></body></html>"
+      [win, doc] = [dom.window, dom.window.document]
+      block.env win
       mgr = ({base}) ->
         new block.manager registry: (d) ->
           path = d.path or if d.type == \block => \index.html
