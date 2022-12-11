@@ -215,7 +215,6 @@ pug_html = pug_html + "\u003Cdiv class=\"navbar navbar-expand-lg navbar-light fi
 }
 }, "navtop");
 pug_mixins["nbr"](2);
-pug_html = pug_html + "\u003Cdiv class=\"w-1024 rwd mx-auto\"\u003E\u003C\u002Fdiv\u003E";
 pug_mixins["script"]([
       {name: "i18next", path: "dist/umd/i18next.min.js"},
       {name: "i18next-browser-languagedetector", path: "dist/umd/i18nextBrowserLanguageDetector.min.js"},
@@ -247,7 +246,7 @@ pug_mixins["script"]([
       {name: "@undecaf/barcode-detector-polyfill", path: "dist/index.js"},
       {url: "/js/site.min.js"}
     ]);
-pug_html = pug_html + "\u003Cscript type=\"module\"\u003E(function(n){return n.apply({})})(function(){return servebase.corectx(function(n){var r;r=n.core;return r.init().then(function(){})})});\u003C\u002Fscript\u003E\u003C\u002Fbody\u003E\u003C\u002Fhtml\u003E";
+pug_html = pug_html + "\u003Cscript type=\"module\"\u003E\u003C\u002Fscript\u003E\u003C\u002Fbody\u003E\u003C\u002Fhtml\u003E";
     }.call(this, "Array" in locals_for_with ?
         locals_for_with.Array :
         typeof Array !== 'undefined' ? Array : undefined, "JSON" in locals_for_with ?
