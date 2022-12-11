@@ -205,6 +205,7 @@ pug_html = pug_html + "\u003Chtml\u003E\u003Chead\u003E\u003Cmeta charset=\"utf-
 pug_mixins["css"]([
       {name: "bootstrap", path: "dist/css/bootstrap.min.css"},
       {name: "@loadingio/bootstrap.ext"},
+      {name: "lddatetimepicker"},
       {name: "ldiconfont"},
       {name: "ldcover"}
     ]);
@@ -224,6 +225,7 @@ pug_mixins["script"]([
       {name: "@loadingio/debounce.js"},
       {name: "@loadingio/ldquery"},
       {name: "@loadingio/ldc"},
+      {name: "dayjs", path: "dayjs.min.js"},
       {name: "zmgr"},
       {name: "ldview"},
       {name: "ldcover"},
@@ -231,6 +233,7 @@ pug_mixins["script"]([
       {name: "ldcvmgr"},
       {name: "lderror"},
       {name: "ldloader"},
+      {name: "lddatetimepicker"},
       {name: "@plotdb/httputil"},
       {name: "@plotdb/semver"},
       {name: "@plotdb/rescope"},

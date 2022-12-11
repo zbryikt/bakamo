@@ -1,4 +1,28 @@
 extends /base.pug
+block head
+  style(type="text/css"): include:stylus index.styl
 block body
+  .w-1024.rwd.mx-auto
+    .d-flex.align-items-end.g-1
+      h2.mb-0 我的書單
+      .flex-grow-1
+      .btn-group
+        .btn.btn-sm.btn-outline-primary(ld="scan") 掃描
+        .btn.btn-sm.btn-outline-primary(ld="new-read") 手動
+        //-.btn.btn-sm.btn-primary(ld="new-book") 追加書籍
+    hr
+    .mb-5
+      .book.head.border-bottom.pb-2.mb-2
+        div 書名
+        div 開讀日
+        div 完讀日
+      .d-none(ld="read-loading") 載入中
+      .d-none(ld="no-read") 沒有書
+      .book(ld-each="read")
+        div
+          div(ld="title")
+          .text-sm.text-muted(ld="isbn")
+        div(ld="startdate")
+        div(ld="enddate")
 block script
   script(type="module"): include:lsc index.ls

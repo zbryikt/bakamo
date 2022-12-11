@@ -1,0 +1,28 @@
+.book
+  display: flex
+  gap: .5em
+  align-items: center
+  justify-content: start
+  padding-bottom: .5em
+  margin-bottom: .5em
+  border-bottom: 1px solid #eeeff0
+  & > div:nth-child(1)
+    width: 10em
+    flex: 0 0 auto
+  & > div:nth-child(2)
+    width: 5em
+    flex: 0 0 auto
+  & > div:nth-child(3)
+    width: 5em
+    flex: 0 0 auto
+@media (max-width: 960px)
+  .book
+    flex-wrap: wrap
+    & > div:nth-child(1)
+      width: 100%
+    & > div:nth-child(2)
+      width: 40%
+      flex: 0 0 auto
+    & > div:nth-child(3)
+      width: 40%
+      flex: 0 0 auto
