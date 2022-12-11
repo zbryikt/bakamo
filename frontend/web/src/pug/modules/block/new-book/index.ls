@@ -10,7 +10,6 @@ module.exports =
     {ldform, ldcover} = ctx
     @ldcv = new ldcover root: root, resident: true, zmgr: core.zmgr
     @ldcv.on \data, (d) ->
-      console.log d
       form.values d
       form.check n: \isbn, now: true
     view = new ldview do
