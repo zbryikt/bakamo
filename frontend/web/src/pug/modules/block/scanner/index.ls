@@ -7,7 +7,9 @@ module.exports =
       @itf.stop!
       @ldcv.set v
   init: ({root}) ->
-    bd = new BarcodeDetector!
+    ({core}) <~ servebase.corectx _
+    # limit to isbn_13 so it won't incorrectly capture price barcode
+    bd = new BarcodeDetector {formats: <[isbn_13]>}
     @ldcv = new ldcover root: root
     @cache = {}
     @info = {}
@@ -18,9 +20,14 @@ module.exports =
           ret = (@info or {}).isbn or ''
           return if !ret => ret else "ISBN: #ret"
         title: ({node}) ~> ((@info or {}).title or @value or '')
-      action: click: get: ({node}) ~>
-        @itf.stop!
-        @ldcv.set @value
+      action: click:
+        manual: ({node}) ~>
+          core.ldcvmgr.get {ns: \local, name: "new-book"}, {isbn: @value}
+            .then ~> @ldcv.set!
+        
+        get: ({node}) ~>
+          @itf.stop!
+          @ldcv.set @cache[@value]
       handler: info: ({node}) ~> node.classList.toggle \d-none, !(@value)
     video = view.get \video
 
@@ -58,20 +65,38 @@ module.exports =
                 if @cache[@value] => return @cache[@value]
                 ((v) ~>
                   return @cache[v] = Promise.resolve!then ~>
+                    (ret = []) <~ ld$.fetch("/api/book", {method: \POST}, {json: {list: [v]}, type: \json}) .then _
+                    book = ret.filter(-> it.isbn == v).0
+                    @cache[v] = info = if !book => {} else book
+                    if v != @value => return lderror.reject 999
+                    return info
+                    /*
                     (ret = {}) <~ ld$.fetch("/api/code/#v", {method: \GET}, {type: \json}) .then _
                     @cache[v] = info = if !(o = ret.[]items.0) => {} else {title: o.volumeInfo.title, isbn: v}
                     if v != @value => return lderror.reject 999
                     return info
+                    */
                 )(@value)
               .then (info) ~>
                 @info = info
                 view.render <[isbn info title]>
               .catch (e) -> if lderror.id(e) == 999 => return else return Promise.reject e
           view.render <[isbn info title]>
-        #setTimeout (~> requestAnimationFrame (~> @itf.render!)), 200
 
       prepare: ->
-        navigator.mediaDevices.getUserMedia {video: facingMode: \environment}
+        # enforce a large width / height so detector works better
+        box = root.querySelector('.base').getBoundingClientRect!
+        # https://dev.to/dcodeyt/the-easiest-way-to-detect-device-orientation-in-javascript-7d7
+        # detect portrait / landscape mode
+        # mobile device needs inversed ratio for portrait mode
+        ratio = if window.matchMedia("(orientation: portrait)").matches => box.height / box.width
+        else box.width / box.height
+        constraint = video:
+            width: 2000
+            height: 2000
+            facingMode: \environment
+            aspectRatio: {exact: ratio}
+        navigator.mediaDevices.getUserMedia constraint
           .then (ms) ~> 
             @mediastream = ms
             (res, rej) <~ new Promise _
