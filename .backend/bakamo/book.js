@@ -33,7 +33,6 @@
           }
           return v.json().then(function(ret){
             var item, title, author, ref$, thumbnail;
-            fs.writeFileSync("outout", JSON.stringify(ret));
             item = (ret.items || (ret.items = []))[0] || {};
             title = (item.volumeInfo || (item.volumeInfo = {})).title;
             author = ((ref$ = item.volumeInfo).authors || (ref$.authors = []))[0] || '';
@@ -42,7 +41,11 @@
               isbn: isbn,
               title: title,
               author: author,
-              thumbnail: thumbnail
+              thumbnail: thumbnail,
+              detail: {
+                raw: item,
+                source: 'google book api'
+              }
             };
           });
         });
@@ -72,7 +75,7 @@
             ret = ret.filter(function(it){
               return it.title;
             });
-            return db.query("insert into book (isbn,title,author)\nselect * from jsonb_to_recordset($1::jsonb) as e (isbn text, title text, author text)", [JSON.stringify(ret)]);
+            return db.query("insert into book (isbn,title,author,detail)\nselect * from jsonb_to_recordset($1::jsonb) as e (isbn text, title text, author text, detail jsonb)", [JSON.stringify(ret)]);
           });
         }).then(function(){
           return db.query("select * from book where isbn = ANY($1)", [list]);

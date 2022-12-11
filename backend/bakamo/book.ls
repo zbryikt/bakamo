@@ -17,12 +17,11 @@ book-from-google = ({isbn}) ->
     .then (v) ->
       if !(v and v.ok) => return {isbn}
       v.json!then (ret) ->
-        fs.write-file-sync "outout", JSON.stringify(ret)
         item = (ret.[]items.0 or {})
         title = item.{}volumeInfo.title
         author = item.volumeInfo.[]authors.0 or ''
         thumbnail = item.volumeInfo.{}imageLinks.thumbnail
-        return {isbn, title, author, thumbnail}
+        return {isbn, title, author, thumbnail, detail: {raw: item, source: 'google book api'}}
 
 api.post \/book/, (req, res) ->
   # TODO also track non-existed isbn that we have tried with book-from-google
@@ -39,8 +38,8 @@ api.post \/book/, (req, res) ->
         .then (ret) ->
           ret = ret.filter -> it.title
           db.query """
-          insert into book (isbn,title,author)
-          select * from jsonb_to_recordset($1::jsonb) as e (isbn text, title text, author text)
+          insert into book (isbn,title,author,detail)
+          select * from jsonb_to_recordset($1::jsonb) as e (isbn text, title text, author text, detail jsonb)
           """, [JSON.stringify(ret)]
     .then ->
       db.query "select * from book where isbn = ANY($1)", [list]
