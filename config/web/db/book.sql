@@ -4,6 +4,7 @@ create table if not exists book (
   title text,
   description text,
   author text,
+  detail jsonb,
   deleted boolean
 );
 
@@ -21,7 +22,8 @@ create table if not exists read (
   list int references readlist(key),
   book int references book(key),
   isbn text,
-  date timestamp not null default now(),
+  startdate timestamp,
+  enddate timestamp,
   createdtime timestamp not null default now(),
   deleted boolean
 );
