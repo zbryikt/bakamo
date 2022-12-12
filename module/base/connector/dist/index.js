@@ -24,6 +24,11 @@
       }
     }).then(function(){
       return console.log(this$._tag + " connected.");
+    })['catch'](function(e){
+      if (this$.ws.status() === 2) {
+        return;
+      }
+      return Promise.reject(e);
     });
   }, ref$.reopen = function(){
     var this$ = this;
