@@ -66,3 +66,11 @@ Promise.resolve!
   .then -> view.render!
   .then -> readlist.fetch!
   .then -> view.render!
+  .then ->
+    core.manager.from {ns: \chart, name: \pie}, {root: view.get('chart')}
+      .then (ret) ->
+        chart = ret.interface
+        chart.parse!
+        chart.bind!
+        chart.resize!
+        chart.render!
