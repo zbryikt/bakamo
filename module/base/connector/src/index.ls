@@ -14,6 +14,9 @@ connector.prototype = Object.create(Object.prototype) <<<
       .then ~> console.log "#{@_tag} object reconnect ..."
       .then ~> if @_reconnect => @_reconnect!
       .then ~> console.log "#{@_tag} connected."
+      .catch (e) ~>
+        if @ws.status! == 2 => return
+        Promise.reject e
   reopen: ->
     if @_running => return
     @_running = true
