@@ -92,3 +92,19 @@ api.put \/read/:key/delete, aux.validate-key, aux.signedin, (req, res) ->
   list = list.map -> it.key
   db.query """delete from read where owner = $1 and key in ANY($2)""", [req.user.key, list]
     .then (r={}) -> res.send r.[]rows
+
+
+api.get \/readlist/:owner?, aux.signedin, (req, res) ->
+  if req.params.owner? and req.params.owner != req.user.key => return lderror.reject 403
+  owner = req.user.key
+  db.query """select * from readlist where owner = $1""", [owner]
+    .then (r = {}) ->
+      res.send r.[]rows
+
+api.post \/readlist/:owner?, aux.signedin, (req, res) ->
+  if req.params.owner? and req.params.owner != req.user.key => return lderror.reject 403
+  if !req.body.title => return lderror.reject 400
+  owner = req.user.key
+  db.query """insert into readlist (title,owner) values ($1, $2) returning key""", [req.body.title, owner]
+    .then (r = {}) -> res.send (r.[]rows.0 or {})
+

@@ -30,7 +30,9 @@ view = new ldview do
             ld$.fetch "/api/read/", {method: \POST}, {json: payload}
               .finally -> core.loader.off!
               .then ~> readlist.update!
-
+      "new-list": ->
+        core.ldcvmgr.get ns: \local, name: \new-list
+          .then ->
       "new-read": ->
         core.ldcvmgr.get ns: \local, name: \new-read
           .then -> readlist.update!

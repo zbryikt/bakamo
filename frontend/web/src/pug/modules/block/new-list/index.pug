@@ -1,0 +1,11 @@
+.ldcv: .base.w-640: .inner.position-relative.card: .card-body.p-4
+  style(type="text/css"): include:stylus index.styl
+  script(type="@plotdb/block"): include:lsc index.ls
+  .mb-4
+    h2 新增書單
+    .form-group
+      label 書單名稱
+      input.form-control(name="title")
+  .d-flex.justify-content-between.g-2.align-items-center
+    .btn.btn-outline-secondary(data-ldcv-set="") 取消
+    .btn.btn-primary.disabled(ld="add") 新增

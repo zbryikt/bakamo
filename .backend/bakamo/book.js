@@ -123,7 +123,7 @@
           .then (r={}) ->
             res.send!
       */
-      return api.put('/read/:key/delete', aux.validateKey, aux.signedin, function(req, res){
+      api.put('/read/:key/delete', aux.validateKey, aux.signedin, function(req, res){
         var list;
         if (req.user.key !== req.params.key) {
           return lderror.reject(403);
@@ -139,6 +139,31 @@
         return db.query("delete from read where owner = $1 and key in ANY($2)", [req.user.key, list]).then(function(r){
           r == null && (r = {});
           return res.send(r.rows || (r.rows = []));
+        });
+      });
+      api.get('/readlist/:owner?', aux.signedin, function(req, res){
+        var owner;
+        if (req.params.owner != null && req.params.owner !== req.user.key) {
+          return lderror.reject(403);
+        }
+        owner = req.user.key;
+        return db.query("select * from readlist where owner = $1", [owner]).then(function(r){
+          r == null && (r = {});
+          return res.send(r.rows || (r.rows = []));
+        });
+      });
+      return api.post('/readlist/:owner?', aux.signedin, function(req, res){
+        var owner;
+        if (req.params.owner != null && req.params.owner !== req.user.key) {
+          return lderror.reject(403);
+        }
+        if (!req.body.title) {
+          return lderror.reject(400);
+        }
+        owner = req.user.key;
+        return db.query("insert into readlist (title,owner) values ($1, $2) returning key", [req.body.title, owner]).then(function(r){
+          r == null && (r = {});
+          return res.send((r.rows || (r.rows = []))[0] || {});
         });
       });
     });
