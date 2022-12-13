@@ -3,6 +3,15 @@ block head
   style(type="text/css"): include:stylus index.styl
 block body
   .w-1024.rwd.mx-auto
+    .mb-5
+      .d-flex.align-items-end.g-1
+        h2.mb-0 書單列表
+        .flex-grow-1
+        .btn.btn-sm.btn-outline-primary(ld="new-list") 新增書單
+      hr
+      div
+        .readlist-item(ld-each="readlist")
+
     .row
       .col-md
         .d-flex.align-items-end.g-1

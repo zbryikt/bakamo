@@ -11,8 +11,9 @@ readlist =
   fetch: ->
     @loading = true
     debounce 350
-      .then ~>
-        ld$.fetch "/api/read/#{core.user.key}", {method: \GET}, {type: \json}
+      .then ~> ld$.fetch "/api/readlist", {method: \GET}, {type: \json}
+      .then (ret) ~> @lists = ret
+      .then -> ld$.fetch "/api/read/#{core.user.key}", {method: \GET}, {type: \json}
       .then (ret) ~> @list = ret.map -> it.read <<< {book: it.book}
       .finally ~> @loading = false
 
@@ -42,6 +43,11 @@ view = new ldview do
     "read-loading": ({node}) -> node.classList.toggle \d-none, !readlist.is-loading!
     "no-read": ({node}) ->
       node.classList.toggle \d-none, (readlist.is-loading! or readlist.get!length)
+    readlist:
+      list: -> readlist.lists or []
+      key: -> it.key
+      view:
+        text: "@": ({node, ctx}) -> ctx.title or '未命名'
     read:
       list: -> readlist.get!
       key: -> it.key
