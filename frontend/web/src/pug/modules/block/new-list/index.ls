@@ -14,8 +14,14 @@ module.exports =
       action: click:
         add: ({node}) ~>
           if !form.ready! => return
-          {title} = form.values!
-          payload = {title}
+          payload = form.values!
           ld$.fetch "/api/readlist/", {method: \POST}, {json: payload}
             .then ~> @ldcv.set!
-    form = new ldform { root: root, submit: view.get \add }
+    form = new ldform do
+      root: root
+      submit: view.get \add
+      verify: (n,v,e) ~>
+        if n == \description => return 0
+        if n == \title => form.check n: \description, now: true
+        if !v => return 2
+        return 0

@@ -105,6 +105,8 @@ api.post \/readlist/:owner?, aux.signedin, (req, res) ->
   if req.params.owner? and req.params.owner != req.user.key => return lderror.reject 403
   if !req.body.title => return lderror.reject 400
   owner = req.user.key
-  db.query """insert into readlist (title,owner) values ($1, $2) returning key""", [req.body.title, owner]
+  db.query """
+  insert into readlist (title,description,owner) values ($1, $2, $3) returning key
+  """, [req.body.title, (req.body.description or ''), owner]
     .then (r = {}) -> res.send (r.[]rows.0 or {})
 

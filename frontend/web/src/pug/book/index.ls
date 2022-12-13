@@ -47,7 +47,12 @@ view = new ldview do
       list: -> readlist.lists or []
       key: -> it.key
       view:
-        text: "@": ({node, ctx}) -> ctx.title or '未命名'
+        text:
+          title: ({node, ctx}) -> ctx.title or '未命名'
+          description: ({node, ctx}) -> ctx.description or ''
+          createdtime: ({node, ctx}) ->
+            if !ctx.createdtime => 'n/a'
+            else dayjs(ctx.createdtime).format('YYYY/MM/DD hh:mm:ss')
     read:
       list: -> readlist.get!
       key: -> it.key

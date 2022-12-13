@@ -10,7 +10,10 @@ block body
         .btn.btn-sm.btn-outline-primary(ld="new-list") 新增書單
       hr
       div
-        .readlist-item(ld-each="readlist")
+        .readlist-item.d-flex.g-2(ld-each="readlist")
+          div(ld="title")
+          .text-truncate(ld="description")
+          div(ld="createdtime")
 
     .row
       .col-md

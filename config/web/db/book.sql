@@ -12,6 +12,7 @@ create table if not exists readlist (
   key serial primary key,
   owner int references users(key),
   title text,
+  description text,
   createdtime timestamp not null default now(),
   deleted boolean
 );
