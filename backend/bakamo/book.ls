@@ -45,68 +45,51 @@ api.post \/book/, (req, res) ->
       db.query "select * from book where isbn = ANY($1)", [list]
     .then (r={}) -> res.send r.[]rows
 
-api.post \/read/:key?, aux.signedin, (req, res) ->
-  # TODO we should make it possible to write read records to other account if they agree.
-  if req.params.key and req.user.key != req.params.key => return lderror.reject 403
-  if isNaN(owner = +req.user.key) => return lderror.reject 400
+api.post \/sudan/:key, aux.validate-key, aux.signedin, (req, res) ->
+  # TODO permission check
+  sudan = req.params.key
+  owner = req.user.key
   list = (if Array.isArray(req.body.list) => req.body.list else [req.body.list])
     .filter -> it and it.book
-    .map -> it <<< {owner}
+    .map -> it <<< {owner, sudan}
   # TODO we may add book here too with fields such as req.body.books
   # this requires additional fields in req.body.list to recognize books to be added
-  db.query """
-  insert into read (owner, book, enddate)
-  select * from jsonb_to_recordset($1::jsonb) as e (owner int, book int, enddate timestamp)
-  """, [JSON.stringify list]
+  db.query "select key from sudan where key = $1 and owner = $2", [sudan, owner]
+    .then (r={}) ->
+      if !r.[]rows.length => return lderror.reject 404
+      db.query """
+      insert into dusu (owner, book, enddate, sudan)
+      select * from jsonb_to_recordset($1::jsonb) as e (owner int, book int, enddate timestamp, sudan int)
+      """, [JSON.stringify list]
     .then (r={}) -> res.send {}
 
-api.get \/read/:key, aux.validate-key, aux.signedin, (req, res) ->
+api.get \/sudan/:key, aux.validate-key, aux.signedin, (req, res) ->
+  # TODO permission check
+  sudan = req.params.key
+  owner = req.user.key
   db.query """
   with merged as (
-    select r as read, b as book from read as r
-    left join book as b on b.key = r.book
-    where r.owner = $1
+    select d as dusu, b as book from dusu as d
+    left join book as b on b.key = d.book
+    inner join sudan as s on s.key = d.sudan
+    where d.sudan = $1 and s.owner = $2
   )
-  select row_to_json(m.read) as read, row_to_json(m.book) as book from merged as m
-  """, [req.params.key]
+  select row_to_json(m.dusu) as dusu, row_to_json(m.book) as book from merged as m
+  """, [sudan, owner]
     .then (r={}) -> res.send r.[]rows
 
-/* TODO finish the query for update
-api.put \/read/:key/, aux.validate-key, aux.signedin, (req, res) ->
-  # TODO we should make it possible to update read records in other account if they agree.
-  if req.user.key != req.params.key => return lderror.reject 403
-  # TODO we may add book here too with fields such as req.body.books
-  # this requires additional fields in req.body.list to recognize books to be added
-  db.query """
-  update read (book,date) values
-  select * from jsonb_to_recordset($1::jsonb) as e (book int, date timestamp)
-  """, [JSON.stringify list]
-    .then (r={}) ->
-      res.send!
-*/
-
-api.put \/read/:key/delete, aux.validate-key, aux.signedin, (req, res) ->
-  # TODO we should make it possible to delete read records in other account if they agree.
-  if req.user.key != req.params.key => return lderror.reject 403
-  list = (if Array.isArray(req.body.list) => req.body.list else [req.body.list]).filter(->it and it.key)
-  list = list.map -> it.key
-  db.query """delete from read where owner = $1 and key in ANY($2)""", [req.user.key, list]
-    .then (r={}) -> res.send r.[]rows
-
-
-api.get \/readlist/:owner?, aux.signedin, (req, res) ->
-  if req.params.owner? and req.params.owner != req.user.key => return lderror.reject 403
+api.get \/user/:key/sudan, aux.validate-key, aux.signedin, (req, res) ->
+  # TODO permission check
   owner = req.user.key
-  db.query """select * from readlist where owner = $1""", [owner]
-    .then (r = {}) ->
-      res.send r.[]rows
+  db.query """select * from sudan where owner = $1""", [owner]
+    .then (r = {}) -> res.send r.[]rows
 
-api.post \/readlist/:owner?, aux.signedin, (req, res) ->
-  if req.params.owner? and req.params.owner != req.user.key => return lderror.reject 403
+api.post \/user/:key/sudan, aux.validate-key, aux.signedin, (req, res) ->
+  # TODO permission check
   if !req.body.title => return lderror.reject 400
   owner = req.user.key
   db.query """
-  insert into readlist (title,description,owner) values ($1, $2, $3) returning key
+  insert into sudan (title,description,owner) values ($1, $2, $3) returning key
   """, [req.body.title, (req.body.description or ''), owner]
     .then (r = {}) -> res.send (r.[]rows.0 or {})
 

@@ -7,43 +7,38 @@ block body
       .d-flex.align-items-end.g-1
         h2.mb-0 書單列表
         .flex-grow-1
-        .btn.btn-sm.btn-outline-primary(ld="new-list") 新增書單
+        .btn.btn-sm.btn-outline-primary(ld="new-sudan") 新增書單
       hr
       div
-        .readlist-item.d-flex.g-2(ld-each="readlist")
+        .sudan.d-flex.g-2(ld-each="sudan")
           div(ld="title")
           .text-truncate(ld="description")
           div(ld="createdtime")
 
-    .row
-      .col-md
-        .d-flex.align-items-end.g-1
-          h2.mb-0 我的書單
-          .flex-grow-1
-          .btn.btn-sm.btn-outline-primary(ld="new-list") 新增書單
-          .btn-group.mr-1
-            .btn.btn-sm.btn-outline-primary(ld="scan") 掃書
-            .btn.btn-sm.btn-outline-primary(ld="new-read") 手動
-          .btn.btn-sm.btn-outline-primary(ld="new-book") 追加書籍
-        hr
-        .mb-5
-          .book.head.border-bottom.pb-2.mb-2
-            div 書名
-            div 開讀日
-            div 完讀日
-          .d-none(ld="read-loading") 載入中
-          .d-none(ld="no-read") 沒有書
-          .book(ld-each="read")
-            div
-              div(ld="title")
-              .text-sm.text-muted(ld="isbn")
-            div(ld="startdate")
-            div(ld="enddate")
-      .col-md
-        .aspect-ratio.ratio-1by1: div(ld="chart")
-        
+    .d-flex.align-items-end.g-1
+      h2.mb-0 我的書單
+      .flex-grow-1
+      .btn.btn-sm.btn-outline-primary(ld="new-sudan") 新增書單
+      .btn-group.mr-1
+        .btn.btn-sm.btn-outline-primary(ld="scan") 掃書
+        .btn.btn-sm.btn-outline-primary(ld="new-dusu") 手動
+      .btn.btn-sm.btn-outline-primary(ld="new-book") 追加書籍
+    hr
+    .mb-5
+      .book.head.border-bottom.pb-2.mb-2
+        div 書名
+        div 開讀日
+        div 完讀日
+      .d-none(ld="dusu-loading") 載入中
+      .d-none(ld="no-dusu") 沒有書
+      .book(ld-each="dusu")
+        div
+          div(ld="title")
+          .text-sm.text-muted(ld="isbn")
+        div: div(ld="startdate")
+        div: div(ld="enddate")
+
 block script
-  +script([
-    {name: "@plotdb/chart"}
-  ])
+  //-.aspect-ratio.ratio-1by1: div(ld="chart")
+  +script([ {name: "@plotdb/chart"} ])
   script(type="module"): include:lsc index.ls

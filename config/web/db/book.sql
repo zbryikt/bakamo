@@ -8,7 +8,7 @@ create table if not exists book (
   deleted boolean
 );
 
-create table if not exists readlist (
+create table if not exists sudan (
   key serial primary key,
   owner int references users(key),
   title text,
@@ -17,10 +17,10 @@ create table if not exists readlist (
   deleted boolean
 );
 
-create table if not exists read (
+create table if not exists dusu (
   key serial primary key,
   owner int references users(key),
-  list int references readlist(key),
+  sudan int references sudan(key),
   book int references book(key),
   isbn text,
   startdate timestamp,

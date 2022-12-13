@@ -8,6 +8,7 @@ module.exports =
   init: ({root, ctx}) ->
     ({core}) <~ servebase.corectx _
     @ldcv = new ldcover root: root, resident: true, zmgr: core.zmgr
+    @ldcv.on \data, (d) ->
     {ldform} = ctx
     view = new ldview do
       root: root
@@ -17,7 +18,7 @@ module.exports =
           {isbn} = form.values!
           if !(book = @isbn.find isbn) => return
           payload = list: [{book: book.key, date: new Date!}]
-          ld$.fetch "/api/read/", {method: \POST}, {json: payload}
+          ld$.fetch "/api/sudan/???", {method: \POST}, {json: payload}
             .then ~> @ldcv.set!
     @isbn =
       hash: {}

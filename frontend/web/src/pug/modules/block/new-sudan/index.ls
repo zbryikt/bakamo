@@ -14,8 +14,9 @@ module.exports =
       action: click:
         add: ({node}) ~>
           if !form.ready! => return
+          (global) <~ core.auth.ensure!then _
           payload = form.values!
-          ld$.fetch "/api/readlist/", {method: \POST}, {json: payload}
+          ld$.fetch "/api/user/#{global.user.key}/sudan", {method: \POST}, {json: payload}
             .then ~> @ldcv.set!
     form = new ldform do
       root: root

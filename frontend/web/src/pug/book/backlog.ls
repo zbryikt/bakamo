@@ -3,31 +3,19 @@
 <~ core.init!then _
 <- core.auth.ensure!then _
 
-sudans =
-  _: all: [], loading: true, cur: null
-  get: -> if @_.loading => [] else (@_.all or [])
-  cur: -> @_.cur
-  is-loading: -> !!@_.loading
+readlist =
+  loading: true
+  is-loading: -> !!@loading
+  get: -> if @loading => [] else (@list or [])
   update: -> @fetch!then -> view.render!
   fetch: ->
-    @_.loading = true
+    @loading = true
     debounce 350
-      .then ~> ld$.fetch "/api/user/#{core.user.key}/sudan", {method: \GET}, {type: \json}
-      .then (ret) ~>
-        @_.all = ret
-        if !@_.cur => @_.cur = ret.0
-        if !@_.cur => return
-        ld$.fetch "/api/sudan/#{@_.cur.key}", {method: \GET}, {type: \json}
-          .then (ret) ~> @_.detail = ret.map -> it.dusu <<< {book: it.book}
-      .finally ~> @_.loading = false
-  dusu:
-    get: -> sudans._.detail or []
-    add: (payload) ->
-      core.loader.on!
-      ld$.fetch "/api/sudan/#{sudans.cur!key}", {method: \POST}, {json: payload}
-        .finally -> core.loader.off!
-        .then ~> sudans.update!
-
+      .then ~> ld$.fetch "/api/readlist", {method: \GET}, {type: \json}
+      .then (ret) ~> @lists = ret
+      .then -> ld$.fetch "/api/read/#{core.user.key}", {method: \GET}, {type: \json}
+      .then (ret) ~> @list = ret.map -> it.read <<< {book: it.book}
+      .finally ~> @loading = false
 
 view = new ldview do
   root: document.body
@@ -38,22 +26,25 @@ view = new ldview do
         core.ldcvmgr.get ns: \local, name: \scanner
           .then (book = {}) ->
             if !book.key => return
+            core.loader.on!
             payload = list: [{book: book.key, enddate: new Date!}]
-            sudans.dusu.add payload
-      "new-sudan": ->
-        core.ldcvmgr.get ns: \local, name: \new-sudan
+            ld$.fetch "/api/read/", {method: \POST}, {json: payload}
+              .finally -> core.loader.off!
+              .then ~> readlist.update!
+      "new-list": ->
+        core.ldcvmgr.get ns: \local, name: \new-list
           .then ->
-      "new-dusu": ->
-        core.ldcvmgr.get ns: \local, name: \new-dusu
-          .then -> sudans.update!
+      "new-read": ->
+        core.ldcvmgr.get ns: \local, name: \new-read
+          .then -> readlist.update!
       "new-book": -> core.ldcvmgr.get ns: \local, name: \new-book
 
   handler:
-    "sudan-loading": ({node}) -> node.classList.toggle \d-none, !sudans.is-loading!
-    "no-dusu": ({node}) ->
-      node.classList.toggle \d-none, (sudans.is-loading! or sudans.dusu.get!length)
-    sudan:
-      list: -> sudans.get!
+    "read-loading": ({node}) -> node.classList.toggle \d-none, !readlist.is-loading!
+    "no-read": ({node}) ->
+      node.classList.toggle \d-none, (readlist.is-loading! or readlist.get!length)
+    readlist:
+      list: -> readlist.lists or []
       key: -> it.key
       view:
         text:
@@ -62,8 +53,8 @@ view = new ldview do
           createdtime: ({node, ctx}) ->
             if !ctx.createdtime => 'n/a'
             else dayjs(ctx.createdtime).format('YYYY/MM/DD hh:mm:ss')
-    dusu:
-      list: -> sudans.dusu.get!
+    read:
+      list: -> readlist.get!
       key: -> it.key
       view:
         init:
@@ -86,5 +77,13 @@ view = new ldview do
 
 Promise.resolve!
   .then -> view.render!
-  .then -> sudans.fetch!
+  .then -> readlist.fetch!
   .then -> view.render!
+  .then ->
+    core.manager.from {ns: \chart, name: \pie}, {root: view.get('chart')}
+      .then (ret) ->
+        chart = ret.interface
+        chart.parse!
+        chart.bind!
+        chart.resize!
+        chart.render!
