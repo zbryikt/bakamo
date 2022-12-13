@@ -68,6 +68,9 @@
             },
             lng: function(){
               var lng;
+              if (!core.i18n) {
+                return;
+              }
               lng = core.i18n.language;
               return view.getAll('set-lng').filter(function(n){
                 return lng === n.getAttribute('data-name');
@@ -106,6 +109,11 @@
             }
           }
         });
+        if (core.i18n) {
+          core.i18n.on('languageChanged', function(){
+            return view.render('lng');
+          });
+        }
         bar = view.get('root');
         dotst = (bar.getAttribute('data-classes') || "").split(';').map(function(it){
           return it.split(' ').filter(function(it){

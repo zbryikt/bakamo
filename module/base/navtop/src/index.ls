@@ -29,6 +29,7 @@ view = new ldview do
     displayname: ~> @user.displayname or 'User'
     username: ~> @user.username or 'n/a'
     lng: ->
+      if !core.i18n => return
       lng = core.i18n.language
       view.getAll(\set-lng)
         .filter (n) -> lng == n.getAttribute(\data-name)
@@ -40,6 +41,8 @@ view = new ldview do
     unauthed: ({node}) ~> node.classList.toggle \d-none, !!@user.key
     authed: ({node}) ~> node.classList.toggle \d-none, !@user.key
     avatar: ({node}) ~> node.style.backgroundImage = "url(/assets/avatar/#{@user.key})"
+
+if core.i18n => core.i18n.on \languageChanged, -> view.render \lng
 
 bar = view.get \root
 dotst = (bar.getAttribute(\data-classes) or "").split(';').map(->it.split(' ').filter(->it))
