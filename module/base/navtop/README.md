@@ -27,3 +27,11 @@ site-wise navigation menu dynamics
 
  - `data-classes`: "class1 class2 ...;class1 class2 ..." for before and after transition classs.
  - `data-pivot`: node to monitor for visibility and thus reflect the whether state should be change.
+
+
+## API
+
+the `navtop` module provides following API:
+
+ - `toggle(v)`: show / hide navbar based on value `v`.
+
