@@ -12,7 +12,7 @@
         }
       }
     };
-    return core.init().then(function(){
+    core.init().then(function(){
       return function(it){
         return it.apply(obj);
       }(function(){
@@ -155,8 +155,8 @@
           threshold: 0.1
         }).observe(tstTgt);
         return {};
-        return obj;
       });
     });
+    return obj;
   });
 }).call(this);

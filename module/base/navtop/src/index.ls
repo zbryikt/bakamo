@@ -61,4 +61,4 @@ core.init!then ->
   ), {threshold: 0.1}).observe tst-tgt
 
   return {}
-  return obj
+return obj
