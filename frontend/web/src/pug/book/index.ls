@@ -4,11 +4,27 @@
 <- core.auth.ensure!then _
 
 sudans =
-  _: all: [], loading: true, cur: null
+  _: all: [], loading: true, cur: null, detail: {}
   get: -> if @_.loading => [] else (@_.all or [])
   cur: -> @_.cur
   is-loading: -> !!@_.loading
   update: -> @fetch!then -> view.render!
+  toggle: (sudan = {}) ->
+    sudan = @_.all.filter(-> it.key == (sudan.key or sudan)).0
+    @_.cur = sudan
+    @_.loading = true
+    view.render!
+    @fetch-sudan!
+      .finally ~> @_.loading = false
+      .then -> view.render!
+
+  fetch-sudan: ->
+    if !@_.cur => return
+    key = @_.cur.key
+    console.log key, @_.cur
+    ld$.fetch "/api/sudan/#key", {method: \GET}, {type: \json}
+      .then (ret) ~> @_.detail[key] = ret.map -> it.dusu <<< {book: it.book}
+
   fetch: ->
     @_.loading = true
     debounce 350
@@ -16,12 +32,10 @@ sudans =
       .then (ret) ~>
         @_.all = ret
         if !@_.cur => @_.cur = ret.0
-        if !@_.cur => return
-        ld$.fetch "/api/sudan/#{@_.cur.key}", {method: \GET}, {type: \json}
-          .then (ret) ~> @_.detail = ret.map -> it.dusu <<< {book: it.book}
+        @fetch-sudan!
       .finally ~> @_.loading = false
   dusu:
-    get: -> sudans._.detail or []
+    get: -> sudans._.detail[(sudans.cur! or {}).key] or []
     add: (payload) ->
       core.loader.on!
       ld$.fetch "/api/sudan/#{sudans.cur!key}", {method: \POST}, {json: payload}
@@ -35,16 +49,16 @@ view = new ldview do
   action:
     click:
       scan: ->
-        core.ldcvmgr.get ns: \local, name: \scanner
+        core.ldcvmgr.get {ns: \local, name: \scanner}, {data: sudans.cur!}
           .then (book = {}) ->
             if !book.key => return
             payload = list: [{book: book.key, enddate: new Date!}]
             sudans.dusu.add payload
       "new-sudan": ->
-        core.ldcvmgr.get ns: \local, name: \new-sudan
+        core.ldcvmgr.get {ns: \local, name: \new-sudan}, {data: sudans.cur!}
           .then ->
       "new-dusu": ->
-        core.ldcvmgr.get ns: \local, name: \new-dusu
+        core.ldcvmgr.get {ns: \local, name: \new-dusu}, {data: sudans.cur!}
           .then -> sudans.update!
       "new-book": -> core.ldcvmgr.get ns: \local, name: \new-book
 
@@ -56,6 +70,7 @@ view = new ldview do
       list: -> sudans.get!
       key: -> it.key
       view:
+        action: click: "@": ({ctx}) -> sudans.toggle ctx
         text:
           title: ({node, ctx}) -> ctx.title or '未命名'
           description: ({node, ctx}) -> ctx.description or ''

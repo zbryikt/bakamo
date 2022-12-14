@@ -1,4 +1,7 @@
 //- module
+-
+  if(!ctrl) { ctrl = {}; }
+  if(!ctrl.navtop) { ctrl.navtop = {}; }
 +scope("navtop"): .navbar.navbar-expand-lg.navbar-light.fixed-top(ld="root")
   .collapse.navbar-collapse
     a.d-flex.align-items-center(href="/",style="font-size:24px;line-height:1em")
@@ -18,4 +21,5 @@
             a.dropdown-item(href="/me/settings/") 設定
             .dropdown-divider
             .dropdown-item.text-danger(ld="logout") 登出
-+nbr(2)
+if ctrl.navtop.placeholder
+  +nbr(2)

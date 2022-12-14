@@ -1,0 +1,31 @@
+body
+  font-weight: 700
+  font-family: consolas, monospace
+.question
+  font-size: 5em
+.blink
+  animation: blink .66s infinite
+
+.num
+  width: 1.5em
+  text-align: center
+.elapsed
+  font-size: .5em
+.result
+  font-family: 'ldi'
+  font-size: .85em
+  margin-left: .5em
+.result.correct
+  color: #2d2
+  &:before
+      content: "\f00d"
+.result.wrong
+  color: #d22
+  &:before
+      content: "\f065"
+
+@keyframes blink
+  0% { opacity: 1}
+  50% { opacity: 1}
+  50.1% { opacity: 0}
+  100% { opacity: 0}

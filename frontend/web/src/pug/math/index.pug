@@ -1,0 +1,32 @@
+extends /base.pug
+block vars
+block head
+  style(type="text/css"): include:stylus index.styl
+block body
+  .w-100.h-100
+    .d-flex.align-items-center.justify-content-center.w-100.h-100
+      div
+        div
+          .d-flex.question.done.align-items-center(ld-each="q")
+            .num(ld="n1") 0
+            div -
+            .num(ld="n2") 0
+            div =
+            .num(ld="ans") 0
+            .result(ld="result")
+            .elapsed(ld="elapsed")
+        .d-flex.question.align-items-center
+          .num(ld="n1") 0
+          div -
+          .num(ld="n2") 0
+          div =
+          .num.d-flex
+            div(ld="ans") 0
+            .blink _
+          .result(ld="result")
+  .position-absolute.mx-auto(style="bottom:2em;font-size:3em;font-weight:700;left:0;right:0;width:fit-content")
+      div(ld="tick")
+      div(ld="avg")
+
+block script
+  script(type="module"): include:lsc index.ls

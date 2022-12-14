@@ -11,6 +11,7 @@ module.exports =
     # limit to isbn_13 so it won't incorrectly capture price barcode
     bd = new BarcodeDetector {formats: <[isbn_13]>}
     @ldcv = new ldcover root: root
+    @ldcv.on \data, -> console.log ">>", it
     @cache = {}
     @info = {}
     view = new ldview do

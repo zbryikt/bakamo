@@ -10,7 +10,7 @@ function pug_merge(e,r){if(1===arguments.length){for(var t=e[0],g=1;g<e.length;g
 function pug_style(r){if(!r)return"";if("object"==typeof r){var t="";for(var e in r)pug_has_own_property.call(r,e)&&(t=t+e+":"+r[e]+";");return t}return r+""}function template(locals) {var pug_html = "", pug_mixins = {}, pug_interp;;
     var locals_for_with = (locals || {});
     
-    (function (Array, JSON, b64img, blockLoader, c, cssLoader, decache, defer, escape, libLoader, parentName, prefix, scriptLoader, url, version) {
+    (function (Array, JSON, b64img, blockLoader, c, cssLoader, ctrl, decache, defer, escape, libLoader, parentName, prefix, scriptLoader, url, version) {
       pug_html = pug_html + "\u003C!DOCTYPE html\u003E";
 if(!libLoader) {
   libLoader = {
@@ -207,15 +207,20 @@ pug_mixins["css"]([
       {name: "@loadingio/bootstrap.ext"},
       {name: "lddatetimepicker"},
       {name: "ldiconfont"},
-      {name: "ldcover"}
+      {name: "ldcover"},
+      {url: "/css/index.min.css"}
     ]);
 pug_html = pug_html + "\u003C\u002Fhead\u003E\u003Cbody\u003E";
+if(!ctrl) { ctrl = {}; }
+if(!ctrl.navtop) { ctrl.navtop = {}; }
 pug_mixins["scope"].call({
 block: function(){
 pug_html = pug_html + "\u003Cdiv class=\"navbar navbar-expand-lg navbar-light fixed-top\" ld=\"root\"\u003E\u003Cdiv class=\"collapse navbar-collapse\"\u003E\u003Ca class=\"d-flex align-items-center\" href=\"\u002F\" style=\"font-size:24px;line-height:1em\"\u003E\u003Cdiv class=\"font-weight-bold text-sm text-dark\"\u003EBAKAMO\u003C\u002Fdiv\u003E\u003C\u002Fa\u003E\u003Cdiv class=\"ml-auto\"\u003E\u003Cul class=\"navbar-nav ml-4\"\u003E\u003Cli class=\"nav-item d-none\" ld=\"unauthed login\"\u003E\u003Ca class=\"nav-link\"\u003E登入\u003C\u002Fa\u003E\u003C\u002Fli\u003E\u003Cli class=\"nav-item d-none\" ld=\"unauthed signup\"\u003E\u003Ca class=\"nav-link\"\u003E註冊\u003C\u002Fa\u003E\u003C\u002Fli\u003E\u003Cli class=\"nav-item dropdown d-none\" ld=\"authed profile\"\u003E\u003Ca class=\"nav-link dropdown-toggle\" href=\"#\" data-toggle=\"dropdown\"\u003E\u003Ci class=\"i-user\"\u003E\u003C\u002Fi\u003E\u003C\u002Fa\u003E\u003Cdiv class=\"dropdown-menu dropdown-menu-right shadow-sm\"\u003E\u003Ca class=\"dropdown-item\" href=\"\u002Fme\u002Fsettings\u002F\"\u003E\u003Cdiv class=\"align-middle text-capitalize text-ellipsis\" ld=\"displayname\"\u003EGreeting!\u003C\u002Fdiv\u003E\u003Cdiv class=\"text-sm align-middle text-ellipsis\" ld=\"username\"\u003E...\u003C\u002Fdiv\u003E\u003C\u002Fa\u003E\u003Cdiv class=\"dropdown-divider\"\u003E\u003C\u002Fdiv\u003E\u003Ca class=\"dropdown-item\" href=\"\u002Fme\u002Fsettings\u002F\"\u003E設定\u003C\u002Fa\u003E\u003Cdiv class=\"dropdown-divider\"\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"dropdown-item text-danger\" ld=\"logout\"\u003E登出\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fli\u003E\u003C\u002Ful\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
 }
 }, "navtop");
+if (ctrl.navtop.placeholder) {
 pug_mixins["nbr"](2);
+}
 pug_html = pug_html + "\u003Cdiv class=\"w-1024 rwd mx-auto\"\u003E\u003C\u002Fdiv\u003E";
 pug_mixins["script"]([
       {name: "i18next", path: "dist/umd/i18next.min.js"},
@@ -263,7 +268,9 @@ pug_html = pug_html + "\u003Cscript type=\"module\"\u003E(function(n){return n.a
         locals_for_with.c :
         typeof c !== 'undefined' ? c : undefined, "cssLoader" in locals_for_with ?
         locals_for_with.cssLoader :
-        typeof cssLoader !== 'undefined' ? cssLoader : undefined, "decache" in locals_for_with ?
+        typeof cssLoader !== 'undefined' ? cssLoader : undefined, "ctrl" in locals_for_with ?
+        locals_for_with.ctrl :
+        typeof ctrl !== 'undefined' ? ctrl : undefined, "decache" in locals_for_with ?
         locals_for_with.decache :
         typeof decache !== 'undefined' ? decache : undefined, "defer" in locals_for_with ?
         locals_for_with.defer :

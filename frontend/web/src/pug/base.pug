@@ -6,14 +6,15 @@ html
     meta(charset="utf-8")
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
     title BAKAMO
-    block var
+    block vars
     block prehead
     +css([
       {name: "bootstrap", path: "dist/css/bootstrap.min.css"},
       {name: "@loadingio/bootstrap.ext"},
       {name: "lddatetimepicker"},
       {name: "ldiconfont"},
-      {name: "ldcover"}
+      {name: "ldcover"},
+      {url: "/css/index.min.css"}
     ])
     block head
   body
