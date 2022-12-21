@@ -1,0 +1,49 @@
+div
+  div(plug="content")
+    h1(t) title
+    p.text-muted(t) desc
+    br
+    .m-auto.text-left
+      p(t) detail.0
+      p
+        span(t) detail.1
+        a.clickable.mx-1(t,onclick="lda.ldcvmgr.toggle('contact')") contact
+
+  div(plug="cta")
+    br
+    .row
+      .col-md.mb-2
+        a.btn.btn-outline-dark.btn-block.btn-lg(ld="login",t) login
+      .col-md: a.btn.btn-primary.btn-block.btn-lg(t,data-ldcv-set="") close
+  script(type="@plotdb/block"): :lsc
+    module.exports =
+      pkg:
+        extend: {ns: "local", name: "error", path: "common.html"}
+        i18n:
+          en:
+            title: "Login Required"
+            desc: "You have to login to use this feature"
+            detail: [
+              "The feature you are going to access contains some personal or private information, and thus we need your identity to know which information we could provide for you."
+              "So, you will have to sign in and try again if you really want to access it. If you think this is a glitch, please"
+            ]
+            contact: "contact us"
+            close: "Close Dialog"
+            login: "Login Now"
+          "zh-TW":
+            title: "需要登入"
+            desc: "您需要登入才能使用這個功能"
+            detail: [
+              "您正要存取的這個頁面有關於用戶私人資料，設定等等的內容，如果沒有登入，我們無法識別哪些資料可以提供給您，有些功能也將無法正確使用。"
+              "因此，若您想要使用，必須要請您先登入確認您的身份後，再重新嘗試一次。若您覺得這是個錯誤，請"
+            ]
+            contact: "聯繫我們"
+            close: "關閉對話框"
+            login: "現在就登入"
+
+      init: ({root}) ->
+        ({core}) <- servebase.corectx _
+        view = new ldview do
+          root: root
+          action: click: login: ->
+            core.auth.ensure!then (g) -> if g and g.user.key => window.location.reload!

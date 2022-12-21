@@ -1,0 +1,29 @@
+.ldcv.ldcvmgr(data-name="error-413"): .base.w-640.rwd: .inner.card: .card-body.text-center: .p-4
+  script(type="@plotdb/block"): :lsc
+    module.exports = pkg: i18n:
+      en:
+        title: "File too Large"
+        desc: "We can't upload your file, the file is too large."
+        p: [
+          "Sorry but your uploaded file exceeds the system's file size limit, so the system blocked your upload request, and your file was not successfully uploaded."
+          "You can try with a smaller file, adjust its content or optimize its size and upload again to see if you can avoid this error."
+        ]
+
+        close: "Close Dialog"
+      "zh-TW":
+        close: "關閉對話框"
+        "title": "噢喔，檔案太大了"
+        "desc": "我們沒辦法上傳您的檔案，檔案太大了"
+        "p": [
+          "很抱歉！您傳的檔案超過了系統的檔案大小限制，因此系統擋住了您上傳檔案的要求，而您的檔案也因此沒有被順利上傳。"
+          "您可以試著換個檔案、重新調整檔案內容或壓縮檔案後再試著上傳一次，看看是否能夠避免這個錯誤再次發生。"
+        ]
+
+  h1(t) title
+  p(t) desc
+  br
+  .m-auto.text-left.text-muted
+    p(t) p.0
+    p(t) p.1
+    br
+    .btn.btn-primary.btn-block.btn-lg.mr-2(data-ldcv-set="",t) close
