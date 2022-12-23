@@ -210,7 +210,7 @@ pug_mixins["css"]([
       {name: "ldcover"},
       {url: "/css/index.min.css"}
     ]);
-pug_html = pug_html + "\u003Cstyle type=\"text\u002Fcss\"\u003E.page{width:90%;margin:auto;font-size:24px}.table{margin-bottom:1.5em;border:2px solid #000}.trow{display:grid;grid-template:2.75em \u002F .75fr repeat(7,1fr);border-bottom:1px solid #000}.trow.td{display:grid;grid-template:2.75em 2.75em \u002F .75fr repeat(7,1fr)}.th .cell{display:flex;justify-content:center;font-size:20px;font-weight:700;flex-wrap:wrap}.cell{border:1px solid #999;display:flex;align-items:center;padding:0 1em}@page{margin:10mm 10mm 10mm 10mm}\u003C\u002Fstyle\u003E\u003C\u002Fhead\u003E\u003Cbody\u003E";
+pug_html = pug_html + "\u003Cstyle type=\"text\u002Fcss\"\u003E.page{width:90%;margin:auto;font-size:24px}.table{margin-bottom:1.5em;border:2px solid #000}.trow{display:grid;grid-template:3em \u002F .75fr repeat(8,1fr);border-bottom:1px solid #000;line-height:1em}.trow.td{display:grid;grid-template:3em 3em 3em \u002F .75fr repeat(8,1fr)}.th .cell{display:flex;justify-content:center;font-size:20px;font-weight:700;flex-wrap:wrap}.cell{border:1px solid #999;display:flex;align-items:center;padding:0 1em}@page{margin:10mm 10mm 10mm 10mm}\u003C\u002Fstyle\u003E\u003C\u002Fhead\u003E\u003Cbody\u003E";
 if(!ctrl) { ctrl = {}; }
 if(!ctrl.navtop) { ctrl.navtop = {}; }
 pug_mixins["scope"].call({
@@ -221,7 +221,7 @@ pug_html = pug_html + "\u003Cdiv class=\"navbar navbar-expand-lg navbar-light fi
 if (ctrl.navtop.placeholder) {
 pug_mixins["nbr"](2);
 }
-pug_mixins["nbr"](3);
+pug_mixins["nbr"](2);
 pug_html = pug_html + "\u003Cdiv class=\"mx-auto page\"\u003E\u003Ch1 class=\"mb-4\"\u003E姓名：\u003C\u002Fh1\u003E";
 // iterate [1]
 ;(function(){
@@ -229,17 +229,17 @@ pug_html = pug_html + "\u003Cdiv class=\"mx-auto page\"\u003E\u003Ch1 class=\"mb
   if ('number' == typeof $$obj.length) {
       for (var pug_index2 = 0, $$l = $$obj.length; pug_index2 < $$l; pug_index2++) {
         var r = $$obj[pug_index2];
-pug_html = pug_html + "\u003Cdiv class=\"table\"\u003E\u003Cdiv class=\"trow th\"\u003E\u003Cdiv class=\"cell\"\u003E週別\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003EScratch\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003E英文\u003Cbr\u003E單字\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003ERAZ\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003E英文\u003Cbr\u003E講義\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003E小說\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003EOIKIDS\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003E\u003Cspan\u003EOIKIDS\u003C\u002Fspan\u003E\u003Cbr\u003E\u003Cspan\u003E複習\u003C\u002Fspan\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
-// iterate [1,2,3,4,5,6,7,8]
+pug_html = pug_html + "\u003Cdiv class=\"table\"\u003E\u003Cdiv class=\"trow th\"\u003E\u003Cdiv class=\"cell\"\u003E週別\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003EScratch\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003E英文\u003Cbr\u003E單字\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003ERAZ\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003E英文\u003Cbr\u003E講義\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003E橋梁書\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003EOIKIDS\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003E\u003Cspan\u003EOIKIDS\u003C\u002Fspan\u003E\u003Cbr\u003E\u003Cspan\u003E複習\u003C\u002Fspan\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003E\u003Cspan\u003E自由\u003C\u002Fspan\u003E\u003Cbr\u003E\u003Cspan\u003E學習\u003C\u002Fspan\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
+// iterate [1,2,3,4,5,6]
 ;(function(){
-  var $$obj = [1,2,3,4,5,6,7,8];
+  var $$obj = [1,2,3,4,5,6];
   if ('number' == typeof $$obj.length) {
       for (var pug_index3 = 0, $$l = $$obj.length; pug_index3 < $$l; pug_index3++) {
         var n = $$obj[pug_index3];
-pug_html = pug_html + "\u003Cdiv class=\"trow td\"\u003E\u003Cdiv class=\"cell\" style=\"grid-area:1 \u002F 1 \u002F span 2 \u002F 1\"\u003E\u003C\u002Fdiv\u003E";
-// iterate [2,3,4,5,6,7,8]
+pug_html = pug_html + "\u003Cdiv class=\"trow td\"\u003E\u003Cdiv class=\"cell\" style=\"grid-area:1 \u002F 1 \u002F span 3 \u002F 1\"\u003E\u003C\u002Fdiv\u003E";
+// iterate [2,3,4,5,6,7,8,9]
 ;(function(){
-  var $$obj = [2,3,4,5,6,7,8];
+  var $$obj = [2,3,4,5,6,7,8,9];
   if ('number' == typeof $$obj.length) {
       for (var pug_index4 = 0, $$l = $$obj.length; pug_index4 < $$l; pug_index4++) {
         var i = $$obj[pug_index4];
@@ -255,9 +255,9 @@ pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_sty
   }
 }).call(this);
 
-// iterate [2,3,4,5,6,7,8]
+// iterate [2,3,4,5,6,7,8,9]
 ;(function(){
-  var $$obj = [2,3,4,5,6,7,8];
+  var $$obj = [2,3,4,5,6,7,8,9];
   if ('number' == typeof $$obj.length) {
       for (var pug_index5 = 0, $$l = $$obj.length; pug_index5 < $$l; pug_index5++) {
         var i = $$obj[pug_index5];
@@ -273,6 +273,24 @@ pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_sty
   }
 }).call(this);
 
+// iterate [2,3,4,5,6,7,8,9]
+;(function(){
+  var $$obj = [2,3,4,5,6,7,8,9];
+  if ('number' == typeof $$obj.length) {
+      for (var pug_index6 = 0, $$l = $$obj.length; pug_index6 < $$l; pug_index6++) {
+        var i = $$obj[pug_index6];
+pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 3 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
+      }
+  } else {
+    var $$l = 0;
+    for (var pug_index6 in $$obj) {
+      $$l++;
+      var i = $$obj[pug_index6];
+pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 3 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
+    }
+  }
+}).call(this);
+
 pug_html = pug_html + "\u003C\u002Fdiv\u003E";
       }
   } else {
@@ -280,39 +298,57 @@ pug_html = pug_html + "\u003C\u002Fdiv\u003E";
     for (var pug_index3 in $$obj) {
       $$l++;
       var n = $$obj[pug_index3];
-pug_html = pug_html + "\u003Cdiv class=\"trow td\"\u003E\u003Cdiv class=\"cell\" style=\"grid-area:1 \u002F 1 \u002F span 2 \u002F 1\"\u003E\u003C\u002Fdiv\u003E";
-// iterate [2,3,4,5,6,7,8]
+pug_html = pug_html + "\u003Cdiv class=\"trow td\"\u003E\u003Cdiv class=\"cell\" style=\"grid-area:1 \u002F 1 \u002F span 3 \u002F 1\"\u003E\u003C\u002Fdiv\u003E";
+// iterate [2,3,4,5,6,7,8,9]
 ;(function(){
-  var $$obj = [2,3,4,5,6,7,8];
-  if ('number' == typeof $$obj.length) {
-      for (var pug_index6 = 0, $$l = $$obj.length; pug_index6 < $$l; pug_index6++) {
-        var i = $$obj[pug_index6];
-pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 1 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
-      }
-  } else {
-    var $$l = 0;
-    for (var pug_index6 in $$obj) {
-      $$l++;
-      var i = $$obj[pug_index6];
-pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 1 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
-    }
-  }
-}).call(this);
-
-// iterate [2,3,4,5,6,7,8]
-;(function(){
-  var $$obj = [2,3,4,5,6,7,8];
+  var $$obj = [2,3,4,5,6,7,8,9];
   if ('number' == typeof $$obj.length) {
       for (var pug_index7 = 0, $$l = $$obj.length; pug_index7 < $$l; pug_index7++) {
         var i = $$obj[pug_index7];
-pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 2 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
+pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 1 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
       }
   } else {
     var $$l = 0;
     for (var pug_index7 in $$obj) {
       $$l++;
       var i = $$obj[pug_index7];
+pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 1 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
+    }
+  }
+}).call(this);
+
+// iterate [2,3,4,5,6,7,8,9]
+;(function(){
+  var $$obj = [2,3,4,5,6,7,8,9];
+  if ('number' == typeof $$obj.length) {
+      for (var pug_index8 = 0, $$l = $$obj.length; pug_index8 < $$l; pug_index8++) {
+        var i = $$obj[pug_index8];
 pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 2 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
+      }
+  } else {
+    var $$l = 0;
+    for (var pug_index8 in $$obj) {
+      $$l++;
+      var i = $$obj[pug_index8];
+pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 2 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
+    }
+  }
+}).call(this);
+
+// iterate [2,3,4,5,6,7,8,9]
+;(function(){
+  var $$obj = [2,3,4,5,6,7,8,9];
+  if ('number' == typeof $$obj.length) {
+      for (var pug_index9 = 0, $$l = $$obj.length; pug_index9 < $$l; pug_index9++) {
+        var i = $$obj[pug_index9];
+pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 3 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
+      }
+  } else {
+    var $$l = 0;
+    for (var pug_index9 in $$obj) {
+      $$l++;
+      var i = $$obj[pug_index9];
+pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 3 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
     }
   }
 }).call(this);
@@ -329,61 +365,17 @@ pug_html = pug_html + "\u003C\u002Fdiv\u003E";
     for (var pug_index2 in $$obj) {
       $$l++;
       var r = $$obj[pug_index2];
-pug_html = pug_html + "\u003Cdiv class=\"table\"\u003E\u003Cdiv class=\"trow th\"\u003E\u003Cdiv class=\"cell\"\u003E週別\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003EScratch\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003E英文\u003Cbr\u003E單字\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003ERAZ\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003E英文\u003Cbr\u003E講義\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003E小說\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003EOIKIDS\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003E\u003Cspan\u003EOIKIDS\u003C\u002Fspan\u003E\u003Cbr\u003E\u003Cspan\u003E複習\u003C\u002Fspan\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
-// iterate [1,2,3,4,5,6,7,8]
+pug_html = pug_html + "\u003Cdiv class=\"table\"\u003E\u003Cdiv class=\"trow th\"\u003E\u003Cdiv class=\"cell\"\u003E週別\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003EScratch\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003E英文\u003Cbr\u003E單字\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003ERAZ\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003E英文\u003Cbr\u003E講義\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003E橋梁書\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003EOIKIDS\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003E\u003Cspan\u003EOIKIDS\u003C\u002Fspan\u003E\u003Cbr\u003E\u003Cspan\u003E複習\u003C\u002Fspan\u003E\u003C\u002Fdiv\u003E\u003Cdiv class=\"cell\"\u003E\u003Cspan\u003E自由\u003C\u002Fspan\u003E\u003Cbr\u003E\u003Cspan\u003E學習\u003C\u002Fspan\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
+// iterate [1,2,3,4,5,6]
 ;(function(){
-  var $$obj = [1,2,3,4,5,6,7,8];
-  if ('number' == typeof $$obj.length) {
-      for (var pug_index8 = 0, $$l = $$obj.length; pug_index8 < $$l; pug_index8++) {
-        var n = $$obj[pug_index8];
-pug_html = pug_html + "\u003Cdiv class=\"trow td\"\u003E\u003Cdiv class=\"cell\" style=\"grid-area:1 \u002F 1 \u002F span 2 \u002F 1\"\u003E\u003C\u002Fdiv\u003E";
-// iterate [2,3,4,5,6,7,8]
-;(function(){
-  var $$obj = [2,3,4,5,6,7,8];
-  if ('number' == typeof $$obj.length) {
-      for (var pug_index9 = 0, $$l = $$obj.length; pug_index9 < $$l; pug_index9++) {
-        var i = $$obj[pug_index9];
-pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 1 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
-      }
-  } else {
-    var $$l = 0;
-    for (var pug_index9 in $$obj) {
-      $$l++;
-      var i = $$obj[pug_index9];
-pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 1 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
-    }
-  }
-}).call(this);
-
-// iterate [2,3,4,5,6,7,8]
-;(function(){
-  var $$obj = [2,3,4,5,6,7,8];
+  var $$obj = [1,2,3,4,5,6];
   if ('number' == typeof $$obj.length) {
       for (var pug_index10 = 0, $$l = $$obj.length; pug_index10 < $$l; pug_index10++) {
-        var i = $$obj[pug_index10];
-pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 2 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
-      }
-  } else {
-    var $$l = 0;
-    for (var pug_index10 in $$obj) {
-      $$l++;
-      var i = $$obj[pug_index10];
-pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 2 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
-    }
-  }
-}).call(this);
-
-pug_html = pug_html + "\u003C\u002Fdiv\u003E";
-      }
-  } else {
-    var $$l = 0;
-    for (var pug_index8 in $$obj) {
-      $$l++;
-      var n = $$obj[pug_index8];
-pug_html = pug_html + "\u003Cdiv class=\"trow td\"\u003E\u003Cdiv class=\"cell\" style=\"grid-area:1 \u002F 1 \u002F span 2 \u002F 1\"\u003E\u003C\u002Fdiv\u003E";
-// iterate [2,3,4,5,6,7,8]
+        var n = $$obj[pug_index10];
+pug_html = pug_html + "\u003Cdiv class=\"trow td\"\u003E\u003Cdiv class=\"cell\" style=\"grid-area:1 \u002F 1 \u002F span 3 \u002F 1\"\u003E\u003C\u002Fdiv\u003E";
+// iterate [2,3,4,5,6,7,8,9]
 ;(function(){
-  var $$obj = [2,3,4,5,6,7,8];
+  var $$obj = [2,3,4,5,6,7,8,9];
   if ('number' == typeof $$obj.length) {
       for (var pug_index11 = 0, $$l = $$obj.length; pug_index11 < $$l; pug_index11++) {
         var i = $$obj[pug_index11];
@@ -399,9 +391,9 @@ pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_sty
   }
 }).call(this);
 
-// iterate [2,3,4,5,6,7,8]
+// iterate [2,3,4,5,6,7,8,9]
 ;(function(){
-  var $$obj = [2,3,4,5,6,7,8];
+  var $$obj = [2,3,4,5,6,7,8,9];
   if ('number' == typeof $$obj.length) {
       for (var pug_index12 = 0, $$l = $$obj.length; pug_index12 < $$l; pug_index12++) {
         var i = $$obj[pug_index12];
@@ -413,6 +405,86 @@ pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_sty
       $$l++;
       var i = $$obj[pug_index12];
 pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 2 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
+    }
+  }
+}).call(this);
+
+// iterate [2,3,4,5,6,7,8,9]
+;(function(){
+  var $$obj = [2,3,4,5,6,7,8,9];
+  if ('number' == typeof $$obj.length) {
+      for (var pug_index13 = 0, $$l = $$obj.length; pug_index13 < $$l; pug_index13++) {
+        var i = $$obj[pug_index13];
+pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 3 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
+      }
+  } else {
+    var $$l = 0;
+    for (var pug_index13 in $$obj) {
+      $$l++;
+      var i = $$obj[pug_index13];
+pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 3 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
+    }
+  }
+}).call(this);
+
+pug_html = pug_html + "\u003C\u002Fdiv\u003E";
+      }
+  } else {
+    var $$l = 0;
+    for (var pug_index10 in $$obj) {
+      $$l++;
+      var n = $$obj[pug_index10];
+pug_html = pug_html + "\u003Cdiv class=\"trow td\"\u003E\u003Cdiv class=\"cell\" style=\"grid-area:1 \u002F 1 \u002F span 3 \u002F 1\"\u003E\u003C\u002Fdiv\u003E";
+// iterate [2,3,4,5,6,7,8,9]
+;(function(){
+  var $$obj = [2,3,4,5,6,7,8,9];
+  if ('number' == typeof $$obj.length) {
+      for (var pug_index14 = 0, $$l = $$obj.length; pug_index14 < $$l; pug_index14++) {
+        var i = $$obj[pug_index14];
+pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 1 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
+      }
+  } else {
+    var $$l = 0;
+    for (var pug_index14 in $$obj) {
+      $$l++;
+      var i = $$obj[pug_index14];
+pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 1 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
+    }
+  }
+}).call(this);
+
+// iterate [2,3,4,5,6,7,8,9]
+;(function(){
+  var $$obj = [2,3,4,5,6,7,8,9];
+  if ('number' == typeof $$obj.length) {
+      for (var pug_index15 = 0, $$l = $$obj.length; pug_index15 < $$l; pug_index15++) {
+        var i = $$obj[pug_index15];
+pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 2 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
+      }
+  } else {
+    var $$l = 0;
+    for (var pug_index15 in $$obj) {
+      $$l++;
+      var i = $$obj[pug_index15];
+pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 2 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
+    }
+  }
+}).call(this);
+
+// iterate [2,3,4,5,6,7,8,9]
+;(function(){
+  var $$obj = [2,3,4,5,6,7,8,9];
+  if ('number' == typeof $$obj.length) {
+      for (var pug_index16 = 0, $$l = $$obj.length; pug_index16 < $$l; pug_index16++) {
+        var i = $$obj[pug_index16];
+pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 3 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
+      }
+  } else {
+    var $$l = 0;
+    for (var pug_index16 in $$obj) {
+      $$l++;
+      var i = $$obj[pug_index16];
+pug_html = pug_html + "\u003Cdiv" + (" class=\"cell\""+pug_attr("style", pug_style(`grid-area: 3 / ${i}`), true, true)) + "\u003E\u003C\u002Fdiv\u003E";
     }
   }
 }).call(this);
