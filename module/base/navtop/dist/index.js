@@ -49,9 +49,11 @@
         return it.apply(obj);
       }(function(){
         var lng, ref$, v, auth, navtop, view, bar, dotst, tstTgt, that, this$ = this;
-        for (lng in ref$ = i18nRes) {
-          v = ref$[lng];
-          core.i18n.addResourceBundle(lng, 'navtop', v);
+        if (core.i18n != null) {
+          for (lng in ref$ = i18nRes) {
+            v = ref$[lng];
+            core.i18n.addResourceBundle(lng, 'navtop', v);
+          }
         }
         auth = core.auth;
         this.user = core.user;

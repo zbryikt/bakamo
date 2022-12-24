@@ -36,7 +36,9 @@ obj =
 
 core.init!then ->
   <-(->it.apply obj) _
-  for lng,v of i18n-res => core.i18n.addResourceBundle lng, \navtop, v
+  if core.i18n? =>
+    for lng,v of i18n-res =>
+      core.i18n.addResourceBundle lng, \navtop, v
 
   auth = core.auth
   @ <<< core{user, global}
