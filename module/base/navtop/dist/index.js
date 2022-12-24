@@ -88,6 +88,15 @@
               })[0] || lng;
             }
           },
+          init: {
+            t: function(arg$){
+              var node;
+              node = arg$.node;
+              if (!node.getAttribute('t')) {
+                return node.setAttribute('t', node.textContent);
+              }
+            }
+          },
           handler: {
             "@": function(arg$){
               var node;
@@ -98,7 +107,7 @@
               var node;
               node = arg$.node;
               if (core.i18n) {
-                return node.innerText = core.i18n.t(node.textContent);
+                return node.innerText = core.i18n.t(node.getAttribute('t'));
               }
             },
             admin: function(arg$){
@@ -125,7 +134,7 @@
         });
         if (core.i18n) {
           core.i18n.on('languageChanged', function(){
-            return view.render('lng');
+            return view.render('lng', 't');
           });
         }
         bar = view.get('root');

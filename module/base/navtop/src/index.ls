@@ -40,15 +40,16 @@ core.init!then ->
           .filter (n) -> lng == n.getAttribute(\data-name)
           .map (n) -> n.getAttribute(\data-alias) or n.innerText.trim!
           .0 or lng
+    init: t: ({node}) -> if !node.getAttribute(\t) => node.setAttribute(\t, node.textContent)
     handler:
       "@": ({node}) ~> node.style.display = if @toggled => \block else \none
-      t: ({node}) -> if core.i18n => node.innerText = core.i18n.t(node.textContent)
+      t: ({node}) -> if core.i18n => node.innerText = core.i18n.t(node.getAttribute(\t))
       admin: ({node}) ~> node.classList.toggle \d-none, !@user.staff
       unauthed: ({node}) ~> node.classList.toggle \d-none, !!@user.key
       authed: ({node}) ~> node.classList.toggle \d-none, !@user.key
       avatar: ({node}) ~> node.style.backgroundImage = "url(/assets/avatar/#{@user.key})"
 
-  if core.i18n => core.i18n.on \languageChanged, -> view.render \lng
+  if core.i18n => core.i18n.on \languageChanged, -> view.render \lng, \t
 
   bar = view.get \root
   dotst = (bar.getAttribute(\data-classes) or "").split(';').map(->it.split(' ').filter(->it))
