@@ -1,11 +1,42 @@
 ({core}) <- ldc.register \navtop, <[core]>, _
+
+i18n-res =
+  en:
+    navtop:
+      home: "Home"
+      language: "Language"
+      login: "Login"
+      signup: "Sign Up"
+      personal: "Personal"
+      settings: "My Settings"
+      projects: "My Projects"
+      advanced: "Advanced"
+      logout: "Logout"
+      judge: "Judge Panel"
+      admin: "Admin Panel"
+  "zh-TW":
+    navtop:
+      home: "首頁"
+      language: "語言"
+      login: "登入"
+      signup: "註冊"
+      personal: "個人功能"
+      settings: "我的設定"
+      projects: "我的專案"
+      advanced: "進階功能"
+      logout: "登出"
+      judge: "評審頁面"
+      admin: "管理頁面"
+
 obj =
   toggled: true
   toggle: (v) ->
     @toggled = !!v
     if @view => @view.render!
+
 core.init!then ->
   <-(->it.apply obj) _
+  for lng,v of i18n-res => core.i18n.addResourceBundle lng, \navtop, v
 
   auth = core.auth
   @ <<< core{user, global}
@@ -43,7 +74,7 @@ core.init!then ->
     init: t: ({node}) -> if !node.getAttribute(\t) => node.setAttribute(\t, node.textContent)
     handler:
       "@": ({node}) ~> node.style.display = if @toggled => \block else \none
-      t: ({node}) -> if core.i18n => node.innerText = core.i18n.t(node.getAttribute(\t))
+      t: ({node}) -> if core.i18n => node.innerText = core.i18n.t("navtop:#{node.getAttribute(\t)}")
       admin: ({node}) ~> node.classList.toggle \d-none, !@user.staff
       unauthed: ({node}) ~> node.classList.toggle \d-none, !!@user.key
       authed: ({node}) ~> node.classList.toggle \d-none, !@user.key
