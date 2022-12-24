@@ -63,6 +63,9 @@ core.init!then ->
         "set-lng": ({node, views}) ~>
           core.i18n.changeLanguage node.getAttribute \data-name
           views.0.render \lng
+    init: t: ({node}) ->
+      node.setAttribute(\t, node.textContent)
+      node.innerText = ''
     text:
       displayname: ~> @user.displayname or 'User'
       username: ~> @user.username or 'n/a'
@@ -73,14 +76,15 @@ core.init!then ->
           .filter (n) -> lng == n.getAttribute(\data-name)
           .map (n) -> n.getAttribute(\data-alias) or n.innerText.trim!
           .0 or lng
-    init: t: ({node}) -> if !node.getAttribute(\t) => node.setAttribute(\t, node.textContent)
+      t: ({node}) ->
+        return if core.i18n => core.i18n.t("navtop:#{node.getAttribute(\t) or ''}") else ''
     handler:
       "@": ({node}) ~> node.style.display = if @toggled => \block else \none
-      t: ({node}) -> if core.i18n => node.innerText = core.i18n.t("navtop:#{node.getAttribute(\t)}")
       admin: ({node}) ~> node.classList.toggle \d-none, !@user.staff
       unauthed: ({node}) ~> node.classList.toggle \d-none, !!@user.key
       authed: ({node}) ~> node.classList.toggle \d-none, !@user.key
       avatar: ({node}) ~> node.style.backgroundImage = "url(/assets/avatar/#{@user.key})"
+
 
   if core.i18n => core.i18n.on \languageChanged, -> view.render \lng, \t
 

@@ -106,6 +106,14 @@
               }
             }
           },
+          init: {
+            t: function(arg$){
+              var node;
+              node = arg$.node;
+              node.setAttribute('t', node.textContent);
+              return node.innerText = '';
+            }
+          },
           text: {
             displayname: function(){
               return this$.user.displayname || 'User';
@@ -124,15 +132,11 @@
               }).map(function(n){
                 return n.getAttribute('data-alias') || n.innerText.trim();
               })[0] || lng;
-            }
-          },
-          init: {
+            },
             t: function(arg$){
               var node;
               node = arg$.node;
-              if (!node.getAttribute('t')) {
-                return node.setAttribute('t', node.textContent);
-              }
+              return core.i18n ? core.i18n.t("navtop:" + (node.getAttribute('t') || '')) : '';
             }
           },
           handler: {
@@ -140,13 +144,6 @@
               var node;
               node = arg$.node;
               return node.style.display = this$.toggled ? 'block' : 'none';
-            },
-            t: function(arg$){
-              var node;
-              node = arg$.node;
-              if (core.i18n) {
-                return node.innerText = core.i18n.t("navtop:" + node.getAttribute('t'));
-              }
             },
             admin: function(arg$){
               var node;
