@@ -43,7 +43,6 @@ servebase =
         manager: @manager
         error-cover: {ns: \local, name: "error", path: "0.html"}
         zmgr: @zmgr
-        base-z: zmgr.modal
       )
       # TODO we should at least provide a dummy i18n so i18n.t will work
       i18n: i18n = if @_cfg.{}i18n.driver => that else if i18next? => i18next else undefined
