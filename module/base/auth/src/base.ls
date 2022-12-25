@@ -18,7 +18,11 @@ module.exports =
     @ldcv = ldcv = {}
     @_auth = data.auth
     iroot = ld$.find(root, '.ldcv[data-name=authpanel]', 0)
-    ldcv.authpanel = new ldcover root: iroot, base-z: (if data.zmgr => \modal else 3000), zmgr: data.zmgr
+    ldcv.authpanel = new ldcover do
+      root: iroot
+      zmgr: core.zmgr
+      # /* we should consider if `data.zmgr` is a good approach */ zmgr: data.zmgr
+      # /* we should unify base-z */ base-z: (if data.zmgr => \modal else 3000)
     ldcv.authpanel.on \toggle.on, ->
       # dont know why we need 100ms delay to make this work. 
       # but indeed modal may still change style due to transition, after toggle.on.
