@@ -12,7 +12,6 @@ view = new ldview do
   text:
     n1: ({node}) -> obj.n1
     n2: ({node}) -> obj.n2
-    n3: ({node}) -> obj.n3
     ans: -> obj.ans or ''
     avg: -> "#{(obj.stat.t / (1000 * (obj.stat.count or 1))).toFixed(1)}s"
   handler:
@@ -23,7 +22,6 @@ view = new ldview do
         text:
           n1: ({node, ctx}) -> ctx.n1
           n2: ({node, ctx}) -> ctx.n2
-          n3: ({node, ctx}) -> ctx.n3
           ans: ({ctx}) -> ctx.ans or ''
           elapsed: ({ctx}) -> "#{(ctx.elapsed / 1000).toFixed(1)}s"
         handler:
@@ -47,10 +45,10 @@ document.addEventListener \keyup, (e) ->
     obj.ans = ans.substring(0, (ans.length - 1 >? 0))
     view.render!
   else if e.keyCode == 13 =>
-    q = obj{n1, n2, n3, ans}
+    q = obj{n1, n2, ans}
     q.elapsed = obj.ct - obj.t
     delete obj.t
-    if q.n1 + q.n2 - q.n3 == +q.ans =>
+    if q.n1 - q.n2 == +q.ans =>
       obj.stat.t += q.elapsed
       obj.stat.count += 1
       audio.correct.play!
@@ -63,9 +61,8 @@ document.addEventListener \keyup, (e) ->
     obj.ans = ''
     gen!
 gen = ->
-  obj.n1 = Math.round(Math.random! * 4) + 6
-  obj.n2 = Math.round(Math.random! * 6) + 3
-  obj.n3 = Math.round(Math.random! * 5) + 1
+  obj.n1 = Math.round(Math.random! * 5) + 5
+  obj.n2 = Math.round(Math.random! * 5) + 1
   view.render!
 
 gen!
