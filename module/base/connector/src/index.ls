@@ -15,7 +15,9 @@ connector.prototype = Object.create(Object.prototype) <<<
       .then ~> if @_reconnect => @_reconnect!
       .then ~> console.log "#{@_tag} connected."
       .catch (e) ~>
-        if @ws.status! == 2 => return
+        # this may be caused by customized reconnect, which contains initialization code.
+        # we should stop and hint user otherwise it may lead to unexpected result.
+        # original code, which ignore error if ws connected: /* if @ws.status! == 2 => return */
         Promise.reject e
   reopen: ->
     if @_running => return
