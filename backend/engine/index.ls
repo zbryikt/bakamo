@@ -7,11 +7,15 @@ require! <[@servebase/auth @servebase/consent @servebase/captcha]>
 
 libdir = path.dirname fs.realpathSync(__filename.replace(/\(js\)$/,''))
 rootdir = path.join(libdir, '../..')
+extdir = path.join(libdir, '..', \ext)
 routes = fs.readdir-sync path.join(libdir, '..')
-  .filter -> !(it in <[engine README.md]>)
+  .filter -> !(it in <[engine README.md ext]>)
   .map -> path.join(libdir, '..', it)
   .filter -> fs.exists-sync path.join(it, 'index.js') or fs.exists-sync path.join(it, 'index.ls')
   .map -> require it
+
+exts = if !(fs.exists-sync(path.join(extdir, 'index.js')) or fs.exists-sync(path.join(extdir, 'index.ls'))) => null
+else require extdir
 
 argv = yargs
   .option \config-name, do
@@ -187,6 +191,7 @@ backend.prototype = Object.create(Object.prototype) <<< do
         auth @  # Authenticate. must before any router ( e.g., /api )
 
         app.use \/extapi/, @route.extapi
+        if exts => exts @ # External API without extapi prefix. should be rarely used.
 
         # CSRF Protection. must after session
         app.use @middleware.csrf = csurf!
