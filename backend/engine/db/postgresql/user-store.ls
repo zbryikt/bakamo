@@ -11,6 +11,20 @@ user-store.prototype = Object.create(Object.prototype) <<< do
   # store whole object ( no serialization )
   serialize: (u = {}) -> Promise.resolve u
   deserialize: (v = {}) -> Promise.resolve v
+
+  # md5 is bad, because
+  #  - it's really fast - thus, also really fast for brute force cracking.
+  #  - it loses entropy for information > 128bits
+  # however, we actually double hash md5 by bcrypt and:
+  #  - bcrypt.hash is way much slower
+  #  - password is not common with more than 128bits entropy. 128bits is usually enough.
+  # additionall:
+  #  - md5 minimizes the risk of DDoS attacks with extremely long password.
+  # while double hashing is kinda useless but it's generally equivalent secure:
+  #  - https://stackoverflow.com/questions/348109
+  # ref:
+  #  - `chaining md5 and bcrypt`, https://security.stackexchange.com/questions/119680/
+  #  - `fb also does this`, wbl, https://news.ycombinator.com/item?id=19171957
   hashing: (password, doMD5 = true, doBcrypt = true) -> new Promise (res, rej) ->
     ret = if doMD5 => crypto.createHash(\md5).update(password).digest(\hex) else password
     if doBcrypt => bcrypt.genSalt 12, (e, salt) -> bcrypt.hash ret, salt, (e, hash) -> res hash
