@@ -38,4 +38,4 @@ the `navtop` module provides following API:
 
 ## i18n Namespace
 
-namespace `navtop` is used when translating. Config your i18n object accordingly for i18n support.
+namespace `@servebase/navtop` is used when translating. Config your i18n object accordingly for i18n support.

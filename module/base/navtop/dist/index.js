@@ -98,7 +98,7 @@
             t: function(arg$){
               var node;
               node = arg$.node;
-              return core.i18n ? core.i18n.t("navtop:" + (node.getAttribute('t') || '')) : '';
+              return core.i18n ? core.i18n.t("@servebase/navtop:" + (node.getAttribute('t') || '')) : '';
             }
           },
           handler: {

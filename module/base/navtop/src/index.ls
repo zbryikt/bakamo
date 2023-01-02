@@ -44,7 +44,7 @@ core.init!then ->
           .map (n) -> n.getAttribute(\data-alias) or n.innerText.trim!
           .0 or lng
       t: ({node}) ->
-        return if core.i18n => core.i18n.t("navtop:#{node.getAttribute(\t) or ''}") else ''
+        return if core.i18n => core.i18n.t("@servebase/navtop:#{node.getAttribute(\t) or ''}") else ''
     handler:
       "@": ({node}) ~> node.style.display = if @toggled => \block else \none
       admin: ({node}) ~> node.classList.toggle \d-none, !@user.staff
