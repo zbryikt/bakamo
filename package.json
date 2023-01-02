@@ -33,6 +33,7 @@
     "demo": "./start base",
     "try": "./node_modules/.bin/lsc log.ls",
     "prebuild": "rm -rf .backend; node_modules/.bin/lsc -co .backend backend",
+    "pug-rebuild": "./tool/build.sh",
     "config": "cd config; ./build",
     "bootstrap": "npx bootstrap.build -c config/base/bootstrap/ -o static/assets/lib/bootstrap.custom/main/",
     "docker-start": "docker-compose -f config/base/docker/compose.yaml up",
