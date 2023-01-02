@@ -35,3 +35,7 @@ the `navtop` module provides following API:
 
  - `toggle(v)`: show / hide navbar based on value `v`.
 
+
+## i18n Namespace
+
+namespace `navtop` is used when translating. Config your i18n object accordingly for i18n support.
