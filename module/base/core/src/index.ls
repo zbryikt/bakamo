@@ -92,7 +92,8 @@ servebase =
           .then -> i18n.init i18ncfg
           .then -> if i18nextBrowserLanguageDetector? => i18n.use i18nextBrowserLanguageDetector
           .then ~>
-            for k,v of (@_cfg.i18n.locales or {}) => i18n.add-resource-bundle k, '', v, true, true
+            for ns, obj of (@_cfg.i18n.locales or {}) =>
+              for lng, res of obj => i18n.add-resource-bundle lng, ns, res, true, true
             lng = (
               (if httputil? => (httputil.qs(\lng) or httputil.cookie(\lng)) else null) or
               navigator.language or navigator.userLanguage

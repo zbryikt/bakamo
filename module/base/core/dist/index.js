@@ -150,10 +150,13 @@
             return i18n.use(i18nextBrowserLanguageDetector);
           }
         }).then(function(){
-          var k, ref$, v, lng;
-          for (k in ref$ = this$._cfg.i18n.locales || {}) {
-            v = ref$[k];
-            i18n.addResourceBundle(k, '', v, true, true);
+          var ns, ref$, obj, lng, res;
+          for (ns in ref$ = this$._cfg.i18n.locales || {}) {
+            obj = ref$[ns];
+            for (lng in obj) {
+              res = obj[lng];
+              i18n.addResourceBundle(lng, ns, res, true, true);
+            }
           }
           lng = (typeof httputil != 'undefined' && httputil !== null ? httputil.qs('lng') || httputil.cookie('lng') : null) || navigator.language || navigator.userLanguage;
           if (!in$(lng, i18ncfg.supportedLng)) {
