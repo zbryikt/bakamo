@@ -4,6 +4,12 @@ block head
   style(type="text/css"): include:stylus index.styl
 block body
   .w-100.h-100
+    .position-absolute(style="left:1em;top:5em")
+      .d-flex.g-2(ld-each="rank")
+        div(ld="rank")
+        div(ld="user")
+        div(ld="elapsed")
+        div(ld="rate")
     .d-flex.align-items-center.justify-content-center.w-100.h-100
       div
         div
@@ -28,9 +34,11 @@ block body
             div(ld="ans") 0
             .blink _
           .result(ld="result")
-  .position-absolute.mx-auto(style="bottom:2em;font-size:3em;font-weight:700;left:0;right:0;width:fit-content")
-      div(ld="tick")
-      div(ld="avg")
+  .position-absolute.mx-auto.text-center(
+  style="bottom:2em;font-size:2em;font-weight:700;left:0;right:0;width:fit-content")
+    div(ld="tick")
+    div(ld="avg")
+    div 正確率 #[span(ld="rate")]%
 
 block script
   script(type="module"): include:lsc index.ls
