@@ -20,6 +20,8 @@ site-wise navigation menu dynamics
  - `avatar`: show user avatar. default to `/assets/avatar/#{uid}`
  - `t`: indicating that this tag should be translated. `textContent` of this tag will be used as key.
 
+Set th `ld-scope` attribute to `@servebase/navtop` in the root element of your navbar for the module to recognize your DOM tree.
+
 
 ## Class Transition
 

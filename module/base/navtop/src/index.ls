@@ -10,7 +10,7 @@ core.init!then ->
   auth = core.auth
   @ <<< core{user, global}
 
-  if !(navtop = ld$.find('[ld-scope=navtop]',0)) => return
+  if !(navtop = ld$.find('[ld-scope="@servebase/navtop"]',0)) => return
 
   @update = (g) ~>
     p = if g => Promise.resolve(g) else auth.get!

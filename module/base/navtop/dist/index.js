@@ -20,7 +20,7 @@
         auth = core.auth;
         this.user = core.user;
         this.global = core.global;
-        if (!(navtop = ld$.find('[ld-scope=navtop]', 0))) {
+        if (!(navtop = ld$.find('[ld-scope="@servebase/navtop"]', 0))) {
           return;
         }
         this.update = function(g){
