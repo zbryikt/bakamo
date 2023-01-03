@@ -1,0 +1,42 @@
+include @/@servebase/pugutil/index.pug
+div
+  script(type="@plotdb/block"): include:lsc index.ls
+  h3(t) title
+  hr
+  .form(data-name="passwd")
+    .row
+      .col-md-8
+        .form-group
+          label(t) old
+          input.form-control(name="oldpasswd",type="password")
+          .invalid-feedback(t) nomatch
+      .col-md-4
+        .form-group
+          label(t) forget
+          .btn.btn-outline-dark.btn-block.ld-ext-right(ld="send-reset-link")
+            +i.i-mail
+            span.mx-1(t) send
+            .ld.ldld.bare.em-1
+    .row
+      .col-md-8
+        .form-group
+          label(t) new
+          input.form-control(name="newpasswd1",type="password")
+          .invalid-feedback(t) weak
+      .col-md-4
+        .form-group(data-node="passwd-bar1")
+          label.text-capitalize &nbsp;
+          .progress(style="height:36px"): .progress-bar.progress-bar-striped(style="width:0%")
+    .row
+      .col-md-8
+        .form-group
+          label(t) again
+          input.form-control(name="newpasswd2",type="password")
+          .invalid-feedback(t) nomatch
+        .btn.btn-primary.btn-block.mb-4.disabled.ld-ext-right(ld="update-password")
+          span.mr-1(t) update
+          .ld.ldld.bare.em-1
+        .text-muted: small
+          p(t) hint.0
+          p #[span(t) hint.1.0] #[a(href="https://en.wikipedia.org/wiki/Password_strength",target="_blank",rel="noopener noreferrer") Password Strength] #[span(t) hint.1.1]
+      .col-md-4 &nbsp;

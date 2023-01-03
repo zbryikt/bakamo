@@ -174,6 +174,17 @@ route.auth
     )(req, res, next)
   ..post \/logout, (req, res) -> req.logout(!-> res.send!)
 
+route.auth.put \/user, aux.signedin, backend.middleware.captcha, (req, res, next) ->
+  [displayname, description, title] = [{k,v} for k,v of req.body{displayname, description, title}]
+    .filter -> it.v?
+    .map -> ("#{it.v or ''}").trim!
+  if !displayname => return aux.reject 400
+  db.query "update users set (displayname,description,title) = ($1,$2,$3) where key = $4",
+  [displayname, description, title, req.user.key]
+    .then -> req.user <<< {displayname, description, title}
+    .then -> new Promise (res, rej) -> req.login req.user, (-> res!)
+    .then -> res.send!
+
 # identical to `/auth` but if it's more semantic clear.
 app.get \/auth/reset, (req, res) ->
   aux.clear-cookie req, res

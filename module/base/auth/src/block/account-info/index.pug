@@ -1,0 +1,64 @@
+include @/@servebase/pugutil/index.pug
+div
+  script(type="@plotdb/block"): include:lsc index.ls
+  h3(t) title
+  hr
+  .form(data-name="basic")
+    .row.mb-1
+      .col-md
+        .form-group
+          label #[span(t) displayname] #[small.text-muted / #[span(t) public]]
+          input.form-control(name="displayname",placeholder="",value="")
+          .invalid-feedback(t) required
+      .col-md
+        .form-group
+          label.d-flex.align-items-end
+            .flex-grow-1(t) userid
+            a.badge.badge-dark.d-none(ld="is-staff",href="/staff/") staff
+          .input-group
+            input.form-control.disabled(ld="uid",readonly,value="")
+            .input-group-append.has-tips.manual(ld="copyuid")
+              .hover-tip.tip-sm.tip-no-min-width.text-nowrap(t) copied
+              .btn.btn-outline-dark: +i.i-clone
+
+    .row.mb-1
+      .col-md
+        .form-group
+          label #[span(t) username] #[small.text-muted / #[span(t) email]]
+          input.form-control(ld="username",placeholder="e.g., yourname@yourhost.com",
+          disabled,value="")
+          .float-right.text-success.d-none(ld="is-verified") #[+i.i-check] #[span(t) verified]
+          .float-right.text-danger.d-none(ld="not-verified") #[+i.i-alert.text-sm] #[small(t) unverified]
+      .col-md
+        .form-group
+          label(t) verify
+          .d-none(ld="is-verified"): .btn.btn-outline-secondary.btn-block.disabled(ld="mail-verify",t) verified
+          .d-none(ld="not-verified"): .btn.btn-success.btn-block.ld.ld-ext-right(ld="mail-verify")
+            | #[span(t) send] #[+i.i-mail.ml-2] #[.ld.ld-spin.ld-ring]
+
+    //-
+      .form-group.mb-4
+        label 描述 #[small.text-muted / 會顯示在個人檔案中。上限 1024 字]
+        textarea.form-control(name="description",rows="3",placeholder="談談關於你的事吧")= user.description
+      .row
+        .col-md
+          .form-group.mb-4
+            label 職業 #[small.text-muted / 會顯示在個人檔案中]
+            input.form-control(name="title",placeholder="你是做什麼的呢？",value=user.title)
+          .form-group.mb-4
+            label 關鍵字 #[small.text-muted / 會顯示在個人檔案中]
+            textarea.form-control(name="tags",rows="1",
+            placeholder="關於你的關鍵字，以逗號 ',' 分隔")= user.tags
+        .col-md
+          .w-100: .aspect-ratio.ratio-2by1.bg-light.bg.bg-portrait(
+          style=`background-image:url(/s/avatar/${user.key}.png);background-size:contain`)
+            .w-100.h-100.vertical-center: .text-center.w-100
+              .btn.btn-outline-light.bg-semi-dark.btn-upload.ld-ext-right
+                | 上傳
+                input(ld="avatar",type="file")
+                .ld.ld-spin.ld-spinner
+
+    .form-group
+      .btn.btn-primary.ld-ext-right(ld="update-basic-data") #[span(t) update] #[.ld.ld-spin.ld-ring]
+
+

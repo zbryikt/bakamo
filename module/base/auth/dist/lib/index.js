@@ -312,6 +312,43 @@
         res.send();
       });
     });
+    route.auth.put('/user', aux.signedin, backend.middleware.captcha, function(req, res, next){
+      var ref$, k, v, ref1$, displayname, description, title;
+      ref1$ = (function(){
+        var ref$, results$ = [];
+        for (k in ref$ = {
+          displayname: (ref$ = req.body).displayname,
+          description: ref$.description,
+          title: ref$.title
+        }) {
+          v = ref$[k];
+          results$.push({
+            k: k,
+            v: v
+          });
+        }
+        return results$;
+      }()).filter(function(it){
+        return it.v != null;
+      }).map(function(it){
+        return ((it.v || '') + "").trim();
+      }), displayname = ref1$[0], description = ref1$[1], title = ref1$[2];
+      if (!displayname) {
+        return aux.reject(400);
+      }
+      return db.query("update users set (displayname,description,title) = ($1,$2,$3) where key = $4", [displayname, description, title, req.user.key]).then(function(){
+        var ref$;
+        return ref$ = req.user, ref$.displayname = displayname, ref$.description = description, ref$.title = title, ref$;
+      }).then(function(){
+        return new Promise(function(res, rej){
+          return req.login(req.user, function(){
+            return res();
+          });
+        });
+      }).then(function(){
+        return res.send();
+      });
+    });
     app.get('/auth/reset', function(req, res){
       aux.clearCookie(req, res);
       return req.logout(function(){
