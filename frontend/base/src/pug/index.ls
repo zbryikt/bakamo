@@ -1,6 +1,7 @@
 ({core}) <- ldc.register <[core navtop]>, _
 <- core.init!then _
 <-(->it.apply core) _
+@ldcv = {}
 @view = {}
 @view.panel = new ldview do
   root: document.body
@@ -11,6 +12,12 @@
     signup: ~> @auth.prompt {tab: \signup} .then -> update!
     login: ~> @auth.prompt {tab: \login} .then -> update!
     logout: ~> @auth.logout!then -> update!
+    "toggle-ldcv": ({node}) ~>
+      name = node.getAttribute \data-name
+      inner = ld$.find(@ldcv[name].root!, '.inner', 0)
+      core.manager.from {name: "@servebase/auth", path: "#name/index.html"}, {root: inner}
+        .then ->
+      @ldcv[name].get!
     wipe: ~>
       core.captcha
         .guard cb: ->
@@ -69,6 +76,11 @@
                   Promise.reject it
         .catch -> alert "captcha verification failed"
   init:
+    ldcv: ({node}) ~>
+      name = node.getAttribute \data-name
+      @ldcv[name] = new ldcover root: node, resident: true
+      inner = ld$.find(node, '.inner', 0)
+
     discuss: ({node}) ~>
       @manager.from {name: \@servebase/discuss}, {root: node} .then ->
 

@@ -1,5 +1,7 @@
 extends /base.pug
 block body
+  .ldcv(ld="ldcv", data-name="account-info"): .base.rwd: .inner.p-4
+  .ldcv(ld="ldcv", data-name="change-password"): .base.rwd: .inner.p-4
   .ldcv.mini.bottom.left.right(data-name="cookie-consent"): .base: .inner.p-2.px-3
     .d-flex.justify-content-center.align-items-center
       .mr-1 By continuing to browse, you agree to our use of cookies.
@@ -48,6 +50,8 @@ block body
           onclick='lda.ldcvmgr.get({ns: "local", name: "sample"})') Sample Block
           .btn.btn-outline-secondary(ld="error") Sample Error
           .btn.btn-outline-secondary(ld="unhandled-rejection") Unhandled Rejection
+          .btn.btn-outline-secondary.d-none(ld="toggle-ldcv signed",data-name="account-info") Account Info
+          .btn.btn-outline-secondary.d-none(ld="toggle-ldcv signed",data-name="change-password") Change Password
 
       .col-md.mb-4
 
