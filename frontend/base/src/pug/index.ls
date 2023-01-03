@@ -2,6 +2,7 @@
 <- core.init!then _
 <-(->it.apply core) _
 @ldcv = {}
+@bd = {}
 @view = {}
 @view.panel = new ldview do
   root: document.body
@@ -15,9 +16,12 @@
     "toggle-ldcv": ({node}) ~>
       name = node.getAttribute \data-name
       inner = ld$.find(@ldcv[name].root!, '.inner', 0)
-      core.manager.from {name: "@servebase/auth", path: "#name/index.html"}, {root: inner}
-        .then ->
-      @ldcv[name].get!
+      Promise.resolve!
+        .then ~>
+          if @bd[name] => return
+          core.manager.from {name: "@servebase/auth", path: "#name/index.html"}, {root: inner}
+            .then (o) ~> @bd[name] = o
+        .then ~> @ldcv[name].get!
     wipe: ~>
       core.captcha
         .guard cb: ->
