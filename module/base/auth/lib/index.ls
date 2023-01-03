@@ -175,13 +175,13 @@ route.auth
   ..post \/logout, (req, res) -> req.logout(!-> res.send!)
 
 route.auth.put \/user, aux.signedin, backend.middleware.captcha, (req, res, next) ->
-  [displayname, description, title] = [{k,v} for k,v of req.body{displayname, description, title}]
+  [displayname, description, title, tags] = [{k,v} for k,v of req.body{displayname, description, title, tags}]
     .filter -> it.v?
     .map -> ("#{it.v or ''}").trim!
   if !displayname => return aux.reject 400
-  db.query "update users set (displayname,description,title) = ($1,$2,$3) where key = $4",
-  [displayname, description, title, req.user.key]
-    .then -> req.user <<< {displayname, description, title}
+  db.query "update users set (displayname,description,title,tags) = ($1,$2,$3,$4) where key = $5",
+  [displayname, description, title, tags, req.user.key]
+    .then -> req.user <<< {displayname, description, title, tags}
     .then -> new Promise (res, rej) -> req.login req.user, (-> res!)
     .then -> res.send!
 

@@ -313,13 +313,14 @@
       });
     });
     route.auth.put('/user', aux.signedin, backend.middleware.captcha, function(req, res, next){
-      var ref$, k, v, ref1$, displayname, description, title;
+      var ref$, k, v, ref1$, displayname, description, title, tags;
       ref1$ = (function(){
         var ref$, results$ = [];
         for (k in ref$ = {
           displayname: (ref$ = req.body).displayname,
           description: ref$.description,
-          title: ref$.title
+          title: ref$.title,
+          tags: ref$.tags
         }) {
           v = ref$[k];
           results$.push({
@@ -332,13 +333,13 @@
         return it.v != null;
       }).map(function(it){
         return ((it.v || '') + "").trim();
-      }), displayname = ref1$[0], description = ref1$[1], title = ref1$[2];
+      }), displayname = ref1$[0], description = ref1$[1], title = ref1$[2], tags = ref1$[3];
       if (!displayname) {
         return aux.reject(400);
       }
-      return db.query("update users set (displayname,description,title) = ($1,$2,$3) where key = $4", [displayname, description, title, req.user.key]).then(function(){
+      return db.query("update users set (displayname,description,title,tags) = ($1,$2,$3,$4) where key = $5", [displayname, description, title, tags, req.user.key]).then(function(){
         var ref$;
-        return ref$ = req.user, ref$.displayname = displayname, ref$.description = description, ref$.title = title, ref$;
+        return ref$ = req.user, ref$.displayname = displayname, ref$.description = description, ref$.title = title, ref$.tags = tags, ref$;
       }).then(function(){
         return new Promise(function(res, rej){
           return req.login(req.user, function(){

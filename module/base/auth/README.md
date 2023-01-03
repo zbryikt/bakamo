@@ -112,6 +112,15 @@ By default the URL path `/auth/` is used as the main access point for auth relat
 Check sample site `frontend/base/src/pug/auth/index.pug` for an working example.
 
 
+### Common UI blocks
+
+Two additional account related blocks are provided:
+
+ - `change-password`: can be used to change user's password.
+ - `account-info`: can be used to update user information. (such as displayname)
+
+These blocks are not ldcover and should be injected manually into document when used. You can also wrap them in ldcover manually if needed.
+
 
 ### Events
 
@@ -182,8 +191,8 @@ engine/auth.ls. API endpoints:
      - username
      - password
    - POST / `@api/auth/logout` - logout. no params.
-   - POST  / `@api/auth/reset` - logout, clear cookie
-   - POST  / `@api/auth/clear` - logout, clear cookie from all devices
+   - POST / `@api/auth/reset` - logout, clear cookie
+   - POST / `@api/auth/clear` - logout, clear cookie from all devices
    - GET  / `@api/auth/<oauth>/callback`
  - password reset
    - POST / `@api/auth/passwd`
@@ -194,7 +203,13 @@ engine/auth.ls. API endpoints:
    - GET  / `@app/auth/mail/verify/:token`
  - oauth login
    - POST / `@api/auth/<name>`
-   - GET / `@api/auth/<name>/callback`
+   - GET  / `@api/auth/<name>/callback`
+ - user related
+   - PUT  / `@api/auth/user/` - update user object. params:
+     - displayname
+     - description
+     - title
+     - tags
 
 
 ### Common Errors
