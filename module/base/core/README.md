@@ -95,3 +95,11 @@ Both the option in `servebase.config` or the `corecfg` ldc module are something 
  - a function. In this case, it will be called with `core` context and should return an object defined above.
 
 `servebase.config` should always be called only once and before any possible core initialization to prevent inconsistent behavior.
+
+
+## i18n
+
+`@servebase/core` detects `lng` or `setlng` querystring to enfoce a locale setting. `lng` is temporarily and `setlng` will also update cookie for following access. For example:
+
+    https://serve.base/?lng=en
+

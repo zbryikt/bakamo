@@ -139,7 +139,7 @@
         }
         i18ncfg = this$._cfg.i18n.cfg || {
           supportedLng: ['en', 'zh-TW'],
-          fallbackLng: 'zh-TW',
+          fallbackLng: 'en',
           fallbackNS: '',
           defaultNS: ''
         };
@@ -158,9 +158,21 @@
               i18n.addResourceBundle(lng, ns, res, true, true);
             }
           }
-          lng = (typeof httputil != 'undefined' && httputil !== null ? httputil.qs('lng') || httputil.cookie('lng') : null) || navigator.language || navigator.userLanguage;
+          lng = (typeof httputil != 'undefined' && httputil !== null ? httputil.qs('lng') || httputil.cookie('lng') : null) || navigator.language || navigator.userLanguage || '';
+          if ((typeof httputil != 'undefined' && httputil !== null) && httputil.qs('setlng')) {
+            lng = httputil.qs('setlng');
+            httputil.cookie('lng', lng, {
+              path: '/'
+            });
+          }
           if (!in$(lng, i18ncfg.supportedLng)) {
-            lng = i18ncfg.fallbackLng || i18ncfg.supportedLng[0] || 'en';
+            if (/-/.exec(lng)) {
+              if (in$(lng.split('-')[0], i18ncfg.supportedLng)) {
+                lng = lng.split('-')[0];
+              }
+            } else {
+              lng = i18ncfg.fallbackLng || i18ncfg.supportedLng[0] || 'en';
+            }
           }
           console.log("[@servebase/core][i18n] use language: ", lng);
           return i18n.changeLanguage(lng);

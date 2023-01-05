@@ -86,7 +86,7 @@ servebase =
       .then ~>
         if !i18n? => return
         i18ncfg = @_cfg.i18n.cfg or {
-          supportedLng: <[en zh-TW]>, fallbackLng: \zh-TW, fallbackNS: '', defaultNS: ''
+          supportedLng: <[en zh-TW]>, fallbackLng: \en, fallbackNS: '', defaultNS: ''
         }
         Promise.resolve!
           .then -> i18n.init i18ncfg
@@ -96,9 +96,16 @@ servebase =
               for lng, res of obj => i18n.add-resource-bundle lng, ns, res, true, true
             lng = (
               (if httputil? => (httputil.qs(\lng) or httputil.cookie(\lng)) else null) or
-              navigator.language or navigator.userLanguage
+              navigator.language or navigator.userLanguage or ''
             )
-            if !(lng in i18ncfg.supportedLng) => lng = i18ncfg.fallbackLng or i18ncfg.supportedLng.0 or \en
+            if httputil? and httputil.qs(\setlng) =>
+              lng = httputil.qs(\setlng)
+              httputil.cookie \lng, lng, {path: \/}
+            if !(lng in i18ncfg.supportedLng) =>
+              if /-/.exec(lng) =>
+                if lng.split(\-).0 in (i18ncfg.supportedLng) => lng = lng.split(\-).0
+              else
+                lng = i18ncfg.fallbackLng or i18ncfg.supportedLng.0 or \en
             console.log "[@servebase/core][i18n] use language: ", lng
             i18n.changeLanguage lng
           .then ->
