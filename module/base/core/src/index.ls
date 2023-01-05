@@ -87,6 +87,10 @@ servebase =
         if !i18n? => return
         i18ncfg = @_cfg.i18n.cfg or {
           supportedLng: <[en zh-TW]>, fallbackLng: \en, fallbackNS: '', defaultNS: ''
+          # pitfall: Namespaced key with spaces doesn't work
+          # workaround: explicitly provide separator
+          #  - https://github.com/i18next/i18next/issues/1670
+          keySeparator: '.', nsSeparator: ':'
         }
         Promise.resolve!
           .then -> i18n.init i18ncfg

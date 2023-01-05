@@ -141,7 +141,9 @@
           supportedLng: ['en', 'zh-TW'],
           fallbackLng: 'en',
           fallbackNS: '',
-          defaultNS: ''
+          defaultNS: '',
+          keySeparator: '.',
+          nsSeparator: ':'
         };
         return Promise.resolve().then(function(){
           return i18n.init(i18ncfg);
