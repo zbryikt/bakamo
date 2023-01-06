@@ -45,6 +45,10 @@ block body
           input.form-control(ld="password-reset-email")
           .input-group-append
             .btn.btn-outline-secondary(ld="password-reset") Send Password Reset Link
+        .input-group.my-2
+          input.form-control(ld="error-code",placeholder="error code")
+          .input-group-append
+            .btn.btn-outline-secondary(ld="toggle-error") Show Error Dialog
         .d-flex.g-2
           .btn.btn-outline-secondary(
           onclick='lda.ldcvmgr.get({ns: "local", name: "sample"})') Sample Block

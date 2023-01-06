@@ -7,6 +7,8 @@
 @view.panel = new ldview do
   root: document.body
   action: click: do
+    "toggle-error": ~>
+      core.error(lderror +(@view.panel.get('error-code').value or 0) )
     error: ~> @error((new lderror 1023) <<< uuid: Math.random!toString(36)substring(2))
     "unhandled-rejection": ~> Promise.reject(lderror 1023)
     # we need an approch to control authpanel. should be done via auth.
