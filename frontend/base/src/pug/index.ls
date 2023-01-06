@@ -7,6 +7,8 @@
 @view.panel = new ldview do
   root: document.body
   action: click: do
+    "toggle-block": ~>
+      core.ldcvmgr.get JSON.parse(@view.panel.get('block-code').value)
     "toggle-error": ~>
       core.error(lderror +(@view.panel.get('error-code').value or 0) )
     error: ~> @error((new lderror 1023) <<< uuid: Math.random!toString(36)substring(2))
