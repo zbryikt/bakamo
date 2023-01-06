@@ -113,6 +113,15 @@
       this.error = function(e){
         return err(e);
       };
+      this.error.ignore = function(){
+        var ids;
+        ids = Array.from(arguments);
+        return function(e){
+          if (!in$(lderror.id(e), ids)) {
+            return Promise.reject(e);
+          }
+        };
+      };
       this.erratum = new erratum({
         handler: err
       });

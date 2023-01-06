@@ -65,6 +65,9 @@ servebase =
       ethr.c = (ethr.c or 0) + 1
       @ldcvmgr.get {ns: \local, name: \error, path: "#n.html"}, e
     @error = (e) -> err e
+    @error.ignore = ->
+      ids = Array.from(arguments)
+      (e) -> if !(lderror.id(e) in ids) => return Promise.reject e
 
     @ <<<
       erratum: new erratum handler: err
