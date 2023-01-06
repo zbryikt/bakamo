@@ -1,24 +1,21 @@
-div
-  div(plug="content")
+.ldcv: .base.w-640.rwd: .inner.p-4.card: .card-body
+  .text-center
     h1(t) title
     p.text-muted(t) desc
-    br
-    .m-auto.text-left
-      p(t) detail.0
-      p
-        span(t) detail.1
-        a.clickable.mx-1(t,onclick="lda.ldcvmgr.toggle('contact')") contact
-
-  div(plug="cta")
-    br
-    .row
-      .col-md.mb-2
-        a.btn.btn-outline-dark.btn-block.btn-lg(ld="login",t) login
-      .col-md: a.btn.btn-primary.btn-block.btn-lg(t,data-ldcv-set="") close
+  br
+  .m-auto.text-left
+    p(t) detail.0
+    p
+      span(t) detail.1
+      a.clickable.mx-1(t,onclick="lda.ldcvmgr.toggle('contact')") contact
+  br
+  .row
+    .col-md.mb-2
+      a.btn.btn-outline-dark.btn-block.btn-lg(ld="login",t) login
+    .col-md: a.btn.btn-primary.btn-block.btn-lg(t,data-ldcv-set="") close
   script(type="@plotdb/block"): :lsc
     module.exports =
       pkg:
-        extend: {ns: "local", name: "error", path: "common.html"}
         i18n:
           en:
             title: "Login Required"
