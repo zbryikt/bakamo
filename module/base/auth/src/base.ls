@@ -60,7 +60,8 @@ module.exports =
           setTimeout (-> node.classList.toggle \d-none, hide), 0
         switch: ({node}) ~>
           name = node.getAttribute \data-name
-          node.classList.toggle \btn-text, (@_tab != name)
+          node.classList.toggle \btn-light, (@_tab != name)
+          node.classList.toggle \border, (@_tab != name)
           node.classList.toggle \btn-primary, (@_tab == name)
     @form = form = new ldform do
       names: -> <[username password displayname]>
