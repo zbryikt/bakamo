@@ -8,6 +8,7 @@ app.get \/, throttle.kit.generic, (req, res, next) ->
       count = (r.[]rows.0 or {count: 0}).count
       res.render \index.pug, {count}
 
+app.get \/auth-required, (req, res, next) -> return lderror.reject 1000
 app.get \/i18n, (req, res, next) -> return res.send({locale: req.get("I18n-Locale")})
 
 # plain Error. unrecgonized, thus trigger exception dump. won't crash. send 500 to client

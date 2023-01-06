@@ -22,6 +22,9 @@
         });
       });
     });
+    app.get('/auth-required', function(req, res, next){
+      return lderror.reject(1000);
+    });
     app.get('/i18n', function(req, res, next){
       return res.send({
         locale: req.get("I18n-Locale")
