@@ -165,7 +165,9 @@ route.auth
           .catch (err) ~>
             # only log here so user can continue to login.
             backend.log-mail.error {err}, "send mail verification mail failed (#username)".red
-      .then (user) !-> req.login user, !-> res.send!
+          .then -> user
+      .then (user) !->
+        req.login user, (err) !-> if err => next(err) else res.send!
       .catch !-> next(lderror 403)
   ..post \/login, backend.middleware.captcha, (req, res, next) ->
     ((err,user,info) <- passport.authenticate \local, _

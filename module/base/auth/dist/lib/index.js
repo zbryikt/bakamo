@@ -284,10 +284,16 @@
           return backend.logMail.error({
             err: err
           }, ("send mail verification mail failed (" + username + ")").red);
+        }).then(function(){
+          return user;
         });
       }).then(function(user){
-        req.login(user, function(){
-          res.send();
+        req.login(user, function(err){
+          if (err) {
+            next(err);
+          } else {
+            res.send();
+          }
         });
       })['catch'](function(){
         next(lderror(403));
