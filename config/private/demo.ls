@@ -6,6 +6,8 @@ module.exports = do
   #  - dev can still infer domain name in used by `aux.hostname(req)` if omitted,
   #    however this should be used if provided.
   domain: 'serve.base'
+  # either a list or a string, email(s) of the one for notifying about admin event.
+  admin: email: '...'
   port: 8901
   limit: '20mb'
   i18n:
