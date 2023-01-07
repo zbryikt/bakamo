@@ -65,6 +65,7 @@ backend = (opt = {}) ->
     route: {}        # all default routes
     store: {}        # redis like data store, with get / set function
     session: {}      # express-session object
+    mod: null        # reserved for developer to extend backend.
   log-level = @config.{}log.level or (if @production => \info else \debug)
   if !(log-level in <[silent trace debug info warn error fatal]>) =>
     throw new Error("pino log level incorrect. please fix secret.ls: log.level")

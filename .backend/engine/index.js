@@ -100,7 +100,8 @@
       mailQueue: null,
       route: {},
       store: {},
-      session: {}
+      session: {},
+      mod: null
     });
     logLevel = ((ref$ = this.config).log || (ref$.log = {})).level || (this.production ? 'info' : 'debug');
     if (!(logLevel === 'silent' || logLevel === 'trace' || logLevel === 'debug' || logLevel === 'info' || logLevel === 'warn' || logLevel === 'error' || logLevel === 'fatal')) {

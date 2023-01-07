@@ -27,6 +27,8 @@
    - `set(key, value)`: return a Promise which resolves when redis successfully update `key` with `value`.
  - `db`: db interface, postgresql object.
  - `i18n`: i18n object, in `i18next` spec.
+ - `mod`: this is reserved for developers to extend backend object.
+   servebase should not use this for any other purpose in the future.
 
 
 ## API
