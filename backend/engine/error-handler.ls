@@ -61,7 +61,7 @@ handler = (err, req, res, next) ->
   # --- take care of unhandled exceptions ---
   req.log.error {err}, "unhandled exception occurred [URL: #{req.originalUrl}] #{if err.message => ': ' + err.message else ''} #{err.uuid}".red
   # filter and leave only core fields to prevent from credential leaking
-  err = err{id,name,uuid}
+  err = err{id,name,uuid,payload}
   # either (error without id) or (nested exception, may be lderror) goes here.
   # let user know it's 500 if id is not explicitly provided.
   if !(err.name? and err.id?) => err <<< name: \lderror, id: 500
