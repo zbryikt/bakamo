@@ -75,7 +75,7 @@ mail-queue.prototype = Object.create(Object.prototype) <<< do
     fs.promises.access fn @base
       .then ~> fn @base
       .catch ~> fs.promises.access fn \base .then ~> fn \base
-      .catch ~>
+      .catch (e) ~>
         @log.error "send mail failed: read template file failed.", e
         return lderror.reject 1027
       .then (file) ~>

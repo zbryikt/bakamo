@@ -111,7 +111,7 @@
         return fs.promises.access(fn('base')).then(function(){
           return fn('base');
         });
-      })['catch'](function(){
+      })['catch'](function(e){
         this$.log.error("send mail failed: read template file failed.", e);
         return lderror.reject(1027);
       }).then(function(file){
