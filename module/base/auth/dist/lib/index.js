@@ -187,6 +187,7 @@
           ? {
             key: (ref$ = req.user).key,
             config: ref$.config,
+            plan: ref$.plan,
             displayname: ref$.displayname,
             verified: ref$.verified,
             username: ref$.username,

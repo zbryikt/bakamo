@@ -111,7 +111,7 @@ route.auth.get \/info, (req, res) ~>
     csrfToken: req.csrfToken!
     production: backend.production
     ip: aux.ip(req)
-    user: if req.user => req.user{key, config, displayname, verified, username, staff} else {}
+    user: if req.user => req.user{key, config, plan, displayname, verified, username, staff} else {}
     captcha: captcha
     version: @version
     config: backend.config.client or {}
