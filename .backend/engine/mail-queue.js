@@ -19,6 +19,7 @@
         }
       }
       : nodemailer.createTransport(nodemailerMailgunTransport(opt.mailgun));
+    this.suppress = opt.suppress;
     this.base = opt.base || 'base';
     this.log = opt.logger;
     this.list = [];
@@ -66,7 +67,10 @@
     sendDirectly: function(payload){
       var this$ = this;
       return new Promise(function(res, rej){
-        this$.log.info(("sending [from:" + payload.from + "] [to:" + payload.to + "] [subject:" + payload.subject + "]").cyan);
+        this$.log.info(((this$.suppress ? '(suppressed)'.gray : '') + " sending [from:" + payload.from + "] [to:" + payload.to + "] [subject:" + payload.subject + "]").cyan);
+        if (this$.suppress) {
+          return res();
+        }
         return this$.api.sendMail(payload, function(e, i){
           if (!e) {
             return res();

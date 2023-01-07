@@ -65,6 +65,8 @@ module.exports = do
       usernameField: \email
       passwordField: \passwd
   mail:
+    # to suppress outgoing mail, enable `suppress` option.
+    suppress: false
     mailgun: auth:
       domain: '...'
       api_key: '...'

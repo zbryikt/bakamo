@@ -18,6 +18,7 @@ mail-queue = (opt={}) ->
       @log.error "sendMail called while mail gateway is not available"
       return lderror.reject 500, "mail service not available"
   else nodemailer.createTransport(nodemailer-mailgun-transport(opt.mailgun))
+  @suppress = opt.suppress
   @base = opt.base or 'base'
   @log = opt.logger
   @list = []
@@ -51,7 +52,8 @@ mail-queue.prototype = Object.create(Object.prototype) <<< do
 
   # directly send
   send-directly: (payload) -> new Promise (res, rej) ~>
-    @log.info "sending [from:#{payload.from}] [to:#{payload.to}] [subject:#{payload.subject}]".cyan
+    @log.info "#{if @suppress => '(suppressed)'.gray else ''} sending [from:#{payload.from}] [to:#{payload.to}] [subject:#{payload.subject}]".cyan
+    if @suppress => return res!
     (e,i) <~ @api.sendMail payload, _
     if !e => return res!
     @log.error "send mail failed: api.sendMail failed.", e
