@@ -27,7 +27,7 @@
     "@loadingio/ldquery": "^3.0.4",
     "@loadingio/loading.css": "^3.1.0",
     "@loadingio/transition.css": "^3.0.0",
-    "@plotdb/block": "^5.0.6",
+    "@plotdb/block": "^5.0.7",
     "@plotdb/csscope": "^5.0.2",
     "@plotdb/httputil": "^0.0.5",
     "@plotdb/rescope": "^5.0.4",
