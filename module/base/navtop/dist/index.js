@@ -149,14 +149,13 @@
           if (!(n = it[0])) {
             return;
           }
-          dotst[0].map(function(c){
-            return bar.classList.toggle(c, n.isIntersecting);
-          });
-          if (dotst[1]) {
-            return dotst[1].map(function(c){
-              return bar.classList.toggle(c, !n.isIntersecting);
+          return (n.isIntersecting
+            ? [1, 0]
+            : [0, 1]).forEach(function(d, i){
+            return dotst[d].map(function(c){
+              return bar.classList.toggle(c, i !== 0);
             });
-          }
+          });
         }, {
           threshold: 0.1
         }).observe(tstTgt);

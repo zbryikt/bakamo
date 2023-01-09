@@ -61,8 +61,9 @@ core.init!then ->
   if !(dotst.length and tst-tgt) => return
   (new IntersectionObserver (->
     if !(n = it.0) => return
-    dotst.0.map (c) -> bar.classList.toggle c, n.isIntersecting
-    if dotst.1 => dotst.1.map (c) -> bar.classList.toggle c, !n.isIntersecting
+    # always toggle off first so we won't remove classes that in both before and after.
+    (d,i) <- (if n.isIntersecting => [1,0] else [0,1]).for-each _
+    dotst[d].map (c) -> bar.classList.toggle c, (i != 0)
   ), {threshold: 0.1}).observe tst-tgt
 
   return {}
