@@ -47,12 +47,13 @@
       },
       route: function(){
         route.auth.post('/mail/verify', aux.signedin, mdw.throttle, mdw.captcha, function(req, res){
+          var this$ = this;
           return db.query("select key from users where key = $1 and deleted is not true", [req.user.key]).then(function(r){
             r == null && (r = {});
             if (!(r.rows || (r.rows = [])).length) {
               return lderror.reject(404);
             }
-            return this.verify({
+            return this$.verify({
               req: req,
               user: req.user,
               db: db

@@ -30,7 +30,7 @@ verify: ({req, user}) ->
 route: ->
   route.auth.post \/mail/verify, aux.signedin, mdw.throttle, mdw.captcha, (req, res) ->
     db.query "select key from users where key = $1 and deleted is not true", [req.user.key]
-      .then (r={}) ->
+      .then (r={}) ~>
         if !(r.[]rows.length) => return lderror.reject 404
         @verify {req, user: req.user, db}
       .then -> res.send!
