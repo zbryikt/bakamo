@@ -58,6 +58,7 @@ module.exports = do
     facebook:
       clientID: '...'
       clientSecret: '...'
+      scope: <[public_profile openid email]>
     line:
       channelID: '...'
       channelSecret: '...'

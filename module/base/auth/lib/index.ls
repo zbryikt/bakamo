@@ -123,7 +123,7 @@ route.auth.get \/info, (req, res) ~>
   if !config{}auth[name] => return
   strategy[name](config.auth[name])
   route.auth
-    ..post "/#name", passport.authenticate name, {scope: <[profile openid email]>}
+    ..post "/#name", passport.authenticate name, {scope: config.auth[name].scope or <[profile openid email]>}
     ..get "/#name/callback", passport.authenticate name, do
       successRedirect: \/auth?oauth-done
       failureRedirect: \/auth?oauth-failed

@@ -212,7 +212,7 @@
       strategy[name](config.auth[name]);
       x$ = route.auth;
       x$.post("/" + name, passport.authenticate(name, {
-        scope: ['profile', 'openid', 'email']
+        scope: config.auth[name].scope || ['profile', 'openid', 'email']
       }));
       x$.get("/" + name + "/callback", passport.authenticate(name, {
         successRedirect: '/auth?oauth-done',
