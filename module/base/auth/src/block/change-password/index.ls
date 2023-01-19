@@ -15,7 +15,7 @@ module.exports =
         bad: "Bad"
         ok: "Okay"
         good: "Good"
-        fail: "Update Password Failed"
+        fail: "Incorrect Old Password?"
         done: "Update Password Successfully"
         sent: "Link Sent"
         hint: [
@@ -39,7 +39,7 @@ module.exports =
         bad: "不妙"
         ok: "還好"
         good: "不錯"
-        fail: "密碼更新失敗"
+        fail: "舊的密碼有誤"
         done: "密碼更新完成"
         sent: "連結已寄出"
         hint: [
@@ -81,6 +81,8 @@ module.exports =
 
         'update-password': ({local, node}) ->
           if node.classList.contains(\disabled) => return
+          <- form.check-all!then _
+          if !form.ready! => return
           ldld = local.ldld
           ldld.on!
           val = form.values!
@@ -104,10 +106,10 @@ module.exports =
               )
 
     form = new ldform do
-      root: root #'.form[data-name=passwd]'
-      submit: '.btn[ld=update-password]'
+      root: root
       after-check: (s) ->
         [p1,p2] = [@fields.newpasswd1.value, @fields.newpasswd2.value]
+        s.username = 0
         if s.newpasswd1 != 1 and p1.length < 6 => s <<< newpasswd1: 2, newpasswd2: 1
         if p1 != p2 and (s.newpasswd2 != 1 or p2 and s.newpasswd1 == 0) => s.newpasswd2 = 2
         passwd = ld$.find(@root, '[data-node]', 0)
@@ -122,30 +124,3 @@ module.exports =
           cls = bar.getAttribute \class
           cls = cls.replace(/bg-\S+/, '').trim! + " bg-#color"
           bar.setAttribute \class, cls
-
-    return
-    btn = ld$.find(document, '.form[data-name=passwd] .btn[ld=update-password]', 0)
-    ldld = new ldloader root: btn
-    btn.addEventListener \click, ->
-      if btn.classList.contains(\disabled) => return
-      ldld.on!
-      val = form.values!
-      captcha
-        .guard cb: (captcha) ->
-          json = {o: val.oldpasswd, n: val.newpasswd1, captcha}
-          ld$.fetch \/api/auth/passwd/, {
-            method: \put
-            headers: { 'Content-Type': 'application/json; charset=UTF-8' }
-          }, {json}
-        .finally -> ldld.off!
-        .then ->
-          ldnotify.send \success, t(\done)
-          form.reset!
-        .catch (e) ->
-          id = lderror.id e
-          ldnotify.send \danger, (
-            if id == 1031 => t(\weak)
-            else if id == 1030 => t(\nomatch)
-            else t(\fail)
-          )
-

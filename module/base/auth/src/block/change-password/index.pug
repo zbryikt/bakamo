@@ -3,12 +3,14 @@ div
   script(type="@plotdb/block"): include:lsc index.ls
   h3(t) title
   hr
-  .form(data-name="passwd")
+  form.form(data-name="passwd")
     .row
       .col-md-8
         .form-group
           label(t) old
-          input.form-control(name="oldpasswd",type="password")
+          //- https://goo.gl/9p2vKq Chrome complains if no type text username field provided.
+          input.d-none(name="username",type="text",autocomplete="username")
+          input.form-control(name="oldpasswd",type="password",autocomplete="current-password")
           .invalid-feedback(t) nomatch
       .col-md-4
         .form-group
@@ -21,7 +23,7 @@ div
       .col-md-8
         .form-group
           label(t) new
-          input.form-control(name="newpasswd1",type="password")
+          input.form-control(name="newpasswd1",type="password",autocomplete="new-password")
           .invalid-feedback(t) weak
       .col-md-4
         .form-group(data-node="passwd-bar1")
@@ -31,9 +33,9 @@ div
       .col-md-8
         .form-group
           label(t) again
-          input.form-control(name="newpasswd2",type="password")
+          input.form-control(name="newpasswd2",type="password",autocomplete="new-password")
           .invalid-feedback(t) nomatch
-        .btn.btn-primary.btn-block.mb-4.disabled.ld-ext-right(ld="update-password")
+        .btn.btn-primary.btn-block.mb-4.ld-ext-right(ld="update-password")
           span.mr-1(t) update
           .ld.ldld.bare.em-1
         .text-muted: small
