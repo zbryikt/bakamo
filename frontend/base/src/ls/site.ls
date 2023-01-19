@@ -3,10 +3,12 @@ ldc.register \locales, <[]>, ->
     en:
       login: "登入"
       signup: "註冊"
+      settings: "Settings"
       logout: "Logout"
     "zh-TW":
       login: "登入"
       signup: "註冊"
+      settings: "個人設定"
       logout: "登出"
 
 

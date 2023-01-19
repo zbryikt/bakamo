@@ -36,3 +36,5 @@ api.post \/post, backend.middleware.captcha, (req, res, next) ->
 
 api.post \/post-test/, (req, res, next) ->
   res.send \pass
+
+app.get \/me/settings, aux.signedin, (req, res, next) -> res.render \me/settings.pug, {user: req.user}
