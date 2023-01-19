@@ -60,8 +60,13 @@
     api.post('/post', backend.middleware.captcha, function(req, res, next){
       return res.send('pass');
     });
-    return api.post('/post-test/', function(req, res, next){
+    api.post('/post-test/', function(req, res, next){
       return res.send('pass');
+    });
+    return app.get('/me/settings', aux.signedin, function(req, res, next){
+      return res.render('me/settings.pug', {
+        user: req.user
+      });
     });
   });
 }).call(this);
