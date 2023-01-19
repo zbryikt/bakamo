@@ -180,7 +180,7 @@ route.auth.put \/user, aux.signedin, backend.middleware.captcha, (req, res, next
   [displayname, description, title, tags] = [{k,v} for k,v of req.body{displayname, description, title, tags}]
     .filter -> it.v?
     .map -> ("#{it.v or ''}").trim!
-  if !displayname => return aux.reject 400
+  if !displayname => return lderror.reject 400
   db.query "update users set (displayname,description,title,tags) = ($1,$2,$3,$4) where key = $5",
   [displayname, description, title, tags, req.user.key]
     .then -> req.user <<< {displayname, description, title, tags}

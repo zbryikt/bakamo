@@ -107,20 +107,20 @@
           }, n = ref$.n, o = ref$.o;
           return Promise.resolve().then(function(){
             if (!req.user) {
-              return aux.reject(403);
+              return lderror.reject(403);
             }
             if (n.length < 8) {
-              return aux.reject(1031);
+              return lderror.reject(1031);
             }
             return db.query("select password from users where key = $1", [req.user.key]);
           }).then(function(r){
             var u;
             r == null && (r = {});
             if (!(u = (r.rows || (r.rows = []))[0])) {
-              return aux.reject(403);
+              return lderror.reject(403);
             }
             return db.userStore.compare(o, u.password)['catch'](function(){
-              return aux.reject(1030);
+              return lderror.reject(1030);
             });
           }).then(function(){
             return db.userStore.hashing(n);

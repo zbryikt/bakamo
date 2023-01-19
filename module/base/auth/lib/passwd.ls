@@ -63,13 +63,13 @@ route: ->
     {n,o} = req.body{n,o}
     Promise.resolve!
       .then ->
-        if !req.user => return aux.reject 403
-        if n.length < 8 => return aux.reject 1031
+        if !req.user => return lderror.reject 403
+        if n.length < 8 => return lderror.reject 1031
         db.query "select password from users where key = $1", [req.user.key]
       .then (r = {}) ->
-        if !(u = r.[]rows.0) => return aux.reject 403
+        if !(u = r.[]rows.0) => return lderror.reject 403
         db.user-store.compare o, u.password
-          .catch -> return aux.reject 1030
+          .catch -> lderror.reject 1030
       .then -> db.user-store.hashing n
       .then (password) ->
         req.user <<< {password}

@@ -342,7 +342,7 @@
         return ((it.v || '') + "").trim();
       }), displayname = ref1$[0], description = ref1$[1], title = ref1$[2], tags = ref1$[3];
       if (!displayname) {
-        return aux.reject(400);
+        return lderror.reject(400);
       }
       return db.query("update users set (displayname,description,title,tags) = ($1,$2,$3,$4) where key = $5", [displayname, description, title, tags, req.user.key]).then(function(){
         var ref$;
