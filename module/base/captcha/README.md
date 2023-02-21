@@ -20,6 +20,7 @@ captcha is a global object providing following APIs:
  - `guard(opt)`: guard a request with captcha. this may trigger a set of default captcha object ui. opt:
    - `cb(verify-object)`: function called with a verified object ( `{token, name}` )
      - this function should use the given verification object to send server API call.
+       - see `middleware` below for how `verify-object` should be sent.
      - this function should reject if the given verification object doesn't accepted by remote server.
 
 register captcha provider with `captcha.register(name, provider)`, where provider is an object implementing following methods:
@@ -45,6 +46,30 @@ Verified object is passed to server and use for result verification in server si
 
  - `token` - token after verified.
  - `name` - name of this provider
+
+
+## Middleware
+
+`@servebase/captcha` in the server side can be used as a middleware to automatically check captcha result. It expects captcha data to be passed in following ways:
+
+ - a stringified JSON in `captcha` field of a multipart request.
+ - a `captcha` field of a JSON body.
+
+`request.body.captcha` is expected (in either JSON object or stringified JSON in string format) which is parsed by the servebase backend engine (via JSON parser from `body-parser`) or directly by user customized middleware, such as multiparty:
+
+    api.post 'my-url', connect-multiparty!, backend.middleware.captcha, (req, res) -> ...
+
+
+following are some possible ways to pass captcha to backend:
+
+    captcha.guard cb: (captcha) ->
+      ld$.fetch "my-url", {method: "POST"}, {json: {captcha}}
+
+    captcha.guard cb: (captcha) ->
+      fd = new FormData!
+      fd.append "captcha", JSON.stringify(captcha)
+      ld$.fetch "my-url", {method: "POST", body: fd}
+
 
 ## Captcha flow
 

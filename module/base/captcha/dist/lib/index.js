@@ -11,10 +11,21 @@
     return this;
   };
   captcha.prototype = (ref$ = Object.create(Object.prototype), ref$.verify = function(req, res, next){
-    var obj, ref$, cfg;
+    var obj, e, ref$, cfg;
     obj = req.body && req.body.captcha
       ? req.body.captcha
       : req.fields ? req.fields.captcha : null;
+    if (typeof obj === 'string') {
+      try {
+        ({
+          obj: obj != null
+            ? obj
+            : JSON.parse(obj)
+        });
+      } catch (e$) {
+        e = e$;
+      }
+    }
     if (!(obj && obj.token)) {
       return Promise.resolve({
         score: 0,
