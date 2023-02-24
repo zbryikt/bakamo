@@ -50,6 +50,7 @@ core.init!then ->
       admin: ({node}) ~> node.classList.toggle \d-none, !@user.staff
       unauthed: ({node}) ~> node.classList.toggle \d-none, !!@user.key
       authed: ({node}) ~> node.classList.toggle \d-none, !@user.key
+      # deprecated: use `s/avatar` for dynamic user content, instead of `assets/avatar`
       avatar: ({node}) ~> node.style.backgroundImage = "url(/assets/avatar/#{@user.key})"
 
 
