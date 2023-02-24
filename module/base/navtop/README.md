@@ -30,6 +30,17 @@ Set th `ld-scope` attribute to `@servebase/navtop` in the root element of your n
  - `data-classes`: "class1 class2 ...;class1 class2 ..." for before and after transition classs.
  - `data-pivot`: node to monitor for visibility and thus reflect the whether state should be change.
 
+node from `data-pivot` is watched for visibility changes so there are several possible scenarios of the visibility:
+
+ - not intersected -> intersected
+   - class changes: `before` -> `after`
+ - intersected -> not intersected
+   - class changes: `after` -> `before`
+ - not intersected -> intersected -> not intersected
+   - class changes: `before` -> `after` -> `before`
+
+we may need additional flexibility of controlling navtop behavior based on multiple pivot nodes, which is left as future work.
+
 
 ## API
 
