@@ -9,10 +9,16 @@
      - `.view`: prebuilt pug js files.
      - `src`
        - ls, styl, pug
-       - pug 可以[使用這招來引入 module pug](https://github.com/pugjs/pug/issues/3125). sample code:
-        p = resolve: (fn,src,opt) -> if /^@\//.exec(fn) => path.resolve(fn.replace(/^@\//, 'module')) else fn
-        pug.render code, {plugins: [p]}
+       - include module pug with following code: (adopted from https://github.com/pugjs/pug/issues/3125):
+
+           p = resolve: (fn,src,opt) -> if /^@\//.exec(fn) => path.resolve(fn.replace(/^@\//, 'module')) else fn
+           pug.render code, {plugins: [p]}
+
      - `static`
+       - `s`: hold static content that are supposed to be auto generated / uploaded by users.
+         - consider this as a path (e.g., `/s/...`) for web, instead of actually storing files here.
+           this can be pointed or routed to other places by symlink or nginx directive.
+           it's not necessary to actually have this folder physically.
        - assets and other
 
  - .backend: prebuilt backend js
