@@ -22,6 +22,13 @@
     }));
     api.use('/admin', route);
     route.use(aux.isAdmin);
+    route.get('/cachestamp', function(req, res, next){
+      return res.send(backend.cachestamp + "");
+    });
+    route.post('/cachestamp', function(req, res, next){
+      backend.cachestamp = new Date().getTime();
+      return res.send(backend.cachestamp + "");
+    });
     route.get('/throttle/reset', function(req, res, next){
       throttle.reset();
       return res.send();
