@@ -287,6 +287,12 @@
           desdir: 'static',
           base: this$.feroot
         }));
+        app.set('sysinfo', function(){
+          return {
+            version: this$.version,
+            cachestamp: this$.cachestamp
+          };
+        });
         app.set('view engine', 'pug');
         app.set('views', path.join(__dirname, '../..', this$.feroot, 'src/pug'));
         app.locals.basedir = app.get('views');

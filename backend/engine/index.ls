@@ -185,6 +185,7 @@ backend.prototype = Object.create(Object.prototype) <<< do
           desdir: 'static'
           base: @feroot
         })
+        app.set 'sysinfo', ~> @{version, cachestamp}
         app.set 'view engine', 'pug'
         app.set 'views', path.join(__dirname, '../..', @feroot, 'src/pug')
         app.locals.basedir = app.get \views

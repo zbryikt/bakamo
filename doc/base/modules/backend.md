@@ -76,3 +76,19 @@ mail-queue API:
  - `send-from-md(payload, map, opt)`: send with markdown content
  - `by-template(name, email, map, config)`: send using template content.
    - templates are stored under "config/mail/${name}.yaml"
+
+
+## View Rendering
+
+View rendering is powered by `@plotdb/srcbuild`. For more information, check `@plotdb/srcbuild` repo README file.
+
+Except the APIs/filters provided by `@plotdb/srcbuild`, `servebase` also provides system information via the function `settings.sysinfo`:
+
+    div= JSON.stringify(settings.sysinfo())
+
+which return an object containing following fields:
+
+ - `version`: software version of this running instances, based on git commit hash.
+ - `cachestamp`: hint of oldest cache timestamp.
+   - usually the timestamp when the service starts but can be refreshed manually.
+

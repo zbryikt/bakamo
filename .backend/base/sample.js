@@ -63,9 +63,14 @@
     api.post('/post-test/', function(req, res, next){
       return res.send('pass');
     });
-    return app.get('/me/settings', aux.signedin, function(req, res, next){
+    app.get('/me/settings', aux.signedin, function(req, res, next){
       return res.render('me/settings.pug', {
         user: req.user
+      });
+    });
+    return app.get('/view', function(req, res, next){
+      return res.render('view.pug', {
+        view: true
       });
     });
   });
