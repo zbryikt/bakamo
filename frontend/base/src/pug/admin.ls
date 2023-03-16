@@ -39,10 +39,17 @@
               .then -> alert \delete.
 
   action: click:
-    "throttle-reset": ~> ld$.fetch "/api/admin/throttle/reset/", {method: \GET} .then -> alert 'throttle reset.'
+    "throttle-reset": ~>
+      ld$.fetch "/api/admin/throttle/reset/", {method: \GET} .then -> alert 'throttle reset.'
     "local-storage-reset": ->
       window.localStorage.clear!
       alert 'local storage cleared.'
+    "refresh-cachestamp": ->
+      ld$.fetch "/api/admin/cachestamp", {method: \POST}, {type: \json}
+        .then (r) -> alert r
+    "get-cachestamp": ->
+      ld$.fetch "/api/admin/cachestamp", {method: \GET}, {type: \json}
+        .then (r) -> alert r
     adduser: ~>
       username = @view.admin.get('adduser.username').value
       displayname = @view.admin.get('adduser.displayname').value

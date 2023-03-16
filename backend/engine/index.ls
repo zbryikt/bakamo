@@ -1,4 +1,4 @@
-require! <[fs yargs express @plotdb/colors path pino lderror pino-http body-parser csurf]>
+require! <[fs yargs express @plotdb/colors path pino lderror pino-http body-parser csurf chokidar]>
 require! <[i18next-http-middleware]>
 require! <[@plotdb/srcbuild @plotdb/block jsdom]>
 require! <[@plotdb/srcbuild/dist/view/pug]>
@@ -53,6 +53,8 @@ backend = (opt = {}) ->
   @ <<< do
     mode: process.env.NODE_ENV # 'production' or other
     production: process.env.NODE_ENV == \production
+    version: 'na' # current software version.
+    cachestamp: new Date!getTime! # timestamp hint for cache. by default server startup time
     middleware: {} # middleware that are dynamically created with certain config, such as csurf, etc
     config: with-default(opt.config, default-config) # backend configuration
     feroot: if opt.config.base => "frontend/#{opt.config.base}" else 'frontend/base'
@@ -83,6 +85,11 @@ backend.prototype = Object.create(Object.prototype) <<< do
     else @server.listen @config.port, ((e) -> if e => rej e else res @server)
 
   watch: ({logger, i18n}) ->
+    @version = 'na'
+    chokidar.watch <[.version]>
+      .on \add, (~> @version = (fs.read-file-sync it .toString!) )
+      .on \change, (~> @version = (fs.read-file-sync it .toString!) )
+
     if !(@config.build and @config.build.enabled) => return
 
     if @config.build.{}block.manager =>

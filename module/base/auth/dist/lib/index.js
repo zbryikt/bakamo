@@ -170,12 +170,6 @@
         }));
       }
     };
-    this.version = 'na';
-    chokidar.watch(['.version']).on('add', function(it){
-      return this$.version = fs.readFileSync(it).toString();
-    }).on('change', function(it){
-      return this$.version = fs.readFileSync(it).toString();
-    });
     route.auth.get('/info', function(req, res){
       var payload, ref$;
       res.setHeader('content-type', 'application/json');
@@ -195,7 +189,7 @@
           }
           : {},
         captcha: captcha,
-        version: this$.version,
+        version: backend.version,
         config: backend.config.client || {}
       });
       res.cookie('global', payload, {

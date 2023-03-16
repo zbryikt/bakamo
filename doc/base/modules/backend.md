@@ -4,6 +4,8 @@
 
  - `mode`: value in `NODE_ENV`, e.g., `production`
  - `production`: true if in production mode, otherwise false.
+ - `version`: software version (e.g., commit hash) of current repo
+ - `cachestamp`: hint of oldest cache timestamp.
  - `middleware`: middleware objects, including
    - csrf
  - `config`: backend configuration

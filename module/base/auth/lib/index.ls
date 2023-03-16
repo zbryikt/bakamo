@@ -89,12 +89,6 @@ strategy = do
           cb null, false, {}
     )
 
-@version = 'na'
-chokidar.watch <[.version]>
-  .on \add, (~> @version = (fs.read-file-sync it .toString!) )
-  .on \change, (~> @version = (fs.read-file-sync it .toString!) )
-
-
 # =============== USER DATA, VIA AJAX
 # Note: jsonp might lead to exploit since jsonp is not protected by CORS.
 # * this cant be protected by CSRF, since it provides CSRF token.
@@ -113,7 +107,7 @@ route.auth.get \/info, (req, res) ~>
     ip: aux.ip(req)
     user: if req.user => req.user{key, config, plan, displayname, verified, username, staff} else {}
     captcha: captcha
-    version: @version
+    version: backend.version
     config: backend.config.client or {}
   })
   res.cookie 'global', payload, { path: '/', secure: true }
