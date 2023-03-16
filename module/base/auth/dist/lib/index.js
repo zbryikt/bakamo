@@ -190,6 +190,7 @@
           : {},
         captcha: captcha,
         version: backend.version,
+        cachestamp: backend.cachestamp,
         config: backend.config.client || {}
       });
       res.cookie('global', payload, {
