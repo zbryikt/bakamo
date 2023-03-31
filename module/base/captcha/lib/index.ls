@@ -11,7 +11,8 @@ captcha.prototype = Object.create(Object.prototype) <<<
     # if captcha is not parsed as JSON instread as a string
     # (e.g., passed as multipart field)
     if typeof(obj) == \string =>
-      try { obj = JSON.parse obj }
+      try
+        obj = JSON.parse obj
       catch e # simply ignore since string won't pass below checks.
     if !(obj and obj.token) => return Promise.resolve {score: 0, verified: false}
     if !(obj.name in <[hcaptcha recaptcha_v3 recaptcha_v2_checkbox]>) => return lderror.reject 1020

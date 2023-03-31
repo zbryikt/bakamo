@@ -17,11 +17,7 @@
       : req.fields ? req.fields.captcha : null;
     if (typeof obj === 'string') {
       try {
-        ({
-          obj: obj != null
-            ? obj
-            : JSON.parse(obj)
-        });
+        obj = JSON.parse(obj);
       } catch (e$) {
         e = e$;
       }
