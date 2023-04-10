@@ -134,7 +134,9 @@
             return view.render('lng', 't');
           });
         }
-        bar = view.get('root');
+        if (!(bar = view.get('root'))) {
+          return {};
+        }
         dotst = (bar.getAttribute('data-classes') || "").split(';').map(function(it){
           return it.split(' ').filter(function(it){
             return it;

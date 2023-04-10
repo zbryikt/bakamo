@@ -56,7 +56,7 @@ core.init!then ->
 
   if core.i18n => core.i18n.on \languageChanged, -> view.render \lng, \t
 
-  bar = view.get \root
+  if !(bar = view.get \root) => return {}
   dotst = (bar.getAttribute(\data-classes) or "").split(';').map(->it.split(' ').filter(->it))
   tst-tgt = if bar.getAttribute(\data-pivot) => ld$.find(document, that, 0) else null
   if !(dotst.length and tst-tgt) => return
