@@ -1,0 +1,9 @@
+extends /base.pug
+block vars
+block head
+  style(type="text/css"): include:stylus index.styl
+block body
+  .w-100.h-100.d-flex.align-items-center.justify-content-center
+    .root(ld="root")
+block script
+  script(type="module"): include:lsc index.ls

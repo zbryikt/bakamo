@@ -1,0 +1,17 @@
+.w-100.h-100
+  style(type="text/css"): include:stylus index.styl
+  script(type="@plotdb/block"): include:lsc index.ls
+  .done-screen.d-none(ld="screen",data-name="done")
+    .d-flex.flex-column.w-100.h-100.align-items-center.justify-content-center
+      h3 作答完成！
+  .test-screen.d-none(ld="screen", data-name="test")
+    .d-flex.flex-column.w-100.h-100
+      .question(ld="question")
+      .answers
+        .answer(ld-each="answer")
+      .result
+        .bar
+          .correct(ld="result", data-name="correct")
+          .wrongn(ld="result", data-name="wrong")
+        .clock
+          div #[span(ld="countdown") 30]s

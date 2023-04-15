@@ -1,0 +1,62 @@
+.test-screen, .done-screen
+  width: 100%
+  height: 100%
+.question
+  font-size: 3em
+  font-weight: 700
+  width: 100%
+  height: 50%
+  flex: 1 1 auto
+  display: flex
+  align-items: center
+  justify-content: center
+.answers
+  font-size: 1.5em
+  font-weight: 700
+  width: 100%
+  height: 50%
+  flex: 1 1 auto
+  display: flex
+  flex-wrap: wrap
+  align-items: center
+  align-content: center
+  justify-content: center
+  gap: .25em
+  .answer
+    cursor: pointer
+    padding: .5em
+    width: 40%
+    box-shadow: 0 1px 3px rgba(0,0,0,.2)
+    border: 1px solid #e7e8e9
+    text-align: center
+.result
+  flex: 0 0 auto
+  width: 80%
+  margin: auto
+  height: 2em
+  padding: .5em 0
+  display: flex
+  gap: .5em
+  .clock
+    line-height: 1em
+    flex: 0 0 auto
+    white-space: nowrap
+    width: 3em
+    text-align: right
+  .bar
+    overflow: hidden
+    width: 100%
+    flex: 1 1 auto
+    display: flex
+    flex-wrap: nowrap
+    justify-content: start
+    border-radius: .25em
+    background: #eee
+  .correct
+    width: 0%
+    height: 1em
+    background: #0f0
+  .wrong
+    width: 0%
+    height: 1em
+    background: #f00
