@@ -109,6 +109,10 @@ backend.prototype = Object.create(Object.prototype) <<< do
     srcbuild.lsp((@config.build or {}) <<< {
       logger, i18n,
       base: Array.from(new Set([@feroot] ++ (@config.srcbuild or [])))
+      pug: locals:
+        settings:
+          domain: @config.domain
+          sysinfo: ~> @{version, cachestamp}
       bundle: {configFile: 'bundle.json', relative-path: true, manager: mgr}
       asset: {srcdir: 'src/pug', desdir: 'static'}
     })
@@ -185,6 +189,7 @@ backend.prototype = Object.create(Object.prototype) <<< do
           desdir: 'static'
           base: @feroot
         })
+        app.set 'domain', @config.domain
         app.set 'sysinfo', ~> @{version, cachestamp}
         app.set 'view engine', 'pug'
         app.set 'views', path.join(__dirname, '../..', @feroot, 'src/pug')
