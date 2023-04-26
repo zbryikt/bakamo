@@ -40,7 +40,7 @@ core.init!then ->
         if !core.i18n => return
         lng = core.i18n.language
         view.getAll(\set-lng)
-          .filter (n) -> lng == n.getAttribute(\data-name)
+          .filter (n) -> (lng or '').toLowerCase! == (n.getAttribute(\data-name) or '').toLowerCase!
           .map (n) -> n.getAttribute(\data-alias) or n.innerText.trim!
           .0 or lng
       t: ({node}) ->

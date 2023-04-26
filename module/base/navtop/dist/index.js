@@ -90,7 +90,7 @@
               }
               lng = core.i18n.language;
               return view.getAll('set-lng').filter(function(n){
-                return lng === n.getAttribute('data-name');
+                return (lng || '').toLowerCase() === (n.getAttribute('data-name') || '').toLowerCase();
               }).map(function(n){
                 return n.getAttribute('data-alias') || n.innerText.trim();
               })[0] || lng;
