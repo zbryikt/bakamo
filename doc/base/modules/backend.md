@@ -82,7 +82,13 @@ mail-queue API:
 
 View rendering is powered by `@plotdb/srcbuild`. For more information, check `@plotdb/srcbuild` repo README file.
 
-Except the APIs/filters provided by `@plotdb/srcbuild`, `servebase` also provides system information via the function `settings.sysinfo`:
+Except the APIs/filters provided by `@plotdb/srcbuild`, `servebase` also provides following information via local variables (in both view and static file rendering):
+
+ - `settings.domain`: domain name set in `secret.ls`. schema not included.
+ - `settings.sysinfo`: a function returning system information including `version` and `cachestamp`.
+
+
+Usage of `sysinfo`:
 
     div= JSON.stringify(settings.sysinfo())
 
