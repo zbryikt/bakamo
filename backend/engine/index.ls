@@ -109,10 +109,11 @@ backend.prototype = Object.create(Object.prototype) <<< do
     srcbuild.lsp((@config.build or {}) <<< {
       logger, i18n,
       base: Array.from(new Set([@feroot] ++ (@config.srcbuild or [])))
-      pug: locals:
-        settings:
-          domain: @config.domain
-          sysinfo: ~> @{version, cachestamp}
+      # in view engine below, we provide `domain` and `sysinfo` in `settings` for pug context
+      # however, both are not suitable for static files since this may lead to
+      # mix up of dev and production domains and inconsistent versions.
+      # thus we remove it for now.
+      pug: locals: {}
       bundle: {configFile: 'bundle.json', relative-path: true, manager: mgr}
       asset: {srcdir: 'src/pug', desdir: 'static'}
     })

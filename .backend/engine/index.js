@@ -181,17 +181,7 @@
         };
       }
       return srcbuild.lsp((ref$ = this.config.build || {}, ref$.logger = logger, ref$.i18n = i18n, ref$.base = Array.from(new Set([this.feroot].concat(this.config.srcbuild || []))), ref$.pug = {
-        locals: {
-          settings: {
-            domain: this.config.domain,
-            sysinfo: function(){
-              return {
-                version: this$.version,
-                cachestamp: this$.cachestamp
-              };
-            }
-          }
-        }
+        locals: {}
       }, ref$.bundle = {
         configFile: 'bundle.json',
         relativePath: true,
