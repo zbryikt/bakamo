@@ -24,6 +24,8 @@ handler = (err, req, res, next) ->
   try
     if !err => return next!
     # SESSION corrupted, usually caused by a duplicated session id
+    # this is generated in @servebase/auth by a middleware
+    # which checks for duplicated session id
     if err.code == \SESSIONCORRUPTED =>
       aux.clear-cookie req, res
       err = lderror 1029
