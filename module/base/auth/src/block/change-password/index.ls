@@ -94,6 +94,7 @@ module.exports =
                 headers: { 'Content-Type': 'application/json; charset=UTF-8' }
               }, {json}
             .finally -> ldld.off!
+            .then -> auth.fetch renew: true
             .then ->
               ldnotify.send \success, t(\done)
               form.reset!
