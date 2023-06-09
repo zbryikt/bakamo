@@ -11,14 +11,16 @@
   mailQueue = function(opt){
     var this$ = this;
     opt == null && (opt = {});
-    this.api = !opt.mailgun
-      ? {
-        sendMail: function(){
-          this$.log.error("sendMail called while mail gateway is not available");
-          return lderror.reject(500, "mail service not available");
-        }
-      }
-      : nodemailer.createTransport(nodemailerMailgunTransport(opt.mailgun));
+    this.api = opt.smtp
+      ? nodemailer.createTransport(opt.smtp)
+      : opt.mailgun
+        ? nodemailer.createTransport(nodemailerMailgunTransport(opt.mailgun))
+        : {
+          sendMail: function(){
+            this$.log.error("sendMail called while mail gateway is not available");
+            return lderror.reject(500, "mail service not available");
+          }
+        };
     this.suppress = opt.suppress;
     this.base = opt.base || 'base';
     this.log = opt.logger;

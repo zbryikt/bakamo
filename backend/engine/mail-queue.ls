@@ -13,11 +13,14 @@ require! <[./utils/md]>
 #   .then -> ...
 
 mail-queue = (opt={}) ->
-  @api = if !opt.mailgun =>
+  @api = if opt.smtp =>
+    nodemailer.createTransport(opt.smtp)
+  else if opt.mailgun =>
+    nodemailer.createTransport(nodemailer-mailgun-transport(opt.mailgun))
+  else
     sendMail: ~>
       @log.error "sendMail called while mail gateway is not available"
       return lderror.reject 500, "mail service not available"
-  else nodemailer.createTransport(nodemailer-mailgun-transport(opt.mailgun))
   @suppress = opt.suppress
   @base = opt.base or 'base'
   @log = opt.logger

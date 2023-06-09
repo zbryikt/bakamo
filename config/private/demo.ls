@@ -68,9 +68,12 @@ module.exports = do
   mail:
     # to suppress outgoing mail, enable `suppress` option.
     suppress: false
-    mailgun: auth:
-      domain: '...'
-      api_key: '...'
+    # currently we support SMPT or Mailgun
+    # SMPT config: {host, port, secure, auth: {user, pass}}
+    # check `https://nodemailer.com/about/#example` for sample configuration
+    smpt: null
+    # Mailgun config: {auth: {domain, api_key}}
+    mailgun: null
   # additional information passing to client side via api/auth/info.
   # use `global.config` to access this object.
   client: {}
