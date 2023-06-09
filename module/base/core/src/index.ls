@@ -18,7 +18,7 @@ servebase =
     # TODO to optimize, we may delay or completely ignore i18n, since not every service need i18n
     # TODO we should at least provide a dummy i18n so i18n.t will work
     @i18n = i18n = if @_cfg.{}i18n.driver => that else if i18next? => i18next else undefined
-    if !i18n? => return
+    if !i18n? => return Promise.resolve!
     block.i18n.use i18n
     i18ncfg = @_cfg.i18n.cfg or {
       supportedLng: <[en zh-TW]>, fallbackLng: \en, fallbackNS: '', defaultNS: ''

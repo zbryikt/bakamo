@@ -26,7 +26,7 @@
         ? that
         : typeof i18next != 'undefined' && i18next !== null ? i18next : undefined;
       if (i18n == null) {
-        return;
+        return Promise.resolve();
       }
       block.i18n.use(i18n);
       i18ncfg = this._cfg.i18n.cfg || {
