@@ -20,8 +20,72 @@
       }
       return this._cfg = o;
     },
+    _i18nInit: function(){
+      var i18n, that, ref$, i18ncfg, this$ = this;
+      this.i18n = i18n = (that = ((ref$ = this._cfg).i18n || (ref$.i18n = {})).driver)
+        ? that
+        : typeof i18next != 'undefined' && i18next !== null ? i18next : undefined;
+      if (i18n == null) {
+        return;
+      }
+      block.i18n.use(i18n);
+      i18ncfg = this._cfg.i18n.cfg || {
+        supportedLng: ['en', 'zh-TW'],
+        fallbackLng: 'en',
+        fallbackNS: '',
+        defaultNS: '',
+        keySeparator: '.',
+        nsSeparator: ':'
+      };
+      return Promise.resolve().then(function(){
+        return i18n.init(i18ncfg);
+      }).then(function(){
+        if (typeof i18nextBrowserLanguageDetector != 'undefined' && i18nextBrowserLanguageDetector !== null) {
+          return i18n.use(i18nextBrowserLanguageDetector);
+        }
+      }).then(function(){
+        var ns, ref$, obj, lng, res;
+        for (ns in ref$ = this$._cfg.i18n.locales || {}) {
+          obj = ref$[ns];
+          for (lng in obj) {
+            res = obj[lng];
+            i18n.addResourceBundle(lng, ns, res, true, true);
+          }
+        }
+        lng = (typeof httputil != 'undefined' && httputil !== null ? httputil.qs('lng') || httputil.cookie('lng') : null) || navigator.language || navigator.userLanguage || '';
+        if ((typeof httputil != 'undefined' && httputil !== null) && httputil.qs('setlng')) {
+          lng = httputil.qs('setlng');
+          httputil.cookie('lng', lng, {
+            path: '/'
+          });
+        }
+        if (!in$(lng, i18ncfg.supportedLng)) {
+          if (/-/.exec(lng)) {
+            if (in$(lng.split('-')[0], i18ncfg.supportedLng)) {
+              lng = lng.split('-')[0];
+            }
+          } else {
+            lng = i18ncfg.fallbackLng || i18ncfg.supportedLng[0] || 'en';
+          }
+        }
+        console.log("[@servebase/core][i18n] use language: ", lng);
+        return i18n.changeLanguage(lng);
+      }).then(function(){
+        i18n.on('languageChanged', function(lng){
+          if (typeof httputil != 'undefined' && httputil !== null) {
+            console.log("[@servebase/core][i18n] language changed to " + lng + " / cookie updated");
+            return httputil.cookie('lng', lng, {
+              path: '/'
+            });
+          } else {
+            return console.log("[@servebase/core][i18n] language changed to " + lng + " / no httputil, skip cookie update");
+          }
+        });
+        return block.i18n.use(i18n);
+      });
+    },
     _init: function(o){
-      var i18n, that, ref$, ethr, err, this$ = this;
+      var this$ = this;
       servebase._inited = true;
       if (o != null) {
         servebase._cfg = o;
@@ -53,164 +117,105 @@
         }
       });
       ldcover.zmgr(this.zmgr);
-      this.loader = new ldloader({
-        className: "ldld full",
-        autoZ: true,
-        baseZ: null,
-        zmgr: this.zmgr.scope(zmgr.splash)
-      });
-      this.captcha = new captcha({
-        manager: this.manager,
-        zmgr: this.zmgr.scope(zmgr.splash)
-      });
-      this.ldcvmgr = new ldcvmgr({
-        manager: this.manager,
-        errorCover: {
-          ns: 'local',
-          name: "error",
-          path: "0.html"
-        },
-        zmgr: this.zmgr
-      });
-      this.i18n = i18n = (that = ((ref$ = this._cfg).i18n || (ref$.i18n = {})).driver)
-        ? that
-        : typeof i18next != 'undefined' && i18next !== null ? i18next : undefined;
-      ethr = {
-        t: 0,
-        c: 0
-      };
-      err = new lderror.handler({
-        handler: function(n, e){
-          /*
-          melt down mechanism - prevent infinite errors. errors limited to 4 in 500ms / 11 in 2s
-          any unhandled error/rejection may trigger this handler again, which causes infinite errors
-          e.g., Promise.reject(Promise.reject(new Error())) in @plotdb/block `_fetch`
-          generate an additional rejection which is impossible to be caught.
-          this bug in @plotdb/block is fixed, however in case of any possible bugs in the future -
-          melt down mechanism is required.
-          */
-          var t;
-          t = Date.now();
-          if (ethr.t < t - 2000) {
-            ethr.t = t;
-            ethr.c = 0;
-          } else if (!ethr.t) {
-            compose$({
-              t: t,
-              c: 0
-            }, ethr);
-          } else if (ethr.t > t - 2000 && ethr.c > 10 || ethr.t > t - 500 && ethr.c > 3) {
-            return alert("something is wrong; please reload and try again");
-          }
-          ethr.c = (ethr.c || 0) + 1;
-          return this$.ldcvmgr.get({
+      return servebase._i18nInit.apply(this).then(function(){
+        var ethr, err;
+        this$.loader = new ldloader({
+          className: "ldld full",
+          autoZ: true,
+          baseZ: null,
+          zmgr: this$.zmgr.scope(zmgr.splash)
+        });
+        this$.captcha = new captcha({
+          manager: this$.manager,
+          zmgr: this$.zmgr.scope(zmgr.splash)
+        });
+        this$.ldcvmgr = new ldcvmgr({
+          manager: this$.manager,
+          errorCover: {
             ns: 'local',
-            name: 'error',
-            path: n + ".html"
-          }, e);
-        }
-      });
-      this.error = function(e){
-        return err(e);
-      };
-      this.error.ignore = function(){
-        var ids;
-        ids = Array.from(arguments);
-        return function(e){
-          if (!in$(lderror.id(e), ids)) {
-            return Promise.reject(e);
-          }
+            name: "error",
+            path: "0.html"
+          },
+          zmgr: this$.zmgr
+        });
+        ethr = {
+          t: 0,
+          c: 0
         };
-      };
-      this.erratum = new erratum({
-        handler: err
-      });
-      this.auth = new auth({
-        manager: this.manager,
-        zmgr: this.zmgr,
-        loader: this.loader,
-        authpanel: this._cfg.auth ? this._cfg.auth.authpanel : null
-      });
-      if (typeof ldc != 'undefined' && ldc !== null) {
-        ldc.action('ldcvmgr', this.ldcvmgr);
-      }
-      this.update = function(g){
-        return this.global = g, this.user = g.user || {}, this;
-      };
-      this.auth.on('error', this.error);
-      this.auth.on('logout', function(){
-        return window.location.replace('/');
-      });
-      return this.manager.init().then(function(){
-        var i18ncfg;
-        if (i18n == null) {
-          return;
-        }
-        i18ncfg = this$._cfg.i18n.cfg || {
-          supportedLng: ['en', 'zh-TW'],
-          fallbackLng: 'en',
-          fallbackNS: '',
-          defaultNS: '',
-          keySeparator: '.',
-          nsSeparator: ':'
+        err = new lderror.handler({
+          handler: function(n, e){
+            /*
+            melt down mechanism - prevent infinite errors. errors limited to 4 in 500ms / 11 in 2s
+            any unhandled error/rejection may trigger this handler again, which causes infinite errors
+            e.g., Promise.reject(Promise.reject(new Error())) in @plotdb/block `_fetch`
+            generate an additional rejection which is impossible to be caught.
+            this bug in @plotdb/block is fixed, however in case of any possible bugs in the future -
+            melt down mechanism is required.
+            */
+            var t;
+            t = Date.now();
+            if (ethr.t < t - 2000) {
+              ethr.t = t;
+              ethr.c = 0;
+            } else if (!ethr.t) {
+              compose$({
+                t: t,
+                c: 0
+              }, ethr);
+            } else if (ethr.t > t - 2000 && ethr.c > 10 || ethr.t > t - 500 && ethr.c > 3) {
+              return alert("something is wrong; please reload and try again");
+            }
+            ethr.c = (ethr.c || 0) + 1;
+            return this$.ldcvmgr.get({
+              ns: 'local',
+              name: 'error',
+              path: n + ".html"
+            }, e);
+          }
+        });
+        this$.error = function(e){
+          return err(e);
         };
-        return Promise.resolve().then(function(){
-          return i18n.init(i18ncfg);
-        }).then(function(){
-          if (typeof i18nextBrowserLanguageDetector != 'undefined' && i18nextBrowserLanguageDetector !== null) {
-            return i18n.use(i18nextBrowserLanguageDetector);
-          }
-        }).then(function(){
-          var ns, ref$, obj, lng, res;
-          for (ns in ref$ = this$._cfg.i18n.locales || {}) {
-            obj = ref$[ns];
-            for (lng in obj) {
-              res = obj[lng];
-              i18n.addResourceBundle(lng, ns, res, true, true);
+        this$.error.ignore = function(){
+          var ids;
+          ids = Array.from(arguments);
+          return function(e){
+            if (!in$(lderror.id(e), ids)) {
+              return Promise.reject(e);
             }
-          }
-          lng = (typeof httputil != 'undefined' && httputil !== null ? httputil.qs('lng') || httputil.cookie('lng') : null) || navigator.language || navigator.userLanguage || '';
-          if ((typeof httputil != 'undefined' && httputil !== null) && httputil.qs('setlng')) {
-            lng = httputil.qs('setlng');
-            httputil.cookie('lng', lng, {
-              path: '/'
-            });
-          }
-          if (!in$(lng, i18ncfg.supportedLng)) {
-            if (/-/.exec(lng)) {
-              if (in$(lng.split('-')[0], i18ncfg.supportedLng)) {
-                lng = lng.split('-')[0];
-              }
-            } else {
-              lng = i18ncfg.fallbackLng || i18ncfg.supportedLng[0] || 'en';
-            }
-          }
-          console.log("[@servebase/core][i18n] use language: ", lng);
-          return i18n.changeLanguage(lng);
+          };
+        };
+        this$.erratum = new erratum({
+          handler: err
+        });
+        this$.auth = new auth({
+          manager: this$.manager,
+          zmgr: this$.zmgr,
+          loader: this$.loader,
+          authpanel: this$._cfg.auth ? this$._cfg.auth.authpanel : null
+        });
+        if (typeof ldc != 'undefined' && ldc !== null) {
+          ldc.action('ldcvmgr', this$.ldcvmgr);
+        }
+        this$.update = function(g){
+          return this.global = g, this.user = g.user || {}, this;
+        };
+        this$.auth.on('error', this$.error);
+        this$.auth.on('logout', function(){
+          return window.location.replace('/');
+        });
+        return this$.manager.init().then(function(){
+          return this$.auth.get();
+        }).then(function(g){
+          this$.global = g;
+          this$.user = g.user;
+          return this$.captcha.init(g.captcha);
         }).then(function(){
-          i18n.on('languageChanged', function(lng){
-            if (typeof httputil != 'undefined' && httputil !== null) {
-              console.log("[@servebase/core][i18n] language changed to " + lng + " / cookie updated");
-              return httputil.cookie('lng', lng, {
-                path: '/'
-              });
-            } else {
-              return console.log("[@servebase/core][i18n] language changed to " + lng + " / no httputil, skip cookie update");
-            }
+          this$.auth.on('update', function(g){
+            return this$.update(g);
           });
-          return block.i18n.use(i18n);
+          return this$;
         });
-      }).then(function(){
-        return this$.auth.get();
-      }).then(function(g){
-        this$.global = g;
-        this$.user = g.user;
-        return this$.captcha.init(g.captcha);
-      }).then(function(){
-        this$.auth.on('update', function(g){
-          return this$.update(g);
-        });
-        return this$;
       });
     }
   };
@@ -231,6 +236,11 @@
   } else if (typeof window != 'undefined' && window !== null) {
     window.servebase = servebase;
   }
+  function in$(x, xs){
+    var i = -1, l = xs.length >>> 0;
+    while (++i < l) if (x === xs[i]) return true;
+    return false;
+  }
   function compose$() {
     var functions = arguments;
     return function() {
@@ -241,10 +251,5 @@
       }
       return result;
     };
-  }
-  function in$(x, xs){
-    var i = -1, l = xs.length >>> 0;
-    while (++i < l) if (x === xs[i]) return true;
-    return false;
   }
 }).call(this);
