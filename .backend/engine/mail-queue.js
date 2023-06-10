@@ -111,8 +111,12 @@
       fn = function(b){
         return "config/" + b + "/mail/" + name + ".yaml";
       };
-      return fs.promises.access(fn(this.base)).then(function(){
-        return fn(this$.base);
+      return fs.promises.access(fn('private')).then(function(){
+        return fn('private');
+      })['catch'](function(){
+        return fs.promises.access(fn(this$.base)).then(function(){
+          return fn(this$.base);
+        });
       })['catch'](function(){
         return fs.promises.access(fn('base')).then(function(){
           return fn('base');

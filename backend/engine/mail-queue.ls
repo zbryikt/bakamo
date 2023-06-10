@@ -77,8 +77,9 @@ mail-queue.prototype = Object.create(Object.prototype) <<< do
 
   by-template: (name, email, map = {}, config = {}) ->
     fn = (b) -> "config/#b/mail/#name.yaml"
-    fs.promises.access fn @base
-      .then ~> fn @base
+    fs.promises.access fn \private
+      .then ~> fn \private
+      .catch ~> fs.promises.access fn @base .then ~> fn @base
       .catch ~> fs.promises.access fn \base .then ~> fn \base
       .catch (e) ~>
         @log.error "send mail failed: read template file failed.", e
