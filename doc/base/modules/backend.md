@@ -12,7 +12,7 @@
  - `base`: base name. default `base`. updated based on `config` related field.
  - `feroot`: default frontend base directory. e.g., `frontend/base`. auto generated based on `base` field
  - `root`: repo root directory
- - `server`: http.Server object 
+ - `server`: http.Server object
  - `app`: express application
  - `log`: logger object, in pino interface
  - `log-server`: child log of `log` for server information
@@ -23,7 +23,7 @@
    - `app`: routes for view
    - `api`: routes for api
    - `extapi`: routes for api from cross domain access
-   - `auth`: routes for authorization 
+   - `auth`: routes for authorization
  - `store`: redis like data store, with following function:
    - `get(key)`: return a Promise which resolves with the value corresponding to `key`.
    - `set(key, value)`: return a Promise which resolves when redis successfully update `key` with `value`.
@@ -75,7 +75,11 @@ mail-queue API:
  - `send-directly(payload)`: send mail, bypassing queue
  - `send-from-md(payload, map, opt)`: send with markdown content
  - `by-template(name, email, map, config)`: send using template content.
-   - templates are stored under "config/mail/${name}.yaml"
+   - templates are stored under `config/<name>/mail/${name}.yaml`.
+     - when there are multiple possible names, they will be looked up with following order:
+     - `private` (e.g., `config/private/mail/...`)
+     - name configured in `base` field in secret file.
+     - `base` (e.g., `config/base/mail/...`)
 
 
 ## View Rendering
