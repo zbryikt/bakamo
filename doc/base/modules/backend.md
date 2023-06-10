@@ -89,6 +89,7 @@ View rendering is powered by `@plotdb/srcbuild`. For more information, check `@p
 Except the APIs/filters provided by `@plotdb/srcbuild`, `servebase` also provides following information via local variables (in both view and static file rendering):
 
  - `settings.domain`: domain name set in `secret.ls`. schema not included.
+   - note that since static generated files use the value when they are generated, `domain` may cause inconsistent when used in static generated files.
  - `settings.sysinfo`: a function returning system information including `version` and `cachestamp`.
 
 

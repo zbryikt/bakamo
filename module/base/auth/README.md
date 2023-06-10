@@ -19,6 +19,7 @@ User information is stored in an object called `global`, passed by an API by req
    - `staff`: true if this is staff user. 
    - `verified`: if this account if verified.
  - `captcha`: captcha configuration. an object of key(captcha provider) / config (sitekey / enabled) mapping.
+ - `oauth`: additional oauth methods, as an object with oauth name to `{enabled}` mapping.
  - `version`: software version
  - `config`: other configuration for frontend, from `client` field of `secret.ls`.
 

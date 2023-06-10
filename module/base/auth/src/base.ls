@@ -15,8 +15,10 @@ module.exports =
     {ldview, ldnotify, curegex, ldform} = ctx
     ({core}) <~ servebase.corectx _
     <-(~>it.apply @mod = @mod({core, t} <<< ctx)) _
-    @ldcv = ldcv = {}
     @_auth = data.auth
+    (g) <~ @_auth.get!then _
+    @global = g
+    @ldcv = ldcv = {}
     iroot = ld$.find(root, '.ldcv[data-name=authpanel]', 0)
     ldcv.authpanel = new ldcover do
       root: iroot
@@ -48,6 +50,8 @@ module.exports =
           @ldld = new ldloader root: node
 
       handler:
+        oauth: ({node}) ~>
+          node.classList.toggle \d-none, !(@global.oauth[node.getAttribute \data-name] or {}).enabled
         submit: ({node}) ~>
           node.classList.toggle \disabled, !(@ready)
         "submit-text": ({node}) ~>

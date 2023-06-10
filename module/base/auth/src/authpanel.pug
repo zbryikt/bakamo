@@ -97,13 +97,13 @@ div
                 span(t,ld="submit-text") login
                 .ld.ld-spin.ld-ring
               .text-right.my-2: a(ld="forget-password",href="/auth/?passwd-reset") #[span(t) forget]? »
-            div
+            div(ld="oauths")
               .sep.sep-text.mb-4.text-sm.text-secondary: span(t) alt
               .d-flex
-                .btn.btn-primary.mr-1.flex-grow-1.d-flex.justify-content-between.align-items-center(
-                ld="oauth",data-name="facebook") #[span Facebook] #[i.i-fb(aria-hidden="true")]
-                .btn.btn-outline-secondary.ml-1.flex-grow-1.d-flex.justify-content-between.align-items-center(
-                ld="oauth",data-name="google") #[span Google] #[i.i-google(aria-hidden="true")]
+                .btn.btn-primary.mr-1.flex-grow-1(ld="oauth",data-name="facebook")
+                  .d-flex.justify-content-between.align-items-center #[span Facebook] #[i.i-fb(aria-hidden="true")]
+                .btn.btn-outline-secondary.ml-1.flex-grow-1(ld="oauth",data-name="google")
+                  .d-flex.justify-content-between.align-items-center #[span Google] #[i.i-google(aria-hidden="true")]
 
   style(type="text/css"): include:stylus authpanel.styl
   script(type="@plotdb/block")

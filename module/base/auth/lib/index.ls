@@ -9,6 +9,11 @@ require! <[@servebase/backend/aux ./passwd ./mail]>
 
 captcha = Object.fromEntries [[k,v] for k,v of config.captcha].map ->
   if it.0 == \enabled => [it.0, it.1] else [it.0, it.1{sitekey, enabled}]
+oauth = Object.fromEntries(
+  [[k,v] for k,v of config.auth]
+    .map -> if it.0 == \local => return else [it.0, {enabled: !(it.1.enabled?) or it.1.enabled }]
+    .filter -> it
+)
 
 limit-session-amount = false
 
@@ -107,6 +112,7 @@ route.auth.get \/info, (req, res) ~>
     ip: aux.ip(req)
     user: if req.user => req.user{key, config, plan, displayname, verified, username, staff} else {}
     captcha: captcha
+    oauth: oauth
     version: backend.version
     cachestamp: backend.cachestamp
     config: backend.config.client or {}

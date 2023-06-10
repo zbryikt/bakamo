@@ -19,7 +19,7 @@
       return f.call({}, it);
     };
   })(function(backend){
-    var db, app, config, route, captcha, k, v, limitSessionAmount, getUser, strategy, x$, this$ = this;
+    var db, app, config, route, captcha, k, v, oauth, limitSessionAmount, getUser, strategy, x$, this$ = this;
     db = backend.db, app = backend.app, config = backend.config, route = backend.route;
     captcha = Object.fromEntries((function(){
       var ref$, results$ = [];
@@ -40,6 +40,24 @@
           }
         ];
       }
+    }));
+    oauth = Object.fromEntries((function(){
+      var ref$, results$ = [];
+      for (k in ref$ = config.auth) {
+        v = ref$[k];
+        results$.push([k, v]);
+      }
+      return results$;
+    }()).map(function(it){
+      if (it[0] === 'local') {} else {
+        return [
+          it[0], {
+            enabled: !(it[1].enabled != null) || it[1].enabled
+          }
+        ];
+      }
+    }).filter(function(it){
+      return it;
     }));
     limitSessionAmount = false;
     getUser = function(arg$){
@@ -189,6 +207,7 @@
           }
           : {},
         captcha: captcha,
+        oauth: oauth,
         version: backend.version,
         cachestamp: backend.cachestamp,
         config: backend.config.client || {}
