@@ -41,6 +41,7 @@
             name: "@servebase/auth"
           };
           return this$._manager.from(bid, {
+            autoTransform: 'i18n',
             root: document.body,
             data: {
               auth: this$,

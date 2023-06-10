@@ -19,9 +19,8 @@ module.exports =
     (g) <~ @_auth.get!then _
     @global = g
     @ldcv = ldcv = {}
-    iroot = ld$.find(root, '.ldcv[data-name=authpanel]', 0)
     ldcv.authpanel = new ldcover do
-      root: iroot
+      root: root
       zmgr: core.zmgr
       # /* we should consider if `data.zmgr` is a good approach */ zmgr: data.zmgr
       # /* we should unify base-z */ base-z: (if data.zmgr => \modal else 3000)
@@ -31,7 +30,7 @@ module.exports =
       setTimeout (-> view.get('username').focus! ), 100
     @ <<< {_tab: 'login', _info: \default}
     @view = view = new ldview do
-      root: iroot
+      root: root
       action:
         keyup: input: ({node, evt}) ~> if evt.keyCode == 13 => @submit!
         click:
@@ -75,7 +74,7 @@ module.exports =
           s.password = if !f.password.value => 1 else if !@is-valid.password(f.password.value) => 2 else 0
         if @_tab == \login => s.displayname = 0
         else s.displayname = if !f.displayname.value => 1 else if !!f.displayname.value => 0 else 2
-      root: iroot
+      root: root
     @form.on \readystatechange, ~> @ready = it; @view.render \submit
 
   interface: -> (toggle = true, opt = {}) ~>
