@@ -26,8 +26,9 @@ get-user = ({username, password, method, detail, create, cb, req}) ->
           if limit-session-amount and ((r.[]rows.0 or {}).count or 1) > 1 => cb lderror(1004), null, {message: ''}
           else cb null, (user <<< {ip: aux.ip(req)})
     .catch (e) ->
-      e = if lderror.id(e) => e else lderror 500
-      cb e, null, {message: ''}
+      if lderror.id(e) == 1012 => return cb null, false
+      console.log e
+      cb lderror(500)
 
 strategy = do
   local: (opt) ->

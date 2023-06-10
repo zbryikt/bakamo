@@ -81,12 +81,11 @@
           }
         });
       })['catch'](function(e){
-        e = lderror.id(e)
-          ? e
-          : lderror(500);
-        return cb(e, null, {
-          message: ''
-        });
+        if (lderror.id(e) === 1012) {
+          return cb(null, false);
+        }
+        console.log(e);
+        return cb(lderror(500));
       });
     };
     strategy = {
