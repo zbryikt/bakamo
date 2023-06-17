@@ -81,7 +81,8 @@
           }
         });
       })['catch'](function(e){
-        if (lderror.id(e) === 1012) {
+        var ref$;
+        if ((ref$ = lderror.id(e)) === 1000 || ref$ === 1004 || ref$ === 1012 || ref$ === 1015 || ref$ === 1034) {
           return cb(null, false);
         }
         console.log(e);

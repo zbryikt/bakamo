@@ -26,7 +26,10 @@ get-user = ({username, password, method, detail, create, cb, req}) ->
           if limit-session-amount and ((r.[]rows.0 or {}).count or 1) > 1 => cb lderror(1004), null, {message: ''}
           else cb null, (user <<< {ip: aux.ip(req)})
     .catch (e) ->
-      if lderror.id(e) == 1012 => return cb null, false
+      # 1012: permission denied;  1004: quota exceeded(won't hit here?)
+      # 1000: user not login; 1034: user not found; 1015: bad param
+      # TODO we may need to pass error code to frontend for better error message.
+      if lderror.id(e) in [1000,1004,1012,1015,1034] => return cb null, false
       console.log e
       cb lderror(500)
 
