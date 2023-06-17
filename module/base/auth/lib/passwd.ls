@@ -40,7 +40,7 @@ route: ->
         res.redirect "/auth/?passwd-change"
 
   route.auth.post \/passwd/reset, mdw.throttle, mdw.captcha, (req, res) ->
-    email = "#{req.body.email}".trim!
+    email = "#{req.body.email}".trim!toLowerCase!
     if !email => return lderror.reject 400
     obj = {}
     db.query "select key from users where username = $1", [email]
