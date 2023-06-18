@@ -34,8 +34,8 @@
             uuid: ~> fetch!uuid or 'n/a'
             message: ~>
               ret =  fetch!message or lderror.message(fetch!) or 'no message provided'
-              if ret.length > 200 => ret = ret.substring(0, 200) + '...'
               if /^\s*<html>/.exec(ret) => ret = ret.replace /<[^>]+?>/g, ' '
+              if ret.length > 200 => ret = ret.substring(0, 200) + '...'
               ret = ret.replace(/\s+/g,' ')
               return ret
 
