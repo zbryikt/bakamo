@@ -1,12 +1,12 @@
 .ldcv.ldcvmgr.scroll(data-name="error"): .base.w-640.rwd: .inner.card: .card-body.text-center: .p-4
   plug(name="content")
-  .my-4.rounded.p-2.bg-light(style="display:grid;grid-template-columns:8em 1fr")
+  .my-4.rounded.p-2.bg-light.text-secondary.text-sm(style="display:grid;grid-template-columns:8em 1fr")
     .text-right.mr-4 error id
-    .text-left #[span.font-weight-bold(ld="id")]
+    .text-left #[span(ld="id")]
     .text-right.mr-4 error uuid
-    .text-left #[span.font-weight-bold(ld="uuid")]
+    .text-left #[span(ld="uuid")]
     .text-right.mr-4 message
-    .w-100.font-weight-bold.text-left(style="word-break:break-all",ld="message")
+    .w-100.text-left(style="word-break:break-all",ld="message")
   plug(name="cta")
 
   script(type="@plotdb/block"): :lsc
@@ -35,6 +35,8 @@
             message: ~>
               ret =  fetch!message or lderror.message(fetch!) or 'no message provided'
               if ret.length > 200 => ret = ret.substring(0, 200) + '...'
+              if /^\s*<html>/.exec(ret) => ret = ret.replace /<[^>]+?>/g, ' '
+              ret = ret.replace(/\s+/g,' ')
               return ret
 
       interface: -> @ldcv
