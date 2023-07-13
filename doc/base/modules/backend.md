@@ -64,6 +64,7 @@ mail-queue API:
  - `send(payload, opt)`: send mail.
    - payload field:
      - from: sender. e.g., '"Servebase Dev" <contact@yourserver.address>'
+       - this may be overwritten by `mail.info.from` field in secret config file.
      - to: recipient. e.g., "some@mail.address"
      - bcc: bcc recipient. e.g., "some@mail.address"
      - subject: mail title

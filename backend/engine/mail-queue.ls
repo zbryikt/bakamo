@@ -24,6 +24,7 @@ mail-queue = (opt={}) ->
   @suppress = opt.suppress
   @base = opt.base or 'base'
   @log = opt.logger
+  @info = opt.info or {}
   @list = []
   @
 
@@ -65,6 +66,7 @@ mail-queue.prototype = Object.create(Object.prototype) <<< do
   # content -> text / html
   send-from-md: (payload, map = {}, opt={}) -> new Promise (res, rej) ~>
     content = (payload.content or '')
+    payload.from = (@info or {}).from or payload.from
     for k,v of map =>
       re = new RegExp("\#{#k}", "g")
       content = content.replace(re, v)

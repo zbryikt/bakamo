@@ -68,6 +68,12 @@ module.exports = do
   mail:
     # to suppress outgoing mail, enable `suppress` option.
     suppress: false
+    # additional information for customizing mail info. possible fields:
+    #  - `from`: sender information, can be interpolated. such as:
+    #            '"#{sitename} Support" <contact@#{domain}>'
+    #            '"test user" <test@plotdb.com>'
+    #            'contact@grantdash.io'
+    info: null
     # currently we support SMPT or Mailgun
     # SMPT config: {host, port, secure, auth: {user, pass}}
     # check `https://nodemailer.com/about/#example` for sample configuration

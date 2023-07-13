@@ -24,6 +24,7 @@
     this.suppress = opt.suppress;
     this.base = opt.base || 'base';
     this.log = opt.logger;
+    this.info = opt.info || {};
     this.list = [];
     return this;
   };
@@ -89,6 +90,7 @@
       return new Promise(function(res, rej){
         var content, k, ref$, v, re;
         content = payload.content || '';
+        payload.from = (this$.info || {}).from || payload.from;
         for (k in ref$ = map) {
           v = ref$[k];
           re = new RegExp("#{" + k + "}", "g");
