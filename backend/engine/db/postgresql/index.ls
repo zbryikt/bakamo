@@ -18,7 +18,7 @@ database = (backend, opt = {}) ->
   @session-store = new session-store {
     db: @, session: backend.config.session.max-age, logger: log, query-only: opt.query-only
   }
-  @user-store = new user-store {db: @, logger: log}
+  @user-store = new user-store {db: @, config, logger: log}
 
   @
 
