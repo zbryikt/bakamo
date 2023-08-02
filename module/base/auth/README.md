@@ -188,9 +188,13 @@ engine/auth.ls. API endpoints:
      - displayname
      - password
      - config
-   - POST / `@api/auth/login` - login. params:
-     - username
-     - password
+   - POST / `@api/auth/login` - login.
+     - params:
+       - username
+       - password
+     - return optional `{passwordDue, passwordShouldRenew}` when necessary with following meaning:
+       - `passwordDue`: how many time password has been due.
+       - `passwordShouldRenew`: should password be renewed.
    - POST / `@api/auth/logout` - logout. no params.
    - POST / `@api/auth/reset` - logout, clear cookie
    - POST / `@api/auth/clear` - logout, clear cookie from all devices

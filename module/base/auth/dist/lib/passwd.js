@@ -42,7 +42,12 @@
             }
             user = r.rows[0];
             user.password = password.hashed;
-            return db.query("update users set (password,method) = ($2,$3) where key = $1", [user.key, user.password, 'local']);
+            return db.query("update users set (password,method) = ($2,$3) where key = $1", [user.key, user.password, 'local']).then(function(){
+              return db.userStore.passwordTrack({
+                user: user,
+                hash: password.hashed
+              });
+            });
           }).then(function(){
             return db.query("delete from pwresettoken where pwresettoken.token=$1", [token]);
           }).then(function(){
@@ -100,11 +105,12 @@
           });
         });
         return route.auth.put('/passwd/', mdw.throttle, aux.signedin, function(req, res, next){
-          var ref$, n, o;
-          ref$ = {
-            n: (ref$ = req.body).n,
-            o: ref$.o
-          }, n = ref$.n, o = ref$.o;
+          var ref$, n, o, renew, unused;
+          ref$ = req.body || {}, n = ref$.n, o = ref$.o, renew = ref$.renew;
+          unused = ((config.policy || {}).password || {}).checkUnused;
+          unused = renew
+            ? unused === 'renew' || unused === 'all'
+            : unused === 'all';
           return Promise.resolve().then(function(){
             if (!req.user) {
               return lderror.reject(403);
@@ -123,10 +129,22 @@
               return lderror.reject(1030);
             });
           }).then(function(){
+            if (unused) {
+              return db.userStore.ensurePasswordUnused({
+                user: req.user,
+                password: n
+              });
+            }
+          }).then(function(){
             return db.userStore.hashing(n);
           }).then(function(password){
             req.user.password = password;
-            return db.query("update users set (password,method) = ($1,'local') where key = $2", [password, req.user.key]);
+            return db.query("update users set (password,method) = ($1,'local') where key = $2", [password, req.user.key]).then(function(){
+              return db.userStore.passwordTrack({
+                user: req.user,
+                hash: password
+              });
+            });
           }).then(function(){
             return new Promise(function(res, rej){
               return req.login(req.user, function(){

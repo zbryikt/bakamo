@@ -321,10 +321,18 @@
         }
         return req.login(user, function(err){
           if (err) {
-            next(err);
-          } else {
-            res.send();
+            return next(err);
           }
+          db.userStore.passwordDue({
+            user: user
+          }).then(function(span){
+            return res.send(span > 0
+              ? {
+                passwordDue: span,
+                passwordShouldRenew: span > 0
+              }
+              : {});
+          });
         });
       })(req, res, next);
     });

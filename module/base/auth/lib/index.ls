@@ -177,7 +177,11 @@ route.auth
   ..post \/login, backend.middleware.captcha, (req, res, next) ->
     ((err,user,info) <- passport.authenticate \local, _
     if err or !user => return next(err or lderror(1000))
-    req.login user, (err) !-> if err => next(err) else res.send!
+    (err) <-! req.login user, _
+    if err => return next err
+    # check if we should notify user to update password
+    (span) <- db.user-store.password-due {user} .then _
+    res.send if span > 0 => {password-due: span, password-should-renew: (span > 0)} else {}
     )(req, res, next)
   ..post \/logout, (req, res) -> req.logout(!-> res.send!)
 

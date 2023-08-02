@@ -106,7 +106,7 @@ module.exports =
         .then ~>
           core.captcha.guard cb: (captcha) ~>
             body <<< {captcha}
-            ld$.fetch "#{@_auth.api-root!}#{@_tab}", {method: \POST}, {json: body}
+            ld$.fetch "#{@_auth.api-root!}#{@_tab}", {method: \POST}, {json: body, type: \json}
         .catch (e) ~>
           if lderror.id(e) != 1005 => return Promise.reject e
           # 1005 csrftoken mismatch - try recoverying directly by reset session
@@ -116,7 +116,10 @@ module.exports =
               @_auth.fetch {renew: true}
             .then ~>
               # try logging in again. if it still fails, fallback to normal error handling process
-              ld$.fetch "#{@_auth.api-root!}#{@_tab}", {method: \POST}, {json: body}
+              ld$.fetch "#{@_auth.api-root!}#{@_tab}", {method: \POST}, {json: body, type: \json}
+        .then (ret = {}) ~>
+          if !ret.password-should-renew => return
+          core.ldcvmgr.get {name: "@servebase/auth", path: "passwd-renew"}
         .then ~> @_auth.fetch!
         .finally ~> @ldld.off!
         .then (g) ~>
