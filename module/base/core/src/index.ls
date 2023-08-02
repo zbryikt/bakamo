@@ -117,6 +117,7 @@ servebase =
     @ <<<
       erratum: new erratum handler: err
       auth: new auth do
+        ldcvmgr: @ldcvmgr
         manager: @manager
         zmgr: @zmgr
         loader: @loader

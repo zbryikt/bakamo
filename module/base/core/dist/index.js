@@ -189,6 +189,7 @@
           handler: err
         });
         this$.auth = new auth({
+          ldcvmgr: this$.ldcvmgr,
           manager: this$.manager,
           zmgr: this$.zmgr,
           loader: this$.loader,
