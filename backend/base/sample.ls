@@ -30,6 +30,10 @@ app.get \/lderror/reject,  (req, res, next) -> Promise.reject(lderror 1023)
 api.get \/ip, (req, res, next) ->
   res.send aux.ip(req)
 
+api.get \/password-due, (req, res, next) ->
+  db.user-store.password-due req{user}
+    .then (delta) -> res.send(if delta > 0 => {password-expire: delta} else {})
+
 # Demonstrate using captcha to guard this api.
 api.post \/post, backend.middleware.captcha, (req, res, next) ->
   res.send \pass

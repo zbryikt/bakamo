@@ -57,6 +57,17 @@
     api.get('/ip', function(req, res, next){
       return res.send(aux.ip(req));
     });
+    api.get('/password-due', function(req, res, next){
+      return db.userStore.passwordDue({
+        user: req.user
+      }).then(function(delta){
+        return res.send(delta > 0
+          ? {
+            passwordExpire: delta
+          }
+          : {});
+      });
+    });
     api.post('/post', backend.middleware.captcha, function(req, res, next){
       return res.send('pass');
     });
