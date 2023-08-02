@@ -50,6 +50,14 @@ module.exports = do
     level: \info
     # when true, all errors handled in `@servebase/backend/error-handler` will be logged with `debug` level
     all-error: false
+  policy:
+    # password renew policy
+    password:
+      check-unused: '' # either empty (don't check), `renew` (check only for renewal), `all` ( always check )
+      renew: 180 # days after last password update to renew password
+      track:
+        count: 1 # amount of password records to keep at most
+        day: 540 # records to keep within this amount of days
   auth:
     # GCP -> API & Services -> Credentials -> OAuth Client ID
     google:

@@ -22,6 +22,17 @@ create table if not exists users (
 
 create index if not exists idx_user_displayname on users (lower(displayname) varchar_pattern_ops);
 
+create table if not exists password (
+  key serial primary key,
+  owner int references users(key),
+  hash text constraint password_hash_len check (char_length(hash) <= 100),
+  createdtime timestamp default now(),
+  snooze timestamp default now()
+);
+
+create index if not exists idx_password_owner on password (owner);
+create index if not exists idx_password_createdtime on password (createdtime);
+
 create table if not exists session (
   key text not null unique primary key,
   owner int references users(key),
