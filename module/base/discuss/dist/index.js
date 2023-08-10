@@ -9,10 +9,18 @@
     this._evthdr = {};
     this._loading = false;
     this._purify = function(t){
-      return DOMPurify.sanitize(t);
+      if (typeof DOMPurify != 'undefined' && DOMPurify !== null) {
+        return DOMPurify.sanitize(t);
+      }
+      console.warn("[@servebase/discuss] DOMPurify is not found which is required for DOM sanitizing");
+      return t;
     };
     this._md = function(t){
-      return marked.parse(t);
+      if (typeof marked != 'undefined' && marked !== null) {
+        return marked.parse(t);
+      }
+      console.warn("[@servebase/discuss] marked is not found which is required for markdown compiling");
+      return t;
     };
     this.comments = [];
     this.discuss = {};
@@ -78,14 +86,15 @@
     })['finally'](function(){
       return this$.loading = false;
     }).then(function(r){
+      console.log("load: ", r);
       this$.comments = r.comments || [];
       this$.discuss = r.discuss || {};
       this$.fire('loaded');
       return this$.view.render();
     });
   }, ref$.contentRender = function(arg$){
-    var ctx, obj;
-    ctx = arg$.ctx;
+    var node, ctx, obj;
+    node = arg$.node, ctx = arg$.ctx;
     obj = ctx.content || {};
     if (!(obj.config || (obj.config = {}))["renderer"]) {
       return node.innerText = obj.body;
@@ -93,15 +102,21 @@
       return node.innerHTML = this._purify(this._md(obj.body));
     }
   }, ref$._view = function(arg$){
-    var root, cfg, this$ = this;
+    var root, setCfg, cfg, this$ = this;
     root = arg$.root;
+    setCfg = function(o){
+      var k, v, results$ = [];
+      o == null && (o = {});
+      for (k in o) {
+        v = o[k];
+        results$.push(this$._edit.content.config[k] = v);
+      }
+      return results$;
+    };
     cfg = {};
     cfg.edit = {
       action: {
         input: {
-          "use-markdown": function(){
-            return this$._edit.content.config["renderer"] === (this$.node.checked ? 'markdown' : '');
-          },
           "toggle-preview": function(arg$){
             var node;
             node = arg$.node;
@@ -131,24 +146,30 @@
               content: this$._edit.content,
               slug: this$._slug
             };
-            return debounce(1000).then(function(){
+            return this$._core.auth.ensure().then(function(){
+              this$.ldld.on();
               return this$._core.captcha.guard({
                 cb: function(captcha){
-                  return payload.captcha = captcha, payload;
+                  payload.captcha = captcha;
+                  return ld$.fetch('/api/discuss', {
+                    method: payload.key ? 'PUT' : 'POST'
+                  }, {
+                    type: 'json',
+                    json: payload
+                  });
                 }
               });
-            }).then(function(){
-              return ld$.fetch('/api/discuss', {
-                method: payload.key ? 'PUT' : 'POST'
-              }, {
-                type: 'json',
-                json: payload
+            }).then(function(ret){
+              return debounce(1000).then(function(){
+                return ret;
               });
+            })['finally'](function(){
+              return this$.ldld.off();
             }).then(function(ret){
               var ref$;
               this$.fire('new-comment', (ref$ = import$({
-                owner: this$.global.user.key,
-                displayname: this$.global.user.displayname,
+                owner: this$._core.user.key,
+                displayname: this$._core.user.displayname,
                 createdtime: Date.now()
               }, payload), ref$.key = ret.key, ref$.slug = ret.slug, ref$));
               this$._edit.content.body = '';
@@ -157,7 +178,41 @@
           }
         }
       },
+      init: {
+        submit: function(arg$){
+          var node;
+          node = arg$.node;
+          return this$.ldld = new ldloader({
+            root: node
+          });
+        }
+      },
       handler: {
+        "use-markdown": {
+          action: {
+            input: {
+              check: function(arg$){
+                var node, views, useMarkdown;
+                node = arg$.node, views = arg$.views;
+                useMarkdown = !!node.checked;
+                return setCfg({
+                  renderer: useMarkdown ? 'markdown' : ''
+                });
+              }
+            },
+            click: {
+              label: function(arg$){
+                var node, views, input, useMarkdown;
+                node = arg$.node, views = arg$.views;
+                input = views[0].get('check');
+                useMarkdown = input.checked = !input.checked;
+                return setCfg({
+                  renderer: useMarkdown ? 'markdown' : ''
+                });
+              }
+            }
+          }
+        },
         avatar: function(){},
         preview: function(){}
       }
