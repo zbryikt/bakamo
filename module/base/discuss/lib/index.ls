@@ -22,10 +22,12 @@ api.get \/discuss/, (req, res) ->
   lc = {}
   {slug,uri} = req.query{slug, uri}
   if !(slug or uri) => return all-thread req, res
+  # fallback to '/' if no slug and no uri
+  if !uri => uri = \/
   limit = if isNaN(req.query.limit) => 20 else +req.query.limit <? 100
   offset = if isNaN(req.query.offset) => 0 else +req.query.offset
   promise = if slug => db.query "select key,title from discuss where slug = $1 limit 1", [slug]
-  else db.query "select key,title from discuss where uri = $1 limit 1", [uri]
+  else db.query "select key,title from discuss where uri = $1 limit 1", [uri or \/]
   promise
     .then (r={}) ->
       lc.discuss = discuss = r.[]rows.0
@@ -38,8 +40,7 @@ api.get \/discuss/, (req, res) ->
       and c.state = 'active'
       order by distance limit $2 offset $3
       """, [discuss.key, limit, offset]
-        .then (r= {}) ->
-          res.send( {discuss: lc.discuss, comments: r.[]rows} )
+        .then (r= {}) -> res.send( {discuss: lc.discuss, comments: r.[]rows} )
 
 api.post \/discuss/, aux.signedin, throttle.kit.generic, backend.middleware.captcha, (req, res) ->
   lc = {}
@@ -48,13 +49,14 @@ api.post \/discuss/, aux.signedin, throttle.kit.generic, backend.middleware.capt
       if !req.body => return lderror.reject 400
       lc <<< req.body{uri, slug, reply, content, title}
       lc.content = (lc.content or {}){body, config}
+      # fallback to '/' if no slug and no uri
+      if !lc.uri => lc.uri = \/
       if lc.slug => db.query "select key, slug from discuss where slug = $1", [lc.slug]
-      else if lc.uri => db.query "select key, slug from discuss where uri = $1", [lc.uri]
-      else return {}
+      else db.query "select key, slug from discuss where uri = $1", [lc.uri]
     .then (r = {}) ->
       if r.[]rows.length => return Promise.resolve(r)
       # new discuss. Since it's new, user should not know its slug.
-      lc.slug = suuid!
+      if !lc.slug => lc.slug = suuid!
       db.query """
       insert into discuss (slug, uri, title) values ($1,$2,$3) returning key
       """, [lc.slug, (if lc.slug => null else lc.uri), (lc.title or '')]
