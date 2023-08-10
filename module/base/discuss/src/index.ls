@@ -35,7 +35,6 @@ discuss.prototype = Object.create(Object.prototype) <<<
     ld$.fetch \/api/discuss, {method: \GET}, {params: payload, type: \json}
       .finally ~> @loading = false
       .then (r) ~>
-        console.log "load: ", r
         @ <<< {comments: r.comments or [], discuss: r.discuss or {}}
         @fire \loaded
         @view.render!
@@ -60,7 +59,10 @@ discuss.prototype = Object.create(Object.prototype) <<<
             if node.classList.contains \running => return
             if node.classList.contains \disabled => return
             if !@is-ready! => return
-            payload = {uri: @_uri, content: @_edit.content, slug: @_slug}
+            payload =
+              uri: @_uri
+              content: JSON.parse(JSON.stringify(@_edit.content))
+              slug: @_slug
             #@data{uri, reply, content, slug, key, title}
             @_core.auth.ensure!
               .then ~>
@@ -74,16 +76,19 @@ discuss.prototype = Object.create(Object.prototype) <<<
                       {type: \json, json: payload}
                     )
               .then (ret) -> debounce 1000 .then -> return ret
-              .finally ~> @ldld.off!
               .then (ret) ~>
-                @fire \new-comment, {
+                c = {
                   owner: @_core.user.key,
                   displayname: @_core.user.displayname
                   createdtime: Date.now!
-                } <<< payload <<< ret{key, slug}
+                } <<< payload{uri, content, slug} <<< ret{key, slug}
+                @fire \new-comment, c
+                @comments.push c
                 @_edit.content.body = ''
                 @_edit.preview = false
-                #view.render!
+                @view.get \input .value = ''
+                @view.render!
+              .finally ~> debounce 1000 .then ~> @ldld.off!
       init: submit: ({node}) ~> @ldld = new ldloader root: node
       handler:
         "use-markdown":

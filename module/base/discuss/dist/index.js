@@ -86,7 +86,6 @@
     })['finally'](function(){
       return this$.loading = false;
     }).then(function(r){
-      console.log("load: ", r);
       this$.comments = r.comments || [];
       this$.discuss = r.discuss || {};
       this$.fire('loaded');
@@ -143,7 +142,7 @@
             }
             payload = {
               uri: this$._uri,
-              content: this$._edit.content,
+              content: JSON.parse(JSON.stringify(this$._edit.content)),
               slug: this$._slug
             };
             return this$._core.auth.ensure().then(function(){
@@ -163,17 +162,23 @@
               return debounce(1000).then(function(){
                 return ret;
               });
-            })['finally'](function(){
-              return this$.ldld.off();
             }).then(function(ret){
-              var ref$;
-              this$.fire('new-comment', (ref$ = import$({
+              var c, ref$, ref1$;
+              c = (ref$ = (ref1$ = {
                 owner: this$._core.user.key,
                 displayname: this$._core.user.displayname,
                 createdtime: Date.now()
-              }, payload), ref$.key = ret.key, ref$.slug = ret.slug, ref$));
+              }, ref1$.uri = payload.uri, ref1$.content = payload.content, ref1$.slug = payload.slug, ref1$), ref$.key = ret.key, ref$.slug = ret.slug, ref$);
+              this$.fire('new-comment', c);
+              this$.comments.push(c);
               this$._edit.content.body = '';
-              return this$._edit.preview = false;
+              this$._edit.preview = false;
+              this$.view.get('input').value = '';
+              return this$.view.render();
+            })['finally'](function(){
+              return debounce(1000).then(function(){
+                return this$.ldld.off();
+              });
             });
           }
         }
@@ -309,11 +314,6 @@
     module.exports = discuss;
   } else if (typeof window != 'undefined' && window !== null) {
     window.discuss = discuss;
-  }
-  function import$(obj, src){
-    var own = {}.hasOwnProperty;
-    for (var key in src) if (own.call(src, key)) obj[key] = src[key];
-    return obj;
   }
   function in$(x, xs){
     var i = -1, l = xs.length >>> 0;
