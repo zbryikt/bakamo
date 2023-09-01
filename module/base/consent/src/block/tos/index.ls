@@ -42,7 +42,6 @@ module.exports =
 
   interface: ->
     get: (opt = {}) ~>
-      console.log opt
       ret = @ldcv.get!
       @link = opt.link or '/privacy/embed.html'
       @view.render!

@@ -74,7 +74,8 @@
       err = {
         id: err.id,
         name: err.name,
-        uuid: err.uuid
+        uuid: err.uuid,
+        payload: err.payload
       };
       if (!(err.name != null && err.id != null)) {
         err.name = 'lderror';

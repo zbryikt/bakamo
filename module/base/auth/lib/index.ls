@@ -9,6 +9,11 @@ require! <[@servebase/backend/aux ./passwd ./mail]>
 
 captcha = Object.fromEntries [[k,v] for k,v of config.captcha].map ->
   if it.0 == \enabled => [it.0, it.1] else [it.0, it.1{sitekey, enabled}]
+oauth = Object.fromEntries(
+  [[k,v] for k,v of config.auth]
+    .map -> if it.0 == \local => return else [it.0, {enabled: !(it.1.enabled?) or it.1.enabled }]
+    .filter -> it
+)
 
 limit-session-amount = false
 
@@ -21,8 +26,12 @@ get-user = ({username, password, method, detail, create, cb, req}) ->
           if limit-session-amount and ((r.[]rows.0 or {}).count or 1) > 1 => cb lderror(1004), null, {message: ''}
           else cb null, (user <<< {ip: aux.ip(req)})
     .catch (e) ->
-      e = if lderror.id(e) => e else lderror 500
-      cb e, null, {message: ''}
+      # 1012: permission denied;  1004: quota exceeded(won't hit here?)
+      # 1000: user not login; 1034: user not found; 1015: bad param
+      # TODO we may need to pass error code to frontend for better error message.
+      if lderror.id(e) in [1000,1004,1012,1015,1034] => return cb null, false
+      console.log e
+      cb lderror(500)
 
 strategy = do
   local: (opt) ->
@@ -89,12 +98,6 @@ strategy = do
           cb null, false, {}
     )
 
-@version = 'na'
-chokidar.watch <[.version]>
-  .on \add, (~> @version = (fs.read-file-sync it .toString!) )
-  .on \change, (~> @version = (fs.read-file-sync it .toString!) )
-
-
 # =============== USER DATA, VIA AJAX
 # Note: jsonp might lead to exploit since jsonp is not protected by CORS.
 # * this cant be protected by CSRF, since it provides CSRF token.
@@ -111,9 +114,11 @@ route.auth.get \/info, (req, res) ~>
     csrfToken: req.csrfToken!
     production: backend.production
     ip: aux.ip(req)
-    user: if req.user => req.user{key, config, displayname, verified, username, staff} else {}
+    user: if req.user => req.user{key, config, plan, displayname, verified, username, staff} else {}
     captcha: captcha
-    version: @version
+    oauth: oauth
+    version: backend.version
+    cachestamp: backend.cachestamp
     config: backend.config.client or {}
   })
   res.cookie 'global', payload, { path: '/', secure: true }
@@ -123,7 +128,7 @@ route.auth.get \/info, (req, res) ~>
   if !config{}auth[name] => return
   strategy[name](config.auth[name])
   route.auth
-    ..post "/#name", passport.authenticate name, {scope: <[profile openid email]>}
+    ..post "/#name", passport.authenticate name, {scope: config.auth[name].scope or <[profile openid email]>}
     ..get "/#name/callback", passport.authenticate name, do
       successRedirect: \/auth?oauth-done
       failureRedirect: \/auth?oauth-failed
@@ -165,14 +170,31 @@ route.auth
           .catch (err) ~>
             # only log here so user can continue to login.
             backend.log-mail.error {err}, "send mail verification mail failed (#username)".red
-      .then (user) !-> req.login user, !-> res.send!
+          .then -> user
+      .then (user) !->
+        req.login user, (err) !-> if err => next(err) else res.send!
       .catch !-> next(lderror 403)
   ..post \/login, backend.middleware.captcha, (req, res, next) ->
     ((err,user,info) <- passport.authenticate \local, _
     if err or !user => return next(err or lderror(1000))
-    req.login user, (err) !-> if err => next(err) else res.send!
+    (err) <-! req.login user, _
+    if err => return next err
+    # check if we should notify user to update password
+    (span) <- db.user-store.password-due {user} .then _
+    res.send if span > 0 => {password-due: span, password-should-renew: (span > 0)} else {}
     )(req, res, next)
   ..post \/logout, (req, res) -> req.logout(!-> res.send!)
+
+route.auth.put \/user, aux.signedin, backend.middleware.captcha, (req, res, next) ->
+  [displayname, description, title, tags] = [{k,v} for k,v of req.body{displayname, description, title, tags}]
+    .filter -> it.v?
+    .map -> ("#{it.v or ''}").trim!
+  if !displayname => return lderror.reject 400
+  db.query "update users set (displayname,description,title,tags) = ($1,$2,$3,$4) where key = $5",
+  [displayname, description, title, tags, req.user.key]
+    .then -> req.user <<< {displayname, description, title, tags}
+    .then -> new Promise (res, rej) -> req.login req.user, (-> res!)
+    .then -> res.send!
 
 # identical to `/auth` but if it's more semantic clear.
 app.get \/auth/reset, (req, res) ->

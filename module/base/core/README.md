@@ -70,7 +70,17 @@ Both the option in `servebase.config` or the `corecfg` ldc module are something 
    - `auth`: an object to customize auth behavior, with following fields:
      - `authpanel`: block id of the authpanel to use.
    - `i18n`: optional i18n related configs. if provided, should be an object with following fields:
-     - `locales`: i18n resource objects for core modules translation (such as navtop )
+     - `locales`: i18n resource objects for core modules translation. namespaced. (such as navtop )
+       - this should be an object containing objects for each namespace with bundles of languages. e.g.,
+
+             {
+                navtop: {en: {...}, "zh-TW": {...},
+                footer: {en: {...}, "zh-TW": {...}
+             }
+
+         the actual fields and supported languages are up to the frontend code design.
+
+
      - `cfg`: optional i18n module configuration.
        - if provided, following fields should be defined:
          - `supportedLng`: list of supported languages. e.g.,  ["en", "zh-TW"]
@@ -85,3 +95,11 @@ Both the option in `servebase.config` or the `corecfg` ldc module are something 
  - a function. In this case, it will be called with `core` context and should return an object defined above.
 
 `servebase.config` should always be called only once and before any possible core initialization to prevent inconsistent behavior.
+
+
+## i18n
+
+`@servebase/core` detects `lng` or `setlng` querystring to enfoce a locale setting. `lng` is temporarily and `setlng` will also update cookie for following access. For example:
+
+    https://serve.base/?lng=en
+

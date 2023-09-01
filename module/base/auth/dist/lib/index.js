@@ -19,7 +19,7 @@
       return f.call({}, it);
     };
   })(function(backend){
-    var db, app, config, route, captcha, k, v, limitSessionAmount, getUser, strategy, x$, this$ = this;
+    var db, app, config, route, captcha, k, v, oauth, limitSessionAmount, getUser, strategy, x$, this$ = this;
     db = backend.db, app = backend.app, config = backend.config, route = backend.route;
     captcha = Object.fromEntries((function(){
       var ref$, results$ = [];
@@ -40,6 +40,24 @@
           }
         ];
       }
+    }));
+    oauth = Object.fromEntries((function(){
+      var ref$, results$ = [];
+      for (k in ref$ = config.auth) {
+        v = ref$[k];
+        results$.push([k, v]);
+      }
+      return results$;
+    }()).map(function(it){
+      if (it[0] === 'local') {} else {
+        return [
+          it[0], {
+            enabled: !(it[1].enabled != null) || it[1].enabled
+          }
+        ];
+      }
+    }).filter(function(it){
+      return it;
     }));
     limitSessionAmount = false;
     getUser = function(arg$){
@@ -63,12 +81,12 @@
           }
         });
       })['catch'](function(e){
-        e = lderror.id(e)
-          ? e
-          : lderror(500);
-        return cb(e, null, {
-          message: ''
-        });
+        var ref$;
+        if ((ref$ = lderror.id(e)) === 1000 || ref$ === 1004 || ref$ === 1012 || ref$ === 1015 || ref$ === 1034) {
+          return cb(null, false);
+        }
+        console.log(e);
+        return cb(lderror(500));
       });
     };
     strategy = {
@@ -170,12 +188,6 @@
         }));
       }
     };
-    this.version = 'na';
-    chokidar.watch(['.version']).on('add', function(it){
-      return this$.version = fs.readFileSync(it).toString();
-    }).on('change', function(it){
-      return this$.version = fs.readFileSync(it).toString();
-    });
     route.auth.get('/info', function(req, res){
       var payload, ref$;
       res.setHeader('content-type', 'application/json');
@@ -187,6 +199,7 @@
           ? {
             key: (ref$ = req.user).key,
             config: ref$.config,
+            plan: ref$.plan,
             displayname: ref$.displayname,
             verified: ref$.verified,
             username: ref$.username,
@@ -194,7 +207,9 @@
           }
           : {},
         captcha: captcha,
-        version: this$.version,
+        oauth: oauth,
+        version: backend.version,
+        cachestamp: backend.cachestamp,
         config: backend.config.client || {}
       });
       res.cookie('global', payload, {
@@ -211,7 +226,7 @@
       strategy[name](config.auth[name]);
       x$ = route.auth;
       x$.post("/" + name, passport.authenticate(name, {
-        scope: ['profile', 'openid', 'email']
+        scope: config.auth[name].scope || ['profile', 'openid', 'email']
       }));
       x$.get("/" + name + "/callback", passport.authenticate(name, {
         successRedirect: '/auth?oauth-done',
@@ -284,10 +299,16 @@
           return backend.logMail.error({
             err: err
           }, ("send mail verification mail failed (" + username + ")").red);
+        }).then(function(){
+          return user;
         });
       }).then(function(user){
-        req.login(user, function(){
-          res.send();
+        req.login(user, function(err){
+          if (err) {
+            next(err);
+          } else {
+            res.send();
+          }
         });
       })['catch'](function(){
         next(lderror(403));
@@ -300,16 +321,62 @@
         }
         return req.login(user, function(err){
           if (err) {
-            next(err);
-          } else {
-            res.send();
+            return next(err);
           }
+          db.userStore.passwordDue({
+            user: user
+          }).then(function(span){
+            return res.send(span > 0
+              ? {
+                passwordDue: span,
+                passwordShouldRenew: span > 0
+              }
+              : {});
+          });
         });
       })(req, res, next);
     });
     x$.post('/logout', function(req, res){
       return req.logout(function(){
         res.send();
+      });
+    });
+    route.auth.put('/user', aux.signedin, backend.middleware.captcha, function(req, res, next){
+      var ref$, k, v, ref1$, displayname, description, title, tags;
+      ref1$ = (function(){
+        var ref$, results$ = [];
+        for (k in ref$ = {
+          displayname: (ref$ = req.body).displayname,
+          description: ref$.description,
+          title: ref$.title,
+          tags: ref$.tags
+        }) {
+          v = ref$[k];
+          results$.push({
+            k: k,
+            v: v
+          });
+        }
+        return results$;
+      }()).filter(function(it){
+        return it.v != null;
+      }).map(function(it){
+        return ((it.v || '') + "").trim();
+      }), displayname = ref1$[0], description = ref1$[1], title = ref1$[2], tags = ref1$[3];
+      if (!displayname) {
+        return lderror.reject(400);
+      }
+      return db.query("update users set (displayname,description,title,tags) = ($1,$2,$3,$4) where key = $5", [displayname, description, title, tags, req.user.key]).then(function(){
+        var ref$;
+        return ref$ = req.user, ref$.displayname = displayname, ref$.description = description, ref$.title = title, ref$.tags = tags, ref$;
+      }).then(function(){
+        return new Promise(function(res, rej){
+          return req.login(req.user, function(){
+            return res();
+          });
+        });
+      }).then(function(){
+        return res.send();
       });
     });
     app.get('/auth/reset', function(req, res){

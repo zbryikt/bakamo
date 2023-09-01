@@ -20,7 +20,7 @@
         auth = core.auth;
         this.user = core.user;
         this.global = core.global;
-        if (!(navtop = ld$.find('[ld-scope=navtop]', 0))) {
+        if (!(navtop = ld$.find('[ld-scope="@servebase/navtop"]', 0))) {
           return;
         }
         this.update = function(g){
@@ -68,6 +68,14 @@
               }
             }
           },
+          init: {
+            t: function(arg$){
+              var node;
+              node = arg$.node;
+              node.setAttribute('t', node.textContent);
+              return node.innerText = '';
+            }
+          },
           text: {
             displayname: function(){
               return this$.user.displayname || 'User';
@@ -82,10 +90,15 @@
               }
               lng = core.i18n.language;
               return view.getAll('set-lng').filter(function(n){
-                return lng === n.getAttribute('data-name');
+                return (lng || '').toLowerCase() === (n.getAttribute('data-name') || '').toLowerCase();
               }).map(function(n){
                 return n.getAttribute('data-alias') || n.innerText.trim();
               })[0] || lng;
+            },
+            t: function(arg$){
+              var node;
+              node = arg$.node;
+              return core.i18n ? core.i18n.t("@servebase/navtop:" + (node.getAttribute('t') || '')) : '';
             }
           },
           handler: {
@@ -93,13 +106,6 @@
               var node;
               node = arg$.node;
               return node.style.display = this$.toggled ? 'block' : 'none';
-            },
-            t: function(arg$){
-              var node;
-              node = arg$.node;
-              if (core.i18n) {
-                return node.innerText = core.i18n.t(node.textContent);
-              }
             },
             admin: function(arg$){
               var node;
@@ -125,10 +131,12 @@
         });
         if (core.i18n) {
           core.i18n.on('languageChanged', function(){
-            return view.render('lng');
+            return view.render('lng', 't');
           });
         }
-        bar = view.get('root');
+        if (!(bar = view.get('root'))) {
+          return {};
+        }
         dotst = (bar.getAttribute('data-classes') || "").split(';').map(function(it){
           return it.split(' ').filter(function(it){
             return it;
@@ -143,14 +151,13 @@
           if (!(n = it[0])) {
             return;
           }
-          dotst[0].map(function(c){
-            return bar.classList.toggle(c, n.isIntersecting);
-          });
-          if (dotst[1]) {
-            return dotst[1].map(function(c){
-              return bar.classList.toggle(c, !n.isIntersecting);
+          return (n.isIntersecting
+            ? [1, 0]
+            : [0, 1]).forEach(function(d, i){
+            return dotst[d].map(function(c){
+              return bar.classList.toggle(c, i !== 0);
             });
-          }
+          });
         }, {
           threshold: 0.1
         }).observe(tstTgt);

@@ -1,5 +1,5 @@
 //- module
-+scope("navtop").position-fixed.w-100.z-fixed(styl="top:0")
++scope("@servebase/navtop").position-fixed.w-100.z-fixed(styl="top:0")
   .navtop(ld="root",data-classes="nav-dark;nav-light",data-pivot="#pivot")
     .py-2.px-4.d-flex.align-items-center
       .flex-grow-1
@@ -10,11 +10,13 @@
           .dropdown-item(ld="set-lng",data-name="en") EN
           .dropdown-item(ld="set-lng",data-name="zh-TW") 中
       .d-none(ld="unauthed")
-        .btn.btn-text(ld="t login") navtop.login
-        .btn.btn-text(ld="t signup") navtop.signup
+        .btn.btn-text(ld="t login") login
+        .btn.btn-text(ld="t signup") signup
       .dropdown.d-none(ld="authed")
         .btn.btn-text.dropdown-toggle(data-toggle="dropdown") #[span(ld="avatar")]
         .dropdown-menu.dropdown-menu-right
           .dropdown-item(ld="displayname")
           .dropdown-divider
-          .dropdown-item(ld="t logout") navtop.logout
+          a.dropdown-item(ld="t", href="/demo/me/settings") settings
+          .dropdown-divider
+          .dropdown-item.text-danger(ld="t logout") logout

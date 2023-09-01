@@ -10,3 +10,19 @@ $bin/lsc -cp --no-header src/index.ls > dist/index.js
 echo "minify index.js -> index.min.js ..."
 $bin/uglifyjs dist/index.js -m -c > dist/index.min.js
 
+echo "generate blocks for different lderror code.."
+$bin/srcbuild-pug src/block/0.pug -o dist/block/0.html
+$bin/srcbuild-pug src/block/1005.pug -o dist/block/1005.html
+$bin/srcbuild-pug src/block/1007.pug -o dist/block/1007.html
+$bin/srcbuild-pug src/block/1012.pug -o dist/block/1012.html
+$bin/srcbuild-pug src/block/1020.pug -o dist/block/1020.html
+$bin/srcbuild-pug src/block/404.pug -o dist/block/404.html
+$bin/srcbuild-pug src/block/490.pug -o dist/block/490.html
+$bin/srcbuild-pug src/block/1000.pug -o dist/block/1000.html
+$bin/srcbuild-pug src/block/1010.pug -o dist/block/1010.html
+$bin/srcbuild-pug src/block/1016.pug -o dist/block/1016.html
+$bin/srcbuild-pug src/block/403.pug -o dist/block/403.html
+$bin/srcbuild-pug src/block/413.pug -o dist/block/413.html
+$bin/srcbuild-pug src/block/500.pug -o dist/block/500.html
+$bin/srcbuild-pug src/block/502.pug -o dist/block/502.html
+$bin/srcbuild-pug src/block/common.pug -o dist/block/common.html

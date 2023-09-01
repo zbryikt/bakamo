@@ -1,16 +1,31 @@
-({core}) <- ldc.register <[core navtop]>, _
+({core}) <- ldc.register <[admin core navtop]>, _
 <- core.init!then _
 <-(->it.apply core) _
+@ldcv = {}
+@bd = {}
 @view = {}
 @view.panel = new ldview do
   root: document.body
   action: click: do
+    "toggle-block": ~>
+      core.ldcvmgr.get JSON.parse(@view.panel.get('block-code').value)
+    "toggle-error": ~>
+      core.error(lderror +(@view.panel.get('error-code').value or 0) )
     error: ~> @error((new lderror 1023) <<< uuid: Math.random!toString(36)substring(2))
     "unhandled-rejection": ~> Promise.reject(lderror 1023)
     # we need an approch to control authpanel. should be done via auth.
     signup: ~> @auth.prompt {tab: \signup} .then -> update!
     login: ~> @auth.prompt {tab: \login} .then -> update!
     logout: ~> @auth.logout!then -> update!
+    "toggle-ldcv": ({node}) ~>
+      name = node.getAttribute \data-name
+      inner = ld$.find(@ldcv[name].root!, '.inner', 0)
+      Promise.resolve!
+        .then ~>
+          if @bd[name] => return
+          core.manager.from {name: "@servebase/auth", path: "#name/index.html"}, {root: inner}
+            .then (o) ~> @bd[name] = o
+        .then ~> @ldcv[name].get!
     wipe: ~>
       core.captcha
         .guard cb: ->
@@ -69,6 +84,11 @@
                   Promise.reject it
         .catch -> alert "captcha verification failed"
   init:
+    ldcv: ({node}) ~>
+      name = node.getAttribute \data-name
+      @ldcv[name] = new ldcover root: node, resident: true
+      inner = ld$.find(node, '.inner', 0)
+
     discuss: ({node}) ~>
       @manager.from {name: \@servebase/discuss}, {root: node} .then ->
 

@@ -6,6 +6,8 @@ module.exports = do
   #  - dev can still infer domain name in used by `aux.hostname(req)` if omitted,
   #    however this should be used if provided.
   domain: 'serve.base'
+  # either a list or a string, email(s) of the one for notifying about admin event.
+  admin: email: '...'
   port: 8901
   limit: '20mb'
   i18n:
@@ -48,6 +50,14 @@ module.exports = do
     level: \info
     # when true, all errors handled in `@servebase/backend/error-handler` will be logged with `debug` level
     all-error: false
+  policy:
+    # password renew policy
+    password:
+      check-unused: '' # either empty (don't check), `renew` (check only for renewal), `all` ( always check )
+      renew: 180 # days after last password update to renew password
+      track:
+        count: 1 # amount of password records to keep at most
+        day: 540 # records to keep within this amount of days
   auth:
     # GCP -> API & Services -> Credentials -> OAuth Client ID
     google:
@@ -56,6 +66,7 @@ module.exports = do
     facebook:
       clientID: '...'
       clientSecret: '...'
+      scope: <[public_profile openid email]>
     line:
       channelID: '...'
       channelSecret: '...'
@@ -63,9 +74,20 @@ module.exports = do
       usernameField: \email
       passwordField: \passwd
   mail:
-    mailgun: auth:
-      domain: '...'
-      api_key: '...'
+    # to suppress outgoing mail, enable `suppress` option.
+    suppress: false
+    # additional information for customizing mail info. possible fields:
+    #  - `from`: sender information, can be interpolated. such as:
+    #            '"#{sitename} Support" <contact@#{domain}>'
+    #            '"test user" <test@plotdb.com>'
+    #            'contact@grantdash.io'
+    info: null
+    # currently we support SMPT or Mailgun
+    # SMPT config: {host, port, secure, auth: {user, pass}}
+    # check `https://nodemailer.com/about/#example` for sample configuration
+    smpt: null
+    # Mailgun config: {auth: {domain, api_key}}
+    mailgun: null
   # additional information passing to client side via api/auth/info.
   # use `global.config` to access this object.
   client: {}

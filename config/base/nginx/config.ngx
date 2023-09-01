@@ -38,6 +38,11 @@ server {
     add_header 'Cache-Control' 'public';
   }
 
+  location ~ ^/modules/error/(.*)$ {
+    root !{root};
+    try_files /modules/error/$1 /modules/error/$1/index.html /assets/lib/@servebase/erratum/main/block/$1 /assets/lib/@servebase/erratum/main/block/$1/index.html @apiserver;
+  }
+
   location ~ ^/(.*)$ {
     root !{root};
     try_files /$1 /$1/index.html @apiserver;

@@ -11,16 +11,20 @@
   mailQueue = function(opt){
     var this$ = this;
     opt == null && (opt = {});
-    this.api = !opt.mailgun
-      ? {
-        sendMail: function(){
-          this$.log.error("sendMail called while mail gateway is not available");
-          return lderror.reject(500, "mail service not available");
-        }
-      }
-      : nodemailer.createTransport(nodemailerMailgunTransport(opt.mailgun));
+    this.api = opt.smtp
+      ? nodemailer.createTransport(opt.smtp)
+      : opt.mailgun
+        ? nodemailer.createTransport(nodemailerMailgunTransport(opt.mailgun))
+        : {
+          sendMail: function(){
+            this$.log.error("sendMail called while mail gateway is not available");
+            return lderror.reject(500, "mail service not available");
+          }
+        };
+    this.suppress = opt.suppress;
     this.base = opt.base || 'base';
     this.log = opt.logger;
+    this.info = opt.info || {};
     this.list = [];
     return this;
   };
@@ -66,7 +70,10 @@
     sendDirectly: function(payload){
       var this$ = this;
       return new Promise(function(res, rej){
-        this$.log.info(("sending [from:" + payload.from + "] [to:" + payload.to + "] [subject:" + payload.subject + "]").cyan);
+        this$.log.info(((this$.suppress ? '(suppressed)'.gray : '') + " sending [from:" + payload.from + "] [to:" + payload.to + "] [subject:" + payload.subject + "]").cyan);
+        if (this$.suppress) {
+          return res();
+        }
         return this$.api.sendMail(payload, function(e, i){
           if (!e) {
             return res();
@@ -83,6 +90,7 @@
       return new Promise(function(res, rej){
         var content, k, ref$, v, re;
         content = payload.content || '';
+        payload.from = (this$.info || {}).from || payload.from;
         for (k in ref$ = map) {
           v = ref$[k];
           re = new RegExp("#{" + k + "}", "g");
@@ -105,13 +113,17 @@
       fn = function(b){
         return "config/" + b + "/mail/" + name + ".yaml";
       };
-      return fs.promises.access(fn(this.base)).then(function(){
-        return fn(this$.base);
+      return fs.promises.access(fn('private')).then(function(){
+        return fn('private');
+      })['catch'](function(){
+        return fs.promises.access(fn(this$.base)).then(function(){
+          return fn(this$.base);
+        });
       })['catch'](function(){
         return fs.promises.access(fn('base')).then(function(){
           return fn('base');
         });
-      })['catch'](function(){
+      })['catch'](function(e){
         this$.log.error("send mail failed: read template file failed.", e);
         return lderror.reject(1027);
       }).then(function(file){

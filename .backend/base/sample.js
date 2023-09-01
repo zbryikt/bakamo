@@ -22,6 +22,9 @@
         });
       });
     });
+    app.get('/auth-required', function(req, res, next){
+      return lderror.reject(1000);
+    });
     app.get('/i18n', function(req, res, next){
       return res.send({
         locale: req.get("I18n-Locale")
@@ -54,11 +57,32 @@
     api.get('/ip', function(req, res, next){
       return res.send(aux.ip(req));
     });
+    api.get('/password-due', function(req, res, next){
+      return db.userStore.passwordDue({
+        user: req.user
+      }).then(function(delta){
+        return res.send(delta > 0
+          ? {
+            passwordExpire: delta
+          }
+          : {});
+      });
+    });
     api.post('/post', backend.middleware.captcha, function(req, res, next){
       return res.send('pass');
     });
-    return api.post('/post-test/', function(req, res, next){
+    api.post('/post-test/', function(req, res, next){
       return res.send('pass');
+    });
+    app.get('/me/settings', aux.signedin, function(req, res, next){
+      return res.render('me/settings.pug', {
+        user: req.user
+      });
+    });
+    return app.get('/view', function(req, res, next){
+      return res.render('view.pug', {
+        view: true
+      });
     });
   });
 }).call(this);

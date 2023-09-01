@@ -1,13 +1,14 @@
 ldc.register \locales, <[]>, ->
-  en:
-    navtop:
+  "@servebase/navtop":
+    en:
       login: "登入"
       signup: "註冊"
+      settings: "Settings"
       logout: "Logout"
-  "zh-TW":
-    navtop:
+    "zh-TW":
       login: "登入"
       signup: "註冊"
+      settings: "個人設定"
       logout: "登出"
 
 

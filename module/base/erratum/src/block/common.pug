@@ -1,0 +1,44 @@
+.ldcv.ldcvmgr.scroll(data-name="error"): .base.w-640.rwd: .inner.card: .card-body.text-center: .p-4
+  plug(name="content")
+  .my-4.rounded.p-2.bg-light.text-secondary.text-sm(style="display:grid;grid-template-columns:8em 1fr")
+    .text-right.mr-4 error id
+    .text-left #[span(ld="id")]
+    .text-right.mr-4 error uuid
+    .text-left #[span(ld="uuid")]
+    .text-right.mr-4 message
+    .w-100.text-left(style="word-break:break-all",ld="message")
+  plug(name="cta")
+
+  script(type="@plotdb/block"): :lsc
+    module.exports =
+      pkg: {}
+      init: ({root, data}) ->
+        fetch = ~>
+          n = @data
+          while n
+            if n.param and n.param.name == \lderror => return n.param
+            else if n.err and n.err.name == \lderror => return n.err
+            else if n.name == \lderror => return n
+            else n = n.param
+          return n or {}
+
+        @ldcv = new ldcover do
+          root: root
+          zmgr: data.zmgr
+          base-z: data.base-z
+        @ldcv.on \data, (e) ~> @data = e; @view.render!
+        @view = new ldview do
+          root: root
+          text:
+            id: ~> fetch!id or 'n/a'
+            uuid: ~> fetch!uuid or 'n/a'
+            message: ~>
+              ret =  fetch!message or lderror.message(fetch!) or 'no message provided'
+              if /^\s*<html>|^<!DOCTYPE html>/.exec(ret) =>
+                ret = ret.replace /<style.+?<\/style>/g, ''
+                ret = ret.replace /<[^>]+?>/g, ' '
+              if ret.length > 200 => ret = ret.substring(0, 200) + '...'
+              ret = ret.replace(/\s+/g,' ')
+              return ret
+
+      interface: -> @ldcv

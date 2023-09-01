@@ -9,6 +9,13 @@ route = aux.routecatch express.Router {mergeParams: true}
 api.use \/admin, route
 route.use aux.is-admin
 
+route.get \/cachestamp, (req, res, next) ->
+  res.send "#{backend.cachestamp}"
+
+route.post \/cachestamp, (req, res, next) ->
+  backend.cachestamp = new Date!getTime!
+  res.send "#{backend.cachestamp}"
+
 route.get \/throttle/reset, (req, res, next) ->
   throttle.reset!
   res.send!

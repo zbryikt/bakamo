@@ -37,7 +37,7 @@ module.exports =
         ]
         "spam": "Spam Folder"
         "again": "Send it again"
-
+        "home": "Homepage"
       "zh-TW":
         "forgot": "忘記密碼？"
         "enter": "請輸入您帳號所用的電子郵件地址，我們將發送密碼重設連結給您："
@@ -70,6 +70,7 @@ module.exports =
         ]
         "spam": "垃圾信件匣"
         "again": "再寄一次"
+        "home": "回首頁"
 
   init: ({ctx}) ->
     {curegex, ldform} = ctx

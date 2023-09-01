@@ -1,4 +1,4 @@
-require! <[fs yargs express @plotdb/colors path pino lderror pino-http body-parser csurf]>
+require! <[fs yargs express @plotdb/colors path pino lderror pino-http body-parser csurf chokidar]>
 require! <[i18next-http-middleware]>
 require! <[@plotdb/srcbuild @plotdb/block jsdom]>
 require! <[@plotdb/srcbuild/dist/view/pug]>
@@ -7,11 +7,15 @@ require! <[@servebase/auth @servebase/consent @servebase/captcha]>
 
 libdir = path.dirname fs.realpathSync(__filename.replace(/\(js\)$/,''))
 rootdir = path.join(libdir, '../..')
+extdir = path.join(libdir, '..', \ext)
 routes = fs.readdir-sync path.join(libdir, '..')
-  .filter -> !(it in <[engine README.md]>)
+  .filter -> !(it in <[engine README.md ext]>)
   .map -> path.join(libdir, '..', it)
   .filter -> fs.exists-sync path.join(it, 'index.js') or fs.exists-sync path.join(it, 'index.ls')
   .map -> require it
+
+exts = if !(fs.exists-sync(path.join(extdir, 'index.js')) or fs.exists-sync(path.join(extdir, 'index.ls'))) => null
+else require extdir
 
 argv = yargs
   .option \config-name, do
@@ -49,6 +53,8 @@ backend = (opt = {}) ->
   @ <<< do
     mode: process.env.NODE_ENV # 'production' or other
     production: process.env.NODE_ENV == \production
+    version: 'na' # current software version.
+    cachestamp: new Date!getTime! # timestamp hint for cache. by default server startup time
     middleware: {} # middleware that are dynamically created with certain config, such as csurf, etc
     config: with-default(opt.config, default-config) # backend configuration
     feroot: if opt.config.base => "frontend/#{opt.config.base}" else 'frontend/base'
@@ -61,6 +67,7 @@ backend = (opt = {}) ->
     route: {}        # all default routes
     store: {}        # redis like data store, with get / set function
     session: {}      # express-session object
+    mod: null        # reserved for developer to extend backend.
   log-level = @config.{}log.level or (if @production => \info else \debug)
   if !(log-level in <[silent trace debug info warn error fatal]>) =>
     throw new Error("pino log level incorrect. please fix secret.ls: log.level")
@@ -78,6 +85,11 @@ backend.prototype = Object.create(Object.prototype) <<< do
     else @server.listen @config.port, ((e) -> if e => rej e else res @server)
 
   watch: ({logger, i18n}) ->
+    @version = 'na'
+    chokidar.watch <[.version]>
+      .on \add, (~> @version = (fs.read-file-sync it .toString!) )
+      .on \change, (~> @version = (fs.read-file-sync it .toString!) )
+
     if !(@config.build and @config.build.enabled) => return
 
     if @config.build.{}block.manager =>
@@ -97,6 +109,11 @@ backend.prototype = Object.create(Object.prototype) <<< do
     srcbuild.lsp((@config.build or {}) <<< {
       logger, i18n,
       base: Array.from(new Set([@feroot] ++ (@config.srcbuild or [])))
+      # in view engine below, we provide `domain` and `sysinfo` in `settings` for pug context
+      # however, both are not suitable for static files since this may lead to
+      # mix up of dev and production domains and inconsistent versions.
+      # thus we remove it for now.
+      pug: locals: {}
       bundle: {configFile: 'bundle.json', relative-path: true, manager: mgr}
       asset: {srcdir: 'src/pug', desdir: 'static'}
     })
@@ -173,6 +190,8 @@ backend.prototype = Object.create(Object.prototype) <<< do
           desdir: 'static'
           base: @feroot
         })
+        app.set 'domain', @config.domain
+        app.set 'sysinfo', ~> @{version, cachestamp}
         app.set 'view engine', 'pug'
         app.set 'views', path.join(__dirname, '../..', @feroot, 'src/pug')
         app.locals.basedir = app.get \views
@@ -187,6 +206,7 @@ backend.prototype = Object.create(Object.prototype) <<< do
         auth @  # Authenticate. must before any router ( e.g., /api )
 
         app.use \/extapi/, @route.extapi
+        if exts => exts @ # External API without extapi prefix. should be rarely used.
 
         # CSRF Protection. must after session
         app.use @middleware.csrf = csurf!

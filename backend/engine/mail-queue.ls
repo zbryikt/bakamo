@@ -13,13 +13,18 @@ require! <[./utils/md]>
 #   .then -> ...
 
 mail-queue = (opt={}) ->
-  @api = if !opt.mailgun =>
+  @api = if opt.smtp =>
+    nodemailer.createTransport(opt.smtp)
+  else if opt.mailgun =>
+    nodemailer.createTransport(nodemailer-mailgun-transport(opt.mailgun))
+  else
     sendMail: ~>
       @log.error "sendMail called while mail gateway is not available"
       return lderror.reject 500, "mail service not available"
-  else nodemailer.createTransport(nodemailer-mailgun-transport(opt.mailgun))
+  @suppress = opt.suppress
   @base = opt.base or 'base'
   @log = opt.logger
+  @info = opt.info or {}
   @list = []
   @
 
@@ -51,7 +56,8 @@ mail-queue.prototype = Object.create(Object.prototype) <<< do
 
   # directly send
   send-directly: (payload) -> new Promise (res, rej) ~>
-    @log.info "sending [from:#{payload.from}] [to:#{payload.to}] [subject:#{payload.subject}]".cyan
+    @log.info "#{if @suppress => '(suppressed)'.gray else ''} sending [from:#{payload.from}] [to:#{payload.to}] [subject:#{payload.subject}]".cyan
+    if @suppress => return res!
     (e,i) <~ @api.sendMail payload, _
     if !e => return res!
     @log.error "send mail failed: api.sendMail failed.", e
@@ -60,6 +66,7 @@ mail-queue.prototype = Object.create(Object.prototype) <<< do
   # content -> text / html
   send-from-md: (payload, map = {}, opt={}) -> new Promise (res, rej) ~>
     content = (payload.content or '')
+    payload.from = (@info or {}).from or payload.from
     for k,v of map =>
       re = new RegExp("\#{#k}", "g")
       content = content.replace(re, v)
@@ -72,10 +79,11 @@ mail-queue.prototype = Object.create(Object.prototype) <<< do
 
   by-template: (name, email, map = {}, config = {}) ->
     fn = (b) -> "config/#b/mail/#name.yaml"
-    fs.promises.access fn @base
-      .then ~> fn @base
+    fs.promises.access fn \private
+      .then ~> fn \private
+      .catch ~> fs.promises.access fn @base .then ~> fn @base
       .catch ~> fs.promises.access fn \base .then ~> fn \base
-      .catch ~>
+      .catch (e) ~>
         @log.error "send mail failed: read template file failed.", e
         return lderror.reject 1027
       .then (file) ~>

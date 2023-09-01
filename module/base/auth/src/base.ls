@@ -15,17 +15,22 @@ module.exports =
     {ldview, ldnotify, curegex, ldform} = ctx
     ({core}) <~ servebase.corectx _
     <-(~>it.apply @mod = @mod({core, t} <<< ctx)) _
-    @ldcv = ldcv = {}
     @_auth = data.auth
-    iroot = ld$.find(root, '.ldcv[data-name=authpanel]', 0)
-    ldcv.authpanel = new ldcover root: iroot, base-z: (if data.zmgr => \modal else 3000), zmgr: data.zmgr
+    (g) <~ @_auth.get!then _
+    @global = g
+    @ldcv = ldcv = {}
+    ldcv.authpanel = new ldcover do
+      root: root
+      zmgr: core.zmgr
+      # /* we should consider if `data.zmgr` is a good approach */ zmgr: data.zmgr
+      # /* we should unify base-z */ base-z: (if data.zmgr => \modal else 3000)
     ldcv.authpanel.on \toggle.on, ->
       # dont know why we need 100ms delay to make this work. 
       # but indeed modal may still change style due to transition, after toggle.on.
       setTimeout (-> view.get('username').focus! ), 100
     @ <<< {_tab: 'login', _info: \default}
     @view = view = new ldview do
-      root: iroot
+      root: root
       action:
         keyup: input: ({node, evt}) ~> if evt.keyCode == 13 => @submit!
         click:
@@ -44,6 +49,8 @@ module.exports =
           @ldld = new ldloader root: node
 
       handler:
+        oauth: ({node}) ~>
+          node.classList.toggle \d-none, !(@global.oauth[node.getAttribute \data-name] or {}).enabled
         submit: ({node}) ~>
           node.classList.toggle \disabled, !(@ready)
         "submit-text": ({node}) ~>
@@ -56,7 +63,8 @@ module.exports =
           setTimeout (-> node.classList.toggle \d-none, hide), 0
         switch: ({node}) ~>
           name = node.getAttribute \data-name
-          node.classList.toggle \btn-text, (@_tab != name)
+          node.classList.toggle \btn-light, (@_tab != name)
+          node.classList.toggle \border, (@_tab != name)
           node.classList.toggle \btn-primary, (@_tab == name)
     @form = form = new ldform do
       names: -> <[username password displayname]>
@@ -66,7 +74,7 @@ module.exports =
           s.password = if !f.password.value => 1 else if !@is-valid.password(f.password.value) => 2 else 0
         if @_tab == \login => s.displayname = 0
         else s.displayname = if !f.displayname.value => 1 else if !!f.displayname.value => 0 else 2
-      root: iroot
+      root: root
     @form.on \readystatechange, ~> @ready = it; @view.render \submit
 
   interface: -> (toggle = true, opt = {}) ~>
@@ -98,7 +106,7 @@ module.exports =
         .then ~>
           core.captcha.guard cb: (captcha) ~>
             body <<< {captcha}
-            ld$.fetch "#{@_auth.api-root!}#{@_tab}", {method: \POST}, {json: body}
+            ld$.fetch "#{@_auth.api-root!}#{@_tab}", {method: \POST}, {json: body, type: \json}
         .catch (e) ~>
           if lderror.id(e) != 1005 => return Promise.reject e
           # 1005 csrftoken mismatch - try recoverying directly by reset session
@@ -108,7 +116,10 @@ module.exports =
               @_auth.fetch {renew: true}
             .then ~>
               # try logging in again. if it still fails, fallback to normal error handling process
-              ld$.fetch "#{@_auth.api-root!}#{@_tab}", {method: \POST}, {json: body}
+              ld$.fetch "#{@_auth.api-root!}#{@_tab}", {method: \POST}, {json: body, type: \json}
+        .then (ret = {}) ~>
+          if !ret.password-should-renew => return
+          core.ldcvmgr.get {name: "@servebase/auth", path: "passwd-renew"}
         .then ~> @_auth.fetch!
         .finally ~> @ldld.off!
         .then (g) ~>

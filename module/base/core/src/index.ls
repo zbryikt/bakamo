@@ -14,6 +14,47 @@ servebase =
       [@servebase/core] This may lead to inconsistent behavior.
       """
     @_cfg = o
+  _i18n-init: ->
+    # TODO to optimize, we may delay or completely ignore i18n, since not every service need i18n
+    # TODO we should at least provide a dummy i18n so i18n.t will work
+    @i18n = i18n = if @_cfg.{}i18n.driver => that else if i18next? => i18next else undefined
+    if !i18n? => return Promise.resolve!
+    block.i18n.use i18n
+    i18ncfg = @_cfg.i18n.cfg or {
+      supportedLng: <[en zh-TW]>, fallbackLng: \en, fallbackNS: '', defaultNS: ''
+      # pitfall: Namespaced key with spaces doesn't work
+      # workaround: explicitly provide separator
+      #  - https://github.com/i18next/i18next/issues/1670
+      keySeparator: '.', nsSeparator: ':'
+    }
+    Promise.resolve!
+      .then -> i18n.init i18ncfg
+      .then -> if i18nextBrowserLanguageDetector? => i18n.use i18nextBrowserLanguageDetector
+      .then ~>
+        for ns, obj of (@_cfg.i18n.locales or {}) =>
+          for lng, res of obj => i18n.add-resource-bundle lng, ns, res, true, true
+        lng = (
+          (if httputil? => (httputil.qs(\lng) or httputil.cookie(\lng)) else null) or
+          navigator.language or navigator.userLanguage or ''
+        )
+        if httputil? and httputil.qs(\setlng) =>
+          lng = httputil.qs(\setlng)
+          httputil.cookie \lng, lng, {path: \/}
+        if !(lng in i18ncfg.supportedLng) =>
+          if /-/.exec(lng) =>
+            if lng.split(\-).0 in (i18ncfg.supportedLng) => lng = lng.split(\-).0
+          else
+            lng = i18ncfg.fallbackLng or i18ncfg.supportedLng.0 or \en
+        console.log "[@servebase/core][i18n] use language: ", lng
+        i18n.changeLanguage lng
+      .then ->
+        i18n.on \languageChanged, (lng) ->
+          if httputil? =>
+            console.log "[@servebase/core][i18n] language changed to #lng / cookie updated"
+            httputil.cookie \lng, lng, {path: \/}
+          else
+            console.log "[@servebase/core][i18n] language changed to #lng / no httputil, skip cookie update"
+        block.i18n.use i18n
   _init: (o) ->
     # _init is usually called with provided context (the core context, instead of `servebase`),
     # so we have to access `servebase` directly with its name.
@@ -36,6 +77,12 @@ servebase =
             return "/modules/block/#name/#{path or 'index.html'}"
           "/assets/lib/#{name}/#{version or 'main'}/#{path}"
     ldcover.zmgr @zmgr
+    # prepare i18n as early as possible so modules won't accidentally use the uninited one.
+    # e.g., ldcvmgr setup i18n related code when script is loaded - this may lead to issues
+    # if we switch our i18n module later.
+    # The best way is to implement in a way that switching module won't affect configs before,
+    # which may need a certain degree of abstraction.
+    <~ servebase._i18n-init.apply @ .then _
     @ <<<
       loader: new ldloader class-name: "ldld full", auto-z: true, base-z: null, zmgr: @zmgr.scope zmgr.splash
       captcha: new captcha manager: @manager, zmgr: @zmgr.scope zmgr.splash
@@ -43,10 +90,7 @@ servebase =
         manager: @manager
         error-cover: {ns: \local, name: "error", path: "0.html"}
         zmgr: @zmgr
-        base-z: zmgr.modal
       )
-      # TODO we should at least provide a dummy i18n so i18n.t will work
-      i18n: i18n = if @_cfg.{}i18n.driver => that else if i18next? => i18next else undefined
 
     ethr = t: 0, c: 0
     err = new lderror.handler handler: (n, e) ~>
@@ -66,10 +110,14 @@ servebase =
       ethr.c = (ethr.c or 0) + 1
       @ldcvmgr.get {ns: \local, name: \error, path: "#n.html"}, e
     @error = (e) -> err e
+    @error.ignore = ->
+      ids = Array.from(arguments)
+      (e) -> if !(lderror.id(e) in ids) => return Promise.reject e
 
     @ <<<
       erratum: new erratum handler: err
       auth: new auth do
+        ldcvmgr: @ldcvmgr
         manager: @manager
         zmgr: @zmgr
         loader: @loader
@@ -82,33 +130,6 @@ servebase =
     @auth.on \logout, -> window.location.replace '/'
 
     @manager.init!
-      # to optimize, we may delay or completely ignore i18n
-      # since not every service need i18n
-      .then ~>
-        if !i18n? => return
-        i18ncfg = @_cfg.i18n.cfg or {
-          supportedLng: <[en zh-TW]>, fallbackLng: \zh-TW, fallbackNS: '', defaultNS: ''
-        }
-        Promise.resolve!
-          .then -> i18n.init i18ncfg
-          .then -> if i18nextBrowserLanguageDetector? => i18n.use i18nextBrowserLanguageDetector
-          .then ~>
-            for k,v of (@_cfg.i18n.locales or {}) => i18n.add-resource-bundle k, '', v, true, true
-            lng = (
-              (if httputil? => (httputil.qs(\lng) or httputil.cookie(\lng)) else null) or
-              navigator.language or navigator.userLanguage
-            )
-            if !(lng in i18ncfg.supportedLng) => lng = i18ncfg.fallbackLng or i18ncfg.supportedLng.0 or \en
-            console.log "[@servebase/core][i18n] use language: ", lng
-            i18n.changeLanguage lng
-          .then ->
-            i18n.on \languageChanged, (lng) ->
-              if httputil? =>
-                console.log "[@servebase/core][i18n] language changed to #lng / cookie updated"
-                httputil.cookie \lng, lng, {path: \/}
-              else
-                console.log "[@servebase/core][i18n] language changed to #lng / no httputil, skip cookie update"
-            block.i18n.use i18n
       .then ~>
         # PERF TODO block.i18n.use and manager.init are quite fast.
         # we may provide an anonymous initialization

@@ -1,0 +1,24 @@
+div
+  script(type="@plotdb/block"): :lsc
+    module.exports = pkg:
+      extend: {ns: \local, name: \error, path: \common.html}
+      i18n:
+        en:
+          title: "Not Supported Yet"
+          desc: "This function is not yet supported for now."
+          p: "It may be because the function is still in development issue of configuration, the function is not yet supported. You can check if this is somthing under development or if it can be simply fixed by tweaking some configurations."
+          close: "Close Dialog"
+        "zh-TW":
+          "title": "尚未支援此功能"
+          "desc": "您想使用的這個功能目前還沒有支援"
+          "p": "可能因為尚未實作或設定上的問題，您欲執行的這個功能還沒有被系統支援。您可以確認是否這是仍在開發中的機制，亦或者僅需要調整設定即可修正的問題。"
+          close: "關閉對話框"
+
+  div(plug="content")
+    h1(t) title
+    p(t) desc
+    br
+    .m-auto.text-left.text-muted
+      p(t) p
+  div(plug="cta")
+    a.btn.btn-primary.btn-block.btn-lg.mb-2(t, data-ldcv-set="") close

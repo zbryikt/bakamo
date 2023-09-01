@@ -35,7 +35,7 @@
         .col-md: .btn.btn-lg.btn-primary.btn-block(onclick="lda.ldcvmgr.toggle('contact')",t) contact-alt
         .col-md: .btn.btn-lg.btn-outline-dark.btn-block(data-ldcv-set="",t) close
     .ldcv(ld="sent"): .base.w-640.rwd: .inner.card: .card-body: .p-4.my-4
-      .text-center
+      .text-center.mb-4
         h1(t) sent.title
         p(t) sent.desc
       //-.my-4.py-4: img#img(src="/assets/img/p/auth/reset/sending-mail.svg")
@@ -43,7 +43,8 @@
         span(t) wait.0
         strong(t) spam
         span(t) wait.1
-      ul
+      ul.mb-5
         li #[a(href="/auth/?passwd-reset",t) again]
         li #[a.clickable.mr-1(onclick="lda.ldcvmgr.toggle('contact')",t) contact]#[span(t) letushelp]
+      a.btn.btn-lg.btn-block.btn-primary(href="/",t) home
 

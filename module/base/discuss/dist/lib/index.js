@@ -36,6 +36,9 @@
         if (!(slug || uri)) {
           return allThread(req, res);
         }
+        if (!uri) {
+          uri = '/';
+        }
         limit = isNaN(req.query.limit)
           ? 20
           : (ref$ = +req.query.limit) < 100 ? ref$ : 100;
@@ -44,7 +47,7 @@
           : +req.query.offset;
         promise = slug
           ? db.query("select key,title from discuss where slug = $1 limit 1", [slug])
-          : db.query("select key,title from discuss where uri = $1 limit 1", [uri]);
+          : db.query("select key,title from discuss where uri = $1 limit 1", [uri || '/']);
         return promise.then(function(r){
           var discuss;
           r == null && (r = {});
@@ -78,19 +81,22 @@
             body: (ref1$ = lc.content || {}).body,
             config: ref1$.config
           };
+          if (!lc.uri) {
+            lc.uri = '/';
+          }
           if (lc.slug) {
             return db.query("select key, slug from discuss where slug = $1", [lc.slug]);
-          } else if (lc.uri) {
-            return db.query("select key, slug from discuss where uri = $1", [lc.uri]);
           } else {
-            return {};
+            return db.query("select key, slug from discuss where uri = $1", [lc.uri]);
           }
         }).then(function(r){
           r == null && (r = {});
           if ((r.rows || (r.rows = [])).length) {
             return Promise.resolve(r);
           }
-          lc.slug = suuid();
+          if (!lc.slug) {
+            lc.slug = suuid();
+          }
           return db.query("insert into discuss (slug, uri, title) values ($1,$2,$3) returning key", [
             lc.slug, lc.slug
               ? null

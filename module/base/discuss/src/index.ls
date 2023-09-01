@@ -3,8 +3,14 @@ discuss = (o = {}) ->
   @ <<<
     _evthdr: {}
     _loading: false
-    _purify: (t) -> DOMPurify.sanitize t
-    _md: (t) -> marked.parse t
+    _purify: (t) ->
+      if DOMPurify? => return DOMPurify.sanitize t
+      console.warn "[@servebase/discuss] DOMPurify is not found which is required for DOM sanitizing"
+      return t
+    _md: (t) ->
+      if marked? => return marked.parse t
+      console.warn "[@servebase/discuss] marked is not found which is required for markdown compiling"
+      return t
     comments: [], discuss: {}
   @_uri = o.uri or window.location.pathname
   @_slug = o.slug or null
@@ -32,18 +38,16 @@ discuss.prototype = Object.create(Object.prototype) <<<
         @ <<< {comments: r.comments or [], discuss: r.discuss or {}}
         @fire \loaded
         @view.render!
-  content-render: ({ctx}) ->
+  content-render: ({node, ctx}) ->
     obj = ctx.content or {}
     if !obj.{}config["renderer"] => node.innerText = obj.body
     else node.innerHTML = @_purify @_md obj.body
   _view: ({root}) ->
+    set-cfg = (o = {}) ~> for k,v of o => @_edit.content.config[k] = v
     cfg = {}
     cfg.edit =
       action:
         input:
-          "use-markdown": ~>
-            @_edit.content.config["renderer"] == if @node.checked => \markdown else ''
-            #view.render!
           "toggle-preview": ({node}) ~>
             @_edit.preview = !!node.checked
             #view.render!
@@ -55,29 +59,47 @@ discuss.prototype = Object.create(Object.prototype) <<<
             if node.classList.contains \running => return
             if node.classList.contains \disabled => return
             if !@is-ready! => return
-            payload = {uri: @_uri, content: @_edit.content, slug: @_slug}
+            payload =
+              uri: @_uri
+              content: JSON.parse(JSON.stringify(@_edit.content))
+              slug: @_slug
             #@data{uri, reply, content, slug, key, title}
-            #@ldld.on!
-            debounce 1000
-              .then ~> @_core.captcha.guard cb: (captcha) -> payload <<< {captcha}
-              .then ->
-                ld$.fetch(
-                  \/api/discuss
-                  {method: if payload.key => \PUT else \POST}
-                  {type: \json, json: payload}
-                )
-              #.finally ~> @ldld.off!
+            @_core.auth.ensure!
+              .then ~>
+                @ldld.on!
+                @_core.captcha
+                  .guard cb: (captcha) ->
+                    payload <<< {captcha}
+                    ld$.fetch(
+                      \/api/discuss
+                      {method: if payload.key => \PUT else \POST}
+                      {type: \json, json: payload}
+                    )
+              .then (ret) -> debounce 1000 .then -> return ret
               .then (ret) ~>
-                @fire \new-comment, {
-                  owner: @global.user.key,
-                  displayname: @global.user.displayname
+                c = {
+                  owner: @_core.user.key,
+                  displayname: @_core.user.displayname
                   createdtime: Date.now!
-                } <<< payload <<< ret{key, slug}
+                } <<< payload{uri, content, slug} <<< ret{key, slug}
+                @fire \new-comment, c
+                @comments.push c
                 @_edit.content.body = ''
                 @_edit.preview = false
-                #view.render!
-      #init: submit: ({node}) ~> @ldld = new ldloader root: node
+                @view.get \input .value = ''
+                @view.render!
+              .finally ~> debounce 1000 .then ~> @ldld.off!
+      init: submit: ({node}) ~> @ldld = new ldloader root: node
       handler:
+        "use-markdown":
+          action:
+            input: check: ({node, views}) ~>
+              use-markdown = !!node.checked
+              set-cfg renderer: if use-markdown => \markdown else ''
+            click: label: ({node, views}) ~>
+              input = views.0.get \check
+              use-markdown = input.checked = !input.checked
+              set-cfg renderer: if use-markdown => \markdown else ''
         avatar: ~> # site specific
         preview: ~>
           #revert = ("off" in node.getAttribute(\ld).split(" "))

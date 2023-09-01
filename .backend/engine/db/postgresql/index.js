@@ -32,6 +32,7 @@
     });
     this.userStore = new userStore({
       db: this,
+      config: config,
       logger: log
     });
     return this;
