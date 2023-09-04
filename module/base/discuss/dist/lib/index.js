@@ -7,26 +7,27 @@
   aux = require('@servebase/backend/aux');
   (function(it){
     return module.exports = it;
-  })(function(backend){
-    return function(it){
-      return it.apply(backend);
-    }(function(){
-      var db, api, allThread;
-      db = this.db, api = this.route.api;
-      allThread = function(req, res){
-        var limit, ref$, offset;
-        limit = isNaN(req.query.limit)
-          ? 20
-          : (ref$ = +req.query.limit) < 100 ? ref$ : 100;
-        offset = isNaN(req.query.offset)
-          ? 0
-          : +req.query.offset;
-        return db.query("select d.title, d.slug, d.createdtime, d.modifiedtime, json_agg(distinct c.owner) as users\nfrom discuss as d\nleft join comment as c on d.key = c.discuss\ngroup by d.key\nlimit $1 offset $2", [limit, offset]).then(function(r){
-          r == null && (r = {});
-          return res.send(r.rows || (r.rows = []));
-        });
-      };
-      api.get('/discuss/', function(req, res){
+  })(function(arg$){
+    var api, route, backend, db, allThread, crud, x$;
+    api = arg$.api, route = arg$.route, backend = arg$.backend;
+    api = api || {};
+    route = route || {};
+    db = backend.db;
+    allThread = function(req, res){
+      var limit, ref$, offset;
+      limit = isNaN(req.query.limit)
+        ? 20
+        : (ref$ = +req.query.limit) < 100 ? ref$ : 100;
+      offset = isNaN(req.query.offset)
+        ? 0
+        : +req.query.offset;
+      return db.query("select d.title, d.slug, d.createdtime, d.modifiedtime, json_agg(distinct c.owner) as users\nfrom discuss as d\nleft join comment as c on d.key = c.discuss\ngroup by d.key\nlimit $1 offset $2", [limit, offset]).then(function(r){
+        r == null && (r = {});
+        return res.send(r.rows || (r.rows = []));
+      });
+    };
+    crud = {
+      get: function(req, res){
         var lc, ref$, slug, uri, limit, offset, promise;
         lc = {};
         ref$ = {
@@ -55,16 +56,29 @@
           if (!discuss) {
             return res.send({});
           }
-          return db.query("select c.*, u.displayname\nfrom comment as c, users as u\nwhere c.discuss = $1 and c.owner = u.key\nand c.deleted is not true\nand c.state = 'active'\norder by distance limit $2 offset $3", [discuss.key, limit, offset]).then(function(r){
-            r == null && (r = {});
-            return res.send({
-              discuss: lc.discuss,
-              comments: r.rows || (r.rows = [])
-            });
+          return db.query("with obj as (\n  select\n    c as comment,\n    to_json(( select d from ( select u.key, u.displayname ) d)) as \"user\"\n  from comment as c\n  left join users as u\n    on u.key = c.owner\n  where\n    c.discuss = $1 and\n    c.deleted is not true and\n    c.state = 'active'\n  order by distance limit $2 offset $3\n) select row_to_json(o) as ret from obj as o", [discuss.key, limit, offset]);
+        }).then(function(r){
+          r == null && (r = {});
+          lc.comments = (r.rows || (r.rows = [])).map(function(it){
+            var ref$;
+            return ref$ = it.ret.comment, ref$._user = it.ret.user, ref$;
+          });
+          return api.role({
+            users: lc.comments.map(function(it){
+              return it.owner;
+            })
+          });
+        }).then(function(r){
+          r == null && (r = {});
+          lc.roles = r;
+          return res.send({
+            discuss: lc.discuss,
+            comments: lc.comments,
+            roles: lc.roles
           });
         });
-      });
-      api.post('/discuss/', aux.signedin, throttle.kit.generic, backend.middleware.captcha, function(req, res){
+      },
+      post: function(req, res){
         var lc;
         lc = {};
         return Promise.resolve().then(function(){
@@ -113,7 +127,7 @@
           }
           return lc.reply
             ? db.query("select c.* from comment as c\nwhere key = $1 and c.deleted is not true and c.state = 'active'", [lc.reply])
-            : db.query("select count(c.key) as distance, d.key as discuss\nfrom comment as c, discuss as d \nwhere c.reply is null and d.key = $1 and d.key = c.discuss\ngroup by d.key", [lc.discuss.key]);
+            : db.query("select count(c.key) as distance, d.key as discuss\nfrom comment as c, discuss as d\nwhere c.reply is null and d.key = $1 and d.key = c.discuss\ngroup by d.key", [lc.discuss.key]);
         }).then(function(r){
           var ret, distance;
           r == null && (r = {});
@@ -132,19 +146,25 @@
         }).then(function(){
           return res.send(lc.ret);
         });
-      });
-      /*
-      api.put \/discuss, (req, res) ->
-        if !req.user => return aux.r404 res
-        lc = {}
-        Promise.resolve!
-          .then ->
-            lc.content = req.body.content{body, config}
-            db.query "update comment set (content) = ($1)", [lc.content]
-          .then -> res.send!
-          .catch aux.error-handler res
-      */
-      return api['delete']('/discuss/:id', aux.signedin, throttle.kit.generic, backend.middleware.captcha, function(req, res){
+      },
+      put: function(req, res){
+        var lc;
+        if (!req.user) {
+          return aux.r404(res);
+        }
+        lc = {};
+        return Promise.resolve().then(function(){
+          var ref$;
+          lc.content = {
+            body: (ref$ = req.body.content).body,
+            config: ref$.config
+          };
+          return db.query("update comment set (content) = ($1)", [lc.content]);
+        }).then(function(){
+          return res.send();
+        })['catch'](aux.errorHandler(res));
+      },
+      'delete': function(req, res){
         var key;
         if (!req.user) {
           return aux.r404(res);
@@ -155,7 +175,17 @@
         return db.query("update comment set deleted = true where key = $1 and owner = $2", [key, req.user.key]).then(function(){
           return res.send();
         });
-      });
-    });
+      }
+    };
+    if (route.api) {
+      x$ = route.api;
+      x$.get('/discuss/', crud.get);
+      x$.put('/discuss', aux.signedin, throttle.kit.generic, backend.middleware.captcha, crud.put);
+      x$.post('/discuss/', aux.signedin, throttle.kit.generic, backend.middleware.captcha, crud.post);
+      x$['delete']('/discuss/:id', aux.signedin, throttle.kit.generic, backend.middleware.captcha, crud['delete']);
+    }
+    return {
+      crud: crud
+    };
   });
 }).call(this);

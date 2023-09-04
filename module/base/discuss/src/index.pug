@@ -5,8 +5,8 @@ div
       .aspect-ratio.ratio-1by1.rounded.bg-dark.w-100.bg-cover(ld="avatar")
     .media-body
       .d-flex.align-items-center
-        strong.my-0(ld="author")
-        .text-sm.text-muted.ml-1(ld="role") ． #[span]
+        strong.my-0.text-capitalize(ld="author")
+        .text-sm.text-muted.ml-1.text-capitalize(ld-each="role") ．#[span(ld="name")]
         .text-sm.text-muted.ml-1 ． #[span(ld="date")]
       .content.my-1(ld="content")
   .media.p-2.position-relative(ld="edit")
@@ -20,10 +20,9 @@ div
           .d-flex.align-items-center.text-sm.text-muted.mr-4.clickable.no-select(ld="use-markdown")
             input.mr-1.clickable(type="checkbox",ld="check")
             div(ld="label") 啟用 Markdown 語法
-            div ( #[a(href="#") 語法說明] )
-          .d-none(ld="if-markdown"): .d-flex.align-items-center.text-sm.text-muted.mr-4
-            input.mr-1(type="checkbox",ld="toggle-preview")
-            div 預覽
+            //-div ( #[a(href="#") 語法說明] )
+          .d-none(ld="if-markdown")
+            .d-flex.align-items-center.text-sm.text-muted.mr-4.clickable(ld="toggle-preview")
+              input.mr-1(type="checkbox",ld="check")
+              div(ld="label") 預覽
         div: .btn.btn-outline-secondary.ld.ld-ext-right(ld="submit") 送出留言 #[.ld.ld-spinner.ld-spin]
-
-

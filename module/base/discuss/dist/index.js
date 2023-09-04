@@ -2,10 +2,24 @@
 (function(){
   var discuss, ref$;
   discuss = function(o){
+    var md, markedr;
     o == null && (o = {});
     this.root = typeof o.root === 'string'
       ? document.querySelector(o.root)
       : o.root;
+    this.host = o.host || {};
+    if (typeof marked != 'undefined' && marked !== null) {
+      md = new marked.Marked();
+      markedr = new marked.Renderer();
+      markedr.link = function(href, title, text){
+        var link;
+        link = marked.Renderer.prototype.link.call(this, href, title, text);
+        return link.replace('<a', '<a target="_blank" rel="noopener noreferrer" ');
+      };
+      md.setOptions({
+        renderer: markedr
+      });
+    }
     this._evthdr = {};
     this._loading = false;
     this._purify = function(t){
@@ -16,8 +30,8 @@
       return t;
     };
     this._md = function(t){
-      if (typeof marked != 'undefined' && marked !== null) {
-        return marked.parse(t);
+      if ((typeof marked != 'undefined' && marked !== null) && md) {
+        return md.parse(t);
       }
       console.warn("[@servebase/discuss] marked is not found which is required for markdown compiling");
       return t;
@@ -55,7 +69,7 @@
     }
     return results$;
   }, ref$.isReady = function(){
-    return true;
+    return !!(this._edit.content.body || '').trim().length;
   }, ref$.init = function(){
     var this$ = this;
     this.view = this._view({
@@ -88,6 +102,7 @@
     }).then(function(r){
       this$.comments = r.comments || [];
       this$.discuss = r.discuss || {};
+      this$.roles = r.roles || {};
       this$.fire('loaded');
       return this$.view.render();
     });
@@ -95,13 +110,13 @@
     var node, ctx, obj;
     node = arg$.node, ctx = arg$.ctx;
     obj = ctx.content || {};
-    if (!(obj.config || (obj.config = {}))["renderer"]) {
-      return node.innerText = obj.body;
+    if (!(obj.config || {})["renderer"] || !(obj.body != null)) {
+      return node.innerText = obj.body || '';
     } else {
       return node.innerHTML = this._purify(this._md(obj.body));
     }
   }, ref$._view = function(arg$){
-    var root, setCfg, cfg, this$ = this;
+    var root, setCfg, setAvatar, cfg, this$ = this;
     root = arg$.root;
     setCfg = function(o){
       var k, v, results$ = [];
@@ -112,19 +127,26 @@
       }
       return results$;
     };
+    setAvatar = function(arg$){
+      var node, ctx;
+      node = arg$.node, ctx = arg$.ctx;
+      if (this$.host.avatar) {
+        return node.style.background = "url(" + this$.host.avatar({
+          ctx: ctx
+        }) + ")";
+      } else {
+        return node.style.background = 'auto';
+      }
+    };
     cfg = {};
     cfg.edit = {
       action: {
         input: {
-          "toggle-preview": function(arg$){
-            var node;
-            node = arg$.node;
-            return this$._edit.preview = !!node.checked;
-          },
           input: function(arg$){
-            var node;
-            node = arg$.node;
-            return this$._edit.content.body = node.value;
+            var node, views;
+            node = arg$.node, views = arg$.views;
+            this$._edit.content.body = node.value;
+            return views[0].render('submit');
           }
         },
         click: {
@@ -166,8 +188,11 @@
               var c, ref$, ref1$;
               c = (ref$ = (ref1$ = {
                 owner: this$._core.user.key,
-                displayname: this$._core.user.displayname,
-                createdtime: Date.now()
+                createdtime: Date.now(),
+                _user: {
+                  key: this$._core.user.key,
+                  displayname: this$._core.user.displayname
+                }
               }, ref1$.uri = payload.uri, ref1$.content = payload.content, ref1$.slug = payload.slug, ref1$), ref$.key = ret.key, ref$.slug = ret.slug, ref$);
               this$.fire('new-comment', c);
               this$.comments.push(c);
@@ -193,6 +218,27 @@
         }
       },
       handler: {
+        "toggle-preview": {
+          action: {
+            input: {
+              check: function(arg$){
+                var node, views;
+                node = arg$.node, views = arg$.views;
+                this$._edit.preview = !!node.checked;
+                return views[1].render();
+              }
+            },
+            click: {
+              label: function(arg$){
+                var node, views, input;
+                node = arg$.node, views = arg$.views;
+                input = views[0].get('check');
+                this$._edit.preview = input.checked = !input.checked;
+                return views[1].render();
+              }
+            }
+          }
+        },
         "use-markdown": {
           action: {
             input: {
@@ -200,9 +246,10 @@
                 var node, views, useMarkdown;
                 node = arg$.node, views = arg$.views;
                 useMarkdown = !!node.checked;
-                return setCfg({
+                setCfg({
                   renderer: useMarkdown ? 'markdown' : ''
                 });
+                return views[1].render();
               }
             },
             click: {
@@ -211,15 +258,41 @@
                 node = arg$.node, views = arg$.views;
                 input = views[0].get('check');
                 useMarkdown = input.checked = !input.checked;
-                return setCfg({
+                setCfg({
                   renderer: useMarkdown ? 'markdown' : ''
                 });
+                return views[1].render();
               }
             }
           }
         },
-        avatar: function(){},
-        preview: function(){}
+        avatar: setAvatar,
+        preview: function(arg$){
+          var node, revert, state, ref$;
+          node = arg$.node;
+          revert = in$("off", node.getAttribute('ld').split(" "));
+          state = !(ref$ = !(this$._edit.preview && this$._edit.content.config.renderer === 'markdown')) !== !revert && (ref$ || revert);
+          return node.classList.toggle('d-none', state);
+        },
+        panel: function(arg$){
+          var node;
+          node = arg$.node;
+          return this$.contentRender({
+            node: node,
+            ctx: this$._edit
+          });
+        },
+        submit: function(arg$){
+          var node;
+          node = arg$.node;
+          return node.classList.toggle('disabled', !this$.isReady());
+        },
+        "if-markdown": function(arg$){
+          var node, hidden;
+          node = arg$.node;
+          hidden = this$._edit.content.config.renderer !== 'markdown';
+          return node.classList.toggle('d-none', hidden);
+        }
       }
     };
     cfg.discuss = {
@@ -256,18 +329,19 @@
               author: function(arg$){
                 var ctx;
                 ctx = arg$.ctx;
-                return ctx.displayname;
+                return ctx._user.displayname;
               }
             },
             handler: {
-              avatar: function(){},
+              avatar: setAvatar,
               role: {
                 list: function(arg$){
-                  var ctx;
+                  var ctx, ret;
                   ctx = arg$.ctx;
-                  return (Array.is(ctx.role)
-                    ? ctx.role
-                    : [ctx.role]).filter(function(it){
+                  ret = this$.roles[ctx.owner] || [];
+                  return (Array.isArray(ret)
+                    ? ret
+                    : [ret]).filter(function(it){
                     return it;
                   });
                 },
