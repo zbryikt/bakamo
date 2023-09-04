@@ -5,6 +5,23 @@
   (function(it){
     return module.exports = it;
   })(function(backend){
-    return discuss(backend);
+    var db, role;
+    db = backend.db;
+    role = function(arg$){
+      var users, ret;
+      users = arg$.users;
+      ret = {};
+      (users || []).map(function(it){
+        return ret[it] = ['sample'];
+      });
+      return Promise.resolve(ret);
+    };
+    return discuss({
+      backend: backend,
+      route: backend.route,
+      api: {
+        role: role
+      }
+    });
   });
 }).call(this);
