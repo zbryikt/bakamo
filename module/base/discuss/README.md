@@ -10,6 +10,9 @@ where `data` is an object with following fields:
 
  - `host`: an object providing host api including:
    - `avatar(obj)`: return URL to the avatar for the given comment data object `obj` (see `Comment Object` below).
+ - `uri`: uri of the discuss thread to load. ignored if `slug` is provided.
+ - `slug`: slug of the discuss thread to load. if omitted, `uri` will be used instead.
+   - either `slug` or `uri` should be provided, otherwise all threads will be loaded.
 
 Alternatively, you can overwrite this block's DOM or even build a block from scratch by calling `discuss` constructor directly. See `src/block.ls` for more information.
 
