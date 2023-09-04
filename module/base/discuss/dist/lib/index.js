@@ -194,9 +194,9 @@
             return aux.reject(403);
           }
         }).then(function(){
-          return db.query("update comment set (content) = ($1) where key = $2", [lc.content]);
+          return db.query("update comment set content = $1 where key = $2", [lc.content, lc.comment]);
         }).then(function(){
-          return res.send();
+          return res.send({});
         });
       },
       'delete': function(req, res){
@@ -237,9 +237,9 @@
     if (route.api) {
       x$ = route.api;
       x$.get('/discuss/', crud.get);
-      x$.put('/discuss', aux.signedin, throttle.kit.generic, backend.middleware.captcha, crud.put);
-      x$.post('/discuss/', aux.signedin, throttle.kit.generic, backend.middleware.captcha, crud.post);
-      x$['delete']('/discuss/:id', aux.signedin, throttle.kit.generic, backend.middleware.captcha, crud['delete']);
+      x$.post('/discuss/comment', aux.signedin, throttle.kit.generic, backend.middleware.captcha, crud.post);
+      x$.put('/discuss/comment', aux.signedin, throttle.kit.generic, backend.middleware.captcha, crud.put);
+      x$['delete']('/discuss/comment/:id', aux.signedin, throttle.kit.generic, backend.middleware.captcha, crud['delete']);
     }
     return {
       crud: crud

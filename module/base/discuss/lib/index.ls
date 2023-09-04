@@ -134,9 +134,9 @@ crud =
         else if comment.owner != req.user.key => return aux.reject 403
       .then ->
         db.query """
-        update comment set (content) = ($1) where key = $2
-        """, [lc.content]
-      .then -> res.send!
+        update comment set content = $1 where key = $2
+        """, [lc.content, lc.comment]
+      .then -> res.send {}
 
   delete: (req, res) ->
     if !req.user => return aux.reject 404
@@ -165,8 +165,8 @@ crud =
 if route.api =>
   route.api
     ..get \/discuss/, crud.get
-    ..put \/discuss, aux.signedin, throttle.kit.generic, backend.middleware.captcha, crud.put
-    ..post \/discuss/, aux.signedin, throttle.kit.generic, backend.middleware.captcha, crud.post
-    ..delete \/discuss/:id, aux.signedin, throttle.kit.generic, backend.middleware.captcha, crud.delete
+    ..post \/discuss/comment, aux.signedin, throttle.kit.generic, backend.middleware.captcha, crud.post
+    ..put \/discuss/comment, aux.signedin, throttle.kit.generic, backend.middleware.captcha, crud.put
+    ..delete \/discuss/comment/:id, aux.signedin, throttle.kit.generic, backend.middleware.captcha, crud.delete
 
 return {crud}

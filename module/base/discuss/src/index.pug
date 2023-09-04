@@ -8,7 +8,27 @@ div
         strong.my-0.text-capitalize(ld="author")
         .text-sm.text-muted.ml-1.text-capitalize(ld-each="role") ．#[span(ld="name")]
         .text-sm.text-muted.ml-1 ． #[span(ld="date")]
+        .flex-grow-1
+        .text-sm.ml-2.clickable #[i.i-pen.mx-2(ld="edit")]#[i.i-trashcan.text-danger(ld="delete")]
       .content.my-1(ld="content")
+      div(ld="update")
+        .position-relative
+          textarea.form-control.mb-2(rows="4",ld="input preview off")
+          .w-100.bg-light.rounded.mb-2.p-3.d-none(ld="preview panel",style="min-height:200px")
+        .d-flex
+          .flex-grow-1.d-flex.align-items-center
+            .d-flex.align-items-center.text-sm.text-muted.mr-4.clickable.no-select(ld="use-markdown")
+              input.mr-1.clickable(type="checkbox",ld="check")
+              div(ld="label") 啟用 Markdown 語法
+              //-div ( #[a(href="#") 語法說明] )
+            .d-none(ld="if-markdown")
+              .d-flex.align-items-center.text-sm.text-muted.mr-4.clickable(ld="toggle-preview")
+                input.mr-1(type="checkbox",ld="check")
+                div(ld="label") 預覽
+          div
+            .btn.btn-sm.btn-outline-secondary.ld.ld-ext-right.mr-2(ld="cancel") 取消 #[.ld.ld-spinner.ld-spin]
+            .btn.btn-sm.btn-outline-secondary.ld.ld-ext-right(ld="submit") 更新 #[.ld.ld-spinner.ld-spin]
+
   .media.p-2.position-relative(ld="edit")
     .mr-2(style="width:3.25em"): .aspect-ratio.ratio-1by1.rounded.bg-dark.w-100.bg-cover(ld="avatar")
     .media-body

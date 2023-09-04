@@ -42,11 +42,7 @@
     this._uri = o.uri || window.location.pathname;
     this._slug = o.slug || null;
     this._core = o.core;
-    this._edit = {
-      content: {
-        config: {}
-      }
-    };
+    this._edit = {};
     return this;
   };
   discuss.prototype = (ref$ = Object.create(Object.prototype), ref$.on = function(n, cb){
@@ -69,8 +65,10 @@
       results$.push(cb.apply(this, v));
     }
     return results$;
-  }, ref$.isReady = function(){
-    return !!(this._edit.content.body || '').trim().length;
+  }, ref$.isReady = function(arg$){
+    var ctx, ref$, ref1$, key$;
+    ctx = arg$.ctx;
+    return !!(((ref$ = (ref1$ = this._edit)[key$ = ctx.key] || (ref1$[key$] = {})).content || (ref$.content = {})).body || '').trim().length;
   }, ref$.init = function(){
     var this$ = this;
     this.view = this._view({
@@ -119,12 +117,12 @@
   }, ref$._view = function(arg$){
     var root, setCfg, setAvatar, cfg, this$ = this;
     root = arg$.root;
-    setCfg = function(o){
-      var k, v, results$ = [];
+    setCfg = function(ctx, o){
+      var k, v, ref$, ref1$, ref2$, key$, results$ = [];
       o == null && (o = {});
       for (k in o) {
         v = o[k];
-        results$.push(this$._edit.content.config[k] = v);
+        results$.push(((ref$ = (ref1$ = (ref2$ = this$._edit)[key$ = ctx.key] || (ref2$[key$] = {})).content || (ref1$.content = {})).config || (ref$.config = {}))[k] = v);
       }
       return results$;
     };
@@ -144,28 +142,37 @@
       action: {
         input: {
           input: function(arg$){
-            var node, views;
-            node = arg$.node, views = arg$.views;
-            this$._edit.content.body = node.value;
+            var node, views, ctx, ref$, ref1$, key$;
+            node = arg$.node, views = arg$.views, ctx = arg$.ctx;
+            ((ref$ = (ref1$ = this$._edit)[key$ = ctx.key] || (ref1$[key$] = {})).content || (ref$.content = {})).body = node.value;
             return views[0].render('submit');
           }
         },
         click: {
+          cancel: function(arg$){
+            var node, ctx, views, ref$, key$;
+            node = arg$.node, ctx = arg$.ctx, views = arg$.views;
+            ((ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})).editing = !((ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})).editing;
+            return views[1].render();
+          },
           submit: function(arg$){
-            var node, payload;
-            node = arg$.node;
+            var node, ctx, ctxs, payload, ref$, key$;
+            node = arg$.node, ctx = arg$.ctx, ctxs = arg$.ctxs;
             if (node.classList.contains('running')) {
               return;
             }
             if (node.classList.contains('disabled')) {
               return;
             }
-            if (!this$.isReady()) {
+            if (!this$.isReady({
+              ctx: ctx
+            })) {
               return;
             }
             payload = {
+              key: ctx.key,
               uri: this$._uri,
-              content: JSON.parse(JSON.stringify(this$._edit.content)),
+              content: JSON.parse(JSON.stringify(((ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})).content || {})),
               slug: this$._slug
             };
             return this$._core.auth.ensure().then(function(){
@@ -173,7 +180,7 @@
               return this$._core.captcha.guard({
                 cb: function(captcha){
                   payload.captcha = captcha;
-                  return ld$.fetch('/api/discuss', {
+                  return ld$.fetch('/api/discuss/comment', {
                     method: payload.key ? 'PUT' : 'POST'
                   }, {
                     type: 'json',
@@ -186,19 +193,10 @@
                 return ret;
               });
             }).then(function(ret){
-              var c, ref$, ref1$;
-              c = (ref$ = (ref1$ = {
-                owner: this$._core.user.key,
-                createdtime: Date.now(),
-                _user: {
-                  key: this$._core.user.key,
-                  displayname: this$._core.user.displayname
-                }
-              }, ref1$.uri = payload.uri, ref1$.content = payload.content, ref1$.slug = payload.slug, ref1$), ref$.key = ret.key, ref$.slug = ret.slug, ref$);
-              this$.fire('new-comment', c);
-              this$.comments.push(c);
-              this$._edit.content.body = '';
-              this$._edit.preview = false;
+              var ref$, key$, ref1$;
+              ctx.content = JSON.parse(JSON.stringify(((ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})).content || {}));
+              ((ref$ = (ref1$ = this$._edit)[key$ = ctx.key] || (ref1$[key$] = {})).content || (ref$.content = {})).body = '';
+              ((ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})).preview = false;
               this$.view.get('input').value = '';
               return this$.view.render();
             })['finally'](function(){
@@ -220,26 +218,35 @@
       },
       handler: {
         "@": function(arg$){
-          var node;
-          node = arg$.node;
-          return node.classList.toggle('d-none', !this$.cfg["comment-new"]);
+          var node, ctx, ref$, key$;
+          node = arg$.node, ctx = arg$.ctx;
+          if (!ctx.key) {
+            return node.classList.toggle('d-none', !this$.cfg["comment-new"]);
+          } else {
+            return node.classList.toggle('d-none', !((ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})).editing);
+          }
+        },
+        input: function(arg$){
+          var node, views, ctx, ref$, ref1$, key$;
+          node = arg$.node, views = arg$.views, ctx = arg$.ctx;
+          return node.value = ((ref$ = (ref1$ = this$._edit)[key$ = ctx.key] || (ref1$[key$] = {})).content || (ref$.content = {})).body || '';
         },
         "toggle-preview": {
           action: {
             input: {
               check: function(arg$){
-                var node, views;
-                node = arg$.node, views = arg$.views;
-                this$._edit.preview = !!node.checked;
+                var node, views, ctxs, ref$, key$;
+                node = arg$.node, views = arg$.views, ctxs = arg$.ctxs;
+                ((ref$ = this$._edit)[key$ = ctxs[0].key] || (ref$[key$] = {})).preview = !!node.checked;
                 return views[1].render();
               }
             },
             click: {
               label: function(arg$){
-                var node, views, input;
-                node = arg$.node, views = arg$.views;
+                var node, views, ctxs, input, ref$, key$;
+                node = arg$.node, views = arg$.views, ctxs = arg$.ctxs;
                 input = views[0].get('check');
-                this$._edit.preview = input.checked = !input.checked;
+                ((ref$ = this$._edit)[key$ = ctxs[0].key] || (ref$[key$] = {})).preview = input.checked = !input.checked;
                 return views[1].render();
               }
             }
@@ -249,10 +256,10 @@
           action: {
             input: {
               check: function(arg$){
-                var node, views, useMarkdown;
-                node = arg$.node, views = arg$.views;
+                var node, views, ctxs, useMarkdown;
+                node = arg$.node, views = arg$.views, ctxs = arg$.ctxs;
                 useMarkdown = !!node.checked;
-                setCfg({
+                setCfg(ctxs[0], {
                   renderer: useMarkdown ? 'markdown' : ''
                 });
                 return views[1].render();
@@ -260,11 +267,11 @@
             },
             click: {
               label: function(arg$){
-                var node, views, input, useMarkdown;
-                node = arg$.node, views = arg$.views;
+                var node, views, ctxs, input, useMarkdown;
+                node = arg$.node, views = arg$.views, ctxs = arg$.ctxs;
                 input = views[0].get('check');
                 useMarkdown = input.checked = !input.checked;
-                setCfg({
+                setCfg(ctxs[0], {
                   renderer: useMarkdown ? 'markdown' : ''
                 });
                 return views[1].render();
@@ -274,29 +281,31 @@
         },
         avatar: setAvatar,
         preview: function(arg$){
-          var node, revert, state, ref$;
-          node = arg$.node;
+          var node, ctx, revert, state, ref$, ref1$, key$;
+          node = arg$.node, ctx = arg$.ctx;
           revert = in$("off", node.getAttribute('ld').split(" "));
-          state = !(ref$ = !(this$._edit.preview && this$._edit.content.config.renderer === 'markdown')) !== !revert && (ref$ || revert);
+          state = !(ref$ = !(((ref1$ = this$._edit)[key$ = ctx.key] || (ref1$[key$] = {})).preview && ((((ref1$ = this$._edit)[key$ = ctx.key] || (ref1$[key$] = {})).content || {}).config || {}).renderer === 'markdown')) !== !revert && (ref$ || revert);
           return node.classList.toggle('d-none', state);
         },
         panel: function(arg$){
-          var node;
-          node = arg$.node;
+          var node, ctx, ref$, key$;
+          node = arg$.node, ctx = arg$.ctx;
           return this$.contentRender({
             node: node,
-            ctx: this$._edit
+            ctx: (ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})
           });
         },
         submit: function(arg$){
-          var node;
-          node = arg$.node;
-          return node.classList.toggle('disabled', !this$.isReady());
+          var node, ctx;
+          node = arg$.node, ctx = arg$.ctx;
+          return node.classList.toggle('disabled', !this$.isReady({
+            ctx: ctx
+          }));
         },
         "if-markdown": function(arg$){
-          var node, hidden;
-          node = arg$.node;
-          hidden = this$._edit.content.config.renderer !== 'markdown';
+          var node, ctx, hidden, ref$, key$;
+          node = arg$.node, ctx = arg$.ctx;
+          hidden = ((((ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})).content || {}).config || {}).renderer !== 'markdown';
           return node.classList.toggle('d-none', hidden);
         }
       }
@@ -338,7 +347,83 @@
                 return ctx._user.displayname;
               }
             },
+            action: {
+              click: {
+                edit: function(arg$){
+                  var node, ctx, views, ref$, key$;
+                  node = arg$.node, ctx = arg$.ctx, views = arg$.views;
+                  ((ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})).editing = !((ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})).editing;
+                  return views[0].render();
+                },
+                'delete': function(arg$){
+                  var node, ctx;
+                  node = arg$.node, ctx = arg$.ctx;
+                  return this$._core.auth.ensure().then(function(){
+                    if (!this$.host.confirmDelete) {
+                      return Promise.resolve(true);
+                    }
+                    return this$.host.confirmDelete({
+                      comment: ctx
+                    });
+                  }).then(function(it){
+                    if (!it) {
+                      return;
+                    }
+                    this$.ldld.on();
+                    return ld$.fetch("/api/discuss/comment/" + ctx.key, {
+                      method: 'DELETE'
+                    })['finally'](function(){
+                      debounce(1000).then(function(){
+                        return this$.ldld.off();
+                      });
+                    }).then(function(){
+                      this$.fire('delete-comment', ctx);
+                      this$.comments.splice(this$.comments.indexOf(ctx), 1);
+                      return this$.view.render();
+                    });
+                  });
+                }
+              }
+            },
+            init: {
+              "@": function(arg$){
+                var ctx, ref$, key$;
+                ctx = arg$.ctx;
+                return ((ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})).content = JSON.parse(JSON.stringify(ctx.content));
+              }
+            },
             handler: {
+              update: import$({
+                ctx: function(arg$){
+                  var ctxs;
+                  ctxs = arg$.ctxs;
+                  return ctxs[0];
+                }
+              }, cfg.edit),
+              edit: function(arg$){
+                var node, ctx, hide;
+                node = arg$.node, ctx = arg$.ctx;
+                hide = !this$.host.perm
+                  ? false
+                  : !this$.host.perm({
+                    comment: ctx,
+                    action: 'edit',
+                    config: this$.cfg
+                  });
+                return node.classList.toggle('d-none', hide);
+              },
+              'delete': function(arg$){
+                var node, ctx, hide;
+                node = arg$.node, ctx = arg$.ctx;
+                hide = !this$.host.perm
+                  ? false
+                  : !this$.host.perm({
+                    comment: ctx,
+                    action: 'delete',
+                    config: this$.cfg
+                  });
+                return node.classList.toggle('d-none', hide);
+              },
               avatar: setAvatar,
               role: {
                 list: function(arg$){
@@ -385,7 +470,11 @@
           return node.classList.toggle('d-none', !(!this$._loading !== !(ref$ = in$('off', names)) && (this$._loading || ref$)));
         },
         discuss: cfg.discuss,
-        edit: cfg.edit,
+        edit: import$({
+          ctx: function(){
+            return {};
+          }
+        }, cfg.edit),
         comments: cfg.comments
       }
     });
@@ -399,5 +488,10 @@
     var i = -1, l = xs.length >>> 0;
     while (++i < l) if (x === xs[i]) return true;
     return false;
+  }
+  function import$(obj, src){
+    var own = {}.hasOwnProperty;
+    for (var key in src) if (own.call(src, key)) obj[key] = src[key];
+    return obj;
   }
 }).call(this);
