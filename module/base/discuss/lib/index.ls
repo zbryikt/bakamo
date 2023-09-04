@@ -28,8 +28,8 @@ crud =
     if !uri => uri = \/
     limit = if isNaN(req.query.limit) => 20 else +req.query.limit <? 100
     offset = if isNaN(req.query.offset) => 0 else +req.query.offset
-    promise = if slug => db.query "select key,title from discuss where slug = $1 limit 1", [slug]
-    else db.query "select key,title from discuss where uri = $1 limit 1", [uri or \/]
+    promise = if slug => db.query "select key,title,slug from discuss where slug = $1 limit 1", [slug]
+    else db.query "select key,title,slug from discuss where uri = $1 limit 1", [uri or \/]
     promise
       .then (r={}) ->
         lc.discuss = discuss = r.[]rows.0
@@ -51,7 +51,7 @@ crud =
         """, [discuss.key, limit, offset]
           .then (r={}) ->
             lc.comments = r.[]rows.map -> it.ret.comment <<< {_user: it.ret.user}
-            api.role {users: lc.comments.map(->it.owner)}
+            api.role {discuss, users: lc.comments.map(->it.owner)}
           .then (r={}) ->
             lc.roles = r
             res.send lc{discuss, comments, roles}

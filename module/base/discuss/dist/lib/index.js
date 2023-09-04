@@ -47,8 +47,8 @@
           ? 0
           : +req.query.offset;
         promise = slug
-          ? db.query("select key,title from discuss where slug = $1 limit 1", [slug])
-          : db.query("select key,title from discuss where uri = $1 limit 1", [uri || '/']);
+          ? db.query("select key,title,slug from discuss where slug = $1 limit 1", [slug])
+          : db.query("select key,title,slug from discuss where uri = $1 limit 1", [uri || '/']);
         return promise.then(function(r){
           var discuss;
           r == null && (r = {});
@@ -63,6 +63,7 @@
               return ref$ = it.ret.comment, ref$._user = it.ret.user, ref$;
             });
             return api.role({
+              discuss: discuss,
               users: lc.comments.map(function(it){
                 return it.owner;
               })
