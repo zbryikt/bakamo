@@ -176,7 +176,8 @@
               slug: this$._slug
             };
             return this$._core.auth.ensure().then(function(){
-              this$.ldld.on();
+              var ref$, key$;
+              ((ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})).ldld.on();
               return this$._core.captcha.guard({
                 cb: function(captcha){
                   payload.captcha = captcha;
@@ -193,15 +194,28 @@
                 return ret;
               });
             }).then(function(ret){
-              var ref$, key$, ref1$;
+              var ref$, key$, c, ref1$;
               ctx.content = JSON.parse(JSON.stringify(((ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})).content || {}));
+              if (!ctx.key) {
+                c = (ref$ = (ref1$ = {
+                  owner: this$._core.user.key,
+                  createdtime: Date.now(),
+                  _user: {
+                    key: this$._core.user.key,
+                    displayname: this$._core.user.displayname
+                  }
+                }, ref1$.uri = payload.uri, ref1$.content = payload.content, ref1$.slug = payload.slug, ref1$), ref$.key = ret.key, ref$.slug = ret.slug, ref$);
+                this$.fire('new-comment', c);
+                this$.comments.push(c);
+              }
               ((ref$ = (ref1$ = this$._edit)[key$ = ctx.key] || (ref1$[key$] = {})).content || (ref$.content = {})).body = '';
               ((ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})).preview = false;
               this$.view.get('input').value = '';
               return this$.view.render();
             })['finally'](function(){
               return debounce(1000).then(function(){
-                return this$.ldld.off();
+                var ref$, key$;
+                return ((ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})).ldld.off();
               });
             });
           }
@@ -209,22 +223,28 @@
       },
       init: {
         submit: function(arg$){
-          var node;
-          node = arg$.node;
-          return this$.ldld = new ldloader({
+          var node, ctx, ref$, key$;
+          node = arg$.node, ctx = arg$.ctx;
+          return ((ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})).ldld = new ldloader({
             root: node
           });
         }
       },
       handler: {
         "@": function(arg$){
-          var node, ctx, ref$, key$;
+          var node, ctx, ref$, key$, hide;
           node = arg$.node, ctx = arg$.ctx;
-          if (!ctx.key) {
-            return node.classList.toggle('d-none', !this$.cfg["comment-new"]);
-          } else {
+          if (ctx.key) {
             return node.classList.toggle('d-none', !((ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})).editing);
           }
+          hide = !this$.host.perm
+            ? !this$.cfg["comment-new"]
+            : !this$.host.perm({
+              comment: ctx,
+              action: 'new',
+              config: this$.cfg
+            });
+          return node.classList.toggle('d-none', hide);
         },
         input: function(arg$){
           var node, views, ctx, ref$, ref1$, key$;
@@ -366,15 +386,17 @@
                       comment: ctx
                     });
                   }).then(function(it){
+                    var ref$, key$;
                     if (!it) {
                       return;
                     }
-                    this$.ldld.on();
+                    ((ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})).ldld.on();
                     return ld$.fetch("/api/discuss/comment/" + ctx.key, {
                       method: 'DELETE'
                     })['finally'](function(){
                       debounce(1000).then(function(){
-                        return this$.ldld.off();
+                        var ref$, key$;
+                        return ((ref$ = this$._edit)[key$ = ctx.key] || (ref$[key$] = {})).ldld.off();
                       });
                     }).then(function(){
                       this$.fire('delete-comment', ctx);

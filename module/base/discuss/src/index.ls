@@ -85,7 +85,7 @@ discuss.prototype = Object.create(Object.prototype) <<<
               slug: @_slug
             @_core.auth.ensure!
               .then ~>
-                @ldld.on!
+                @_edit{}[ctx.key].ldld.on!
                 @_core.captcha
                   .guard cb: (captcha) ->
                     payload <<< {captcha}
@@ -97,18 +97,30 @@ discuss.prototype = Object.create(Object.prototype) <<<
               .then (ret) -> debounce 1000 .then -> return ret
               .then (ret) ~>
                 ctx <<< content: JSON.parse(JSON.stringify(@_edit{}[ctx.key].content or {}))
+                if !ctx.key =>
+                  c = {
+                    owner: @_core.user.key
+                    createdtime: Date.now!
+                    _user:
+                      key: @_core.user.key,
+                      displayname: @_core.user.displayname
+                  } <<< payload{uri, content, slug} <<< ret{key, slug}
+                  @fire \new-comment, c
+                  @comments.push c
                 # TODO we may want to update role object
                 # o commenters can see their roles immediately
                 @_edit{}[ctx.key].{}content.body = ''
                 @_edit{}[ctx.key].preview = false
                 @view.get \input .value = ''
                 @view.render!
-              .finally ~> debounce 1000 .then ~> @ldld.off!
-      init: submit: ({node}) ~> @ldld = new ldloader root: node
+              .finally ~> debounce 1000 .then ~> @_edit{}[ctx.key].ldld.off!
+      init: submit: ({node, ctx}) ~> @_edit{}[ctx.key].ldld = new ldloader root: node
       handler:
         "@": ({node, ctx}) ~>
-          if !ctx.key => node.classList.toggle \d-none, !@cfg["comment-new"]
-          else => node.classList.toggle \d-none, !@_edit{}[ctx.key].editing
+          if ctx.key => return node.classList.toggle \d-none, !@_edit{}[ctx.key].editing
+          hide = if !@host.perm => !@cfg["comment-new"]
+          else !@host.perm({comment: ctx, action: \new, config: @cfg})
+          node.classList.toggle \d-none, hide
         input: ({node, views, ctx}) ~>
           node.value = @_edit{}[ctx.key].{}content.body or ''
         "toggle-preview":
@@ -169,12 +181,12 @@ discuss.prototype = Object.create(Object.prototype) <<<
                   return @host.confirm-delete {comment: ctx}
                 .then ~>
                   if !it => return
-                  @ldld.on!
+                  @_edit{}[ctx.key].ldld.on!
                   ld$.fetch(
                     "/api/discuss/comment/#{ctx.key}", {method: \DELETE}
                   )
                     .finally ~>
-                      debounce 1000 .then ~> @ldld.off!
+                      debounce 1000 .then ~> @_edit{}[ctx.key].ldld.off!
                       return
                     .then ~>
                       @fire \delete-comment, ctx
