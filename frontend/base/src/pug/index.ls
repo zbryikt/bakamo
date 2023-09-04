@@ -90,7 +90,9 @@
       inner = ld$.find(node, '.inner', 0)
 
     discuss: ({node}) ~>
-      data = host: avatar: -> "/assets/img/avatar/#{Math.ceil(Math.random! * 4)}.png"
+      data =
+        host: avatar: -> "/assets/img/avatar/#{Math.ceil(Math.random! * 4)}.png"
+        slug: \test
       @manager.from {name: \@servebase/discuss}, {root: node, data} .then ->
 
   text: do
