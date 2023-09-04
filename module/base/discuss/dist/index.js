@@ -132,7 +132,7 @@
       node = arg$.node, ctx = arg$.ctx;
       if (this$.host.avatar) {
         return node.style.background = "url(" + this$.host.avatar({
-          ctx: ctx
+          comment: ctx || {}
         }) + ")";
       } else {
         return node.style.background = 'auto';

@@ -56,25 +56,25 @@
           if (!discuss) {
             return res.send({});
           }
-          return db.query("with obj as (\n  select\n    c as comment,\n    to_json(( select d from ( select u.key, u.displayname ) d)) as \"user\"\n  from comment as c\n  left join users as u\n    on u.key = c.owner\n  where\n    c.discuss = $1 and\n    c.deleted is not true and\n    c.state = 'active'\n  order by distance limit $2 offset $3\n) select row_to_json(o) as ret from obj as o", [discuss.key, limit, offset]);
-        }).then(function(r){
-          r == null && (r = {});
-          lc.comments = (r.rows || (r.rows = [])).map(function(it){
-            var ref$;
-            return ref$ = it.ret.comment, ref$._user = it.ret.user, ref$;
-          });
-          return api.role({
-            users: lc.comments.map(function(it){
-              return it.owner;
-            })
-          });
-        }).then(function(r){
-          r == null && (r = {});
-          lc.roles = r;
-          return res.send({
-            discuss: lc.discuss,
-            comments: lc.comments,
-            roles: lc.roles
+          return db.query("with obj as (\n  select\n    c as comment,\n    to_json(( select d from ( select u.key, u.displayname ) d)) as \"user\"\n  from comment as c\n  left join users as u\n    on u.key = c.owner\n  where\n    c.discuss = $1 and\n    c.deleted is not true and\n    c.state = 'active'\n  order by distance limit $2 offset $3\n) select row_to_json(o) as ret from obj as o", [discuss.key, limit, offset]).then(function(r){
+            r == null && (r = {});
+            lc.comments = (r.rows || (r.rows = [])).map(function(it){
+              var ref$;
+              return ref$ = it.ret.comment, ref$._user = it.ret.user, ref$;
+            });
+            return api.role({
+              users: lc.comments.map(function(it){
+                return it.owner;
+              })
+            });
+          }).then(function(r){
+            r == null && (r = {});
+            lc.roles = r;
+            return res.send({
+              discuss: lc.discuss,
+              comments: lc.comments,
+              roles: lc.roles
+            });
           });
         });
       },

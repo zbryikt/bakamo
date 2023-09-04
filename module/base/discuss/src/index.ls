@@ -59,7 +59,7 @@ discuss.prototype = Object.create(Object.prototype) <<<
   _view: ({root}) ->
     set-cfg = (o = {}) ~> for k,v of o => @_edit.content.config[k] = v
     set-avatar = ({node, ctx}) ~>
-      if @host.avatar => node.style.background = "url(#{@host.avatar {ctx}})"
+      if @host.avatar => node.style.background = "url(#{@host.avatar {comment: ctx or {}}})"
       else node.style.background = \auto
     cfg = {}
     cfg.edit =

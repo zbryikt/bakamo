@@ -49,12 +49,13 @@ crud =
           order by distance limit $2 offset $3
         ) select row_to_json(o) as ret from obj as o
         """, [discuss.key, limit, offset]
-      .then (r={}) ->
-        lc.comments = r.[]rows.map -> it.ret.comment <<< {_user: it.ret.user}
-        api.role {users: lc.comments.map(->it.owner)}
-      .then (r={}) ->
-        lc.roles = r
-        res.send lc{discuss, comments, roles}
+          .then (r={}) ->
+            lc.comments = r.[]rows.map -> it.ret.comment <<< {_user: it.ret.user}
+            api.role {users: lc.comments.map(->it.owner)}
+          .then (r={}) ->
+            lc.roles = r
+            res.send lc{discuss, comments, roles}
+
   post: (req, res) ->
     lc = {}
     Promise.resolve!

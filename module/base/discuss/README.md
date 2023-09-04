@@ -9,7 +9,7 @@ You can use `@plotdb/block` to load `@servebase/discuss`:
 where `data` is an object with following fields:
 
  - `host`: an object providing host api including:
-   - `avatar(obj)`: return URL to the avatar for the given comment data object `obj` (see `Comment Object` below).
+   - `avatar({comment})`: return URL to the avatar for the given `comment` object (see `Comment Object` below).
  - `uri`: uri of the discuss thread to load. ignored if `slug` is provided.
  - `slug`: slug of the discuss thread to load. if omitted, `uri` will be used instead.
    - either `slug` or `uri` should be provided, otherwise all threads will be loaded.
