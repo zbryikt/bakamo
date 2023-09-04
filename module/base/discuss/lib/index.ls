@@ -6,6 +6,7 @@ api = api or {}
 route = route or {}
 db = backend.db
 
+# not used for now
 all-thread = (req, res) ->
   limit = if isNaN(req.query.limit) => 20 else +req.query.limit <? 100
   offset = if isNaN(req.query.offset) => 0 else +req.query.offset
@@ -23,7 +24,7 @@ crud =
     lc = {}
     {slug,uri} = req.query{slug, uri}
     # TODO consider user scneario for get without slug or uri
-    if !(slug or uri) => return all-thread req, res
+    if !(slug or uri) => return aux.reject 400 #all-thread req, res
     # fallback to '/' if no slug and no uri
     if !uri => uri = \/
     limit = if isNaN(req.query.limit) => 20 else +req.query.limit <? 100
@@ -32,8 +33,11 @@ crud =
     else db.query "select key,title,slug,uri from discuss where uri = $1 limit 1", [uri or \/]
     promise
       .then (r={}) ->
-        lc.discuss = discuss = r.[]rows.0
-        if !discuss => return res.send({})
+        lc.discuss = r.[]rows.0
+        if !lc.discuss or !api.perm => return
+        api.perm {user: req.user, discuss: lc.discuss, action: \view}
+      .then ->
+        if !lc.discuss => return res.send {}
         db.query """
         with obj as (
           select
@@ -48,10 +52,10 @@ crud =
             c.state = 'active'
           order by distance limit $2 offset $3
         ) select row_to_json(o) as ret from obj as o
-        """, [discuss.key, limit, offset]
+        """, [lc.discuss.key, limit, offset]
           .then (r={}) ->
             lc.comments = r.[]rows.map -> it.ret.comment <<< {_user: it.ret.user}
-            api.role {discuss, users: lc.comments.map(->it.owner)}
+            api.role {discuss: lc.discuss, users: Array.from(new Set(lc.comments.map(->it.owner)))}
           .then (r={}) ->
             lc.roles = r
             res.send lc{discuss, comments, roles}
@@ -65,6 +69,8 @@ crud =
         lc.content = (lc.content or {}){body, config}
         # fallback to '/' if no slug and no uri
         if !lc.uri => lc.uri = \/
+        if api.perm => api.perm {user: req.user, discuss: lc{uri, slug}, action: \new}
+      .then ->
         if lc.slug => db.query "select key, slug from discuss where slug = $1", [lc.slug]
         else db.query "select key, slug from discuss where uri = $1", [lc.uri]
       .then (r = {}) ->
@@ -104,19 +110,56 @@ crud =
         lc.ret <<< {slug: lc.discuss.slug}
         db.query "update discuss set modifiedtime = now()"
       .then -> res.send lc.ret
+
   put: (req, res) ->
-    if !req.user => return aux.r404 res
-    lc = {}
-    Promise.resolve!
+    lc =
+      content: req.body.content{body, config}
+      comment: req.body.key
+    db.query """
+    with obj as (
+      select
+	c as comment,
+        d as discuss
+      from comment as c
+      left join discuss as d
+        on d.key = c.discuss
+      where
+	c.key = $1 and
+	c.deleted is not true
+    ) select row_to_json(o) as ret from obj as o
+    """, [lc.comment]
+      .then (r={}) ->
+        {comment,discuss} = ((r.[]rows.0 or {}).ret or {}){comment, discuss}
+        if api.perm => api.perm {user: req.user, discuss, comment, action: \edit}
+        else if comment.owner != req.user.key => return aux.reject 403
       .then ->
-        lc.content = req.body.content{body, config}
-        db.query "update comment set (content) = ($1)", [lc.content]
+        db.query """
+        update comment set (content) = ($1) where key = $2
+        """, [lc.content]
       .then -> res.send!
-      .catch aux.error-handler res
+
   delete: (req, res) ->
-    if !req.user => return aux.r404 res
-    if isNaN(key = +req.params.id) => return aux.r404 res
-    db.query "update comment set deleted = true where key = $1 and owner = $2", [key, req.user.key]
+    if !req.user => return aux.reject 404
+    if isNaN(key = +req.params.id) => return aux.reject 404
+    db.query """
+    with obj as (
+      select
+	c as comment,
+        d as discuss
+      from comment as c
+      left join discuss as d
+        on d.key = c.discuss
+      where
+	c.key = $1 and
+	c.deleted is not true
+    ) select row_to_json(o) as ret from obj as o
+    """, [key]
+      .then (r={}) ->
+        {comment,discuss} = ((r.[]rows.0 or {}).ret or {}){comment, discuss}
+        if !comment => return aux.reject 404
+        if api.perm => api.perm {user: req.user, discuss, comment, action: \delete}
+        else if comment.owner != req.user.key => return aux.reject 403
+      .then -> db.query "update comment set deleted = true where key = $1 and owner = $2", [key, req.user.key]
       .then -> res.send!
 
 if route.api =>

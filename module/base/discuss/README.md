@@ -31,6 +31,7 @@ import `@servebase/discuss` and initialize `discuss` backend API by following co
 Additionally, `api` is an customizable object containing API extensions for discuss to call, including:
 
  - `role({discuss, users})`: return a Promise resolving with a hash mapping from user key to a list string for its corresponding roles. `discuss` is the Discuss object we want to resolve.
+ - `perm({user, discuss, comment, action})`: return a Promise which resolves if permission granted, otherwise rejects with an Error.
 
 
 ## Discuss Object

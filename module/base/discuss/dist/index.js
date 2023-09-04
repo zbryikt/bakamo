@@ -222,7 +222,7 @@
         "@": function(arg$){
           var node;
           node = arg$.node;
-          return node.classList.toggle('d-none', !!this$.cfg["comment-new"]);
+          return node.classList.toggle('d-none', !this$.cfg["comment-new"]);
         },
         "toggle-preview": {
           action: {

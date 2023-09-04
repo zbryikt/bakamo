@@ -110,7 +110,7 @@ discuss.prototype = Object.create(Object.prototype) <<<
               .finally ~> debounce 1000 .then ~> @ldld.off!
       init: submit: ({node}) ~> @ldld = new ldloader root: node
       handler:
-        "@": ({node}) ~> node.classList.toggle \d-none, !!@cfg["comment-new"]
+        "@": ({node}) ~> node.classList.toggle \d-none, !@cfg["comment-new"]
         "toggle-preview":
           action:
             input: check: ({node, views}) ~>
