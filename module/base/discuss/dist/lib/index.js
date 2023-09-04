@@ -47,8 +47,8 @@
           ? 0
           : +req.query.offset;
         promise = slug
-          ? db.query("select key,title,slug from discuss where slug = $1 limit 1", [slug])
-          : db.query("select key,title,slug from discuss where uri = $1 limit 1", [uri || '/']);
+          ? db.query("select key,title,slug,uri from discuss where slug = $1 limit 1", [slug])
+          : db.query("select key,title,slug,uri from discuss where uri = $1 limit 1", [uri || '/']);
         return promise.then(function(r){
           var discuss;
           r == null && (r = {});

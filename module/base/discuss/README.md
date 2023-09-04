@@ -38,7 +38,9 @@ Additionally, `api` is an customizable object containing API extensions for disc
 You can use following fields when resolving a discuss object:
 
  - `slug`: slug for this discuss.
+ - `key`: key for this discuss
  - `uri`: uri for this discuss, if any
+ - `title`: title for this discuss, if any
 
 
 ## Comment Object

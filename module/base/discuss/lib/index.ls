@@ -28,8 +28,8 @@ crud =
     if !uri => uri = \/
     limit = if isNaN(req.query.limit) => 20 else +req.query.limit <? 100
     offset = if isNaN(req.query.offset) => 0 else +req.query.offset
-    promise = if slug => db.query "select key,title,slug from discuss where slug = $1 limit 1", [slug]
-    else db.query "select key,title,slug from discuss where uri = $1 limit 1", [uri or \/]
+    promise = if slug => db.query "select key,title,slug,uri from discuss where slug = $1 limit 1", [slug]
+    else db.query "select key,title,slug,uri from discuss where uri = $1 limit 1", [uri or \/]
     promise
       .then (r={}) ->
         lc.discuss = discuss = r.[]rows.0
