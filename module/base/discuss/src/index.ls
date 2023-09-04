@@ -2,6 +2,7 @@
 discuss = (o = {}) ->
   @root = if typeof(o.root) == \string => document.querySelector(o.root) else o.root
   @host = o.host or {}
+  @cfg = o.config or {}
 
   if marked? =>
     md = new marked.Marked!
@@ -109,6 +110,7 @@ discuss.prototype = Object.create(Object.prototype) <<<
               .finally ~> debounce 1000 .then ~> @ldld.off!
       init: submit: ({node}) ~> @ldld = new ldloader root: node
       handler:
+        "@": ({node}) ~> node.classList.toggle \d-none, !!@cfg["comment-new"]
         "toggle-preview":
           action:
             input: check: ({node, views}) ~>

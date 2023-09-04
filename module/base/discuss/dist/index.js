@@ -8,6 +8,7 @@
       ? document.querySelector(o.root)
       : o.root;
     this.host = o.host || {};
+    this.cfg = o.config || {};
     if (typeof marked != 'undefined' && marked !== null) {
       md = new marked.Marked();
       markedr = new marked.Renderer();
@@ -218,6 +219,11 @@
         }
       },
       handler: {
+        "@": function(arg$){
+          var node;
+          node = arg$.node;
+          return node.classList.toggle('d-none', !!this$.cfg["comment-new"]);
+        },
         "toggle-preview": {
           action: {
             input: {

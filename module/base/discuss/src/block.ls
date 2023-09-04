@@ -9,7 +9,7 @@ module.exports =
     {marked,discuss} = ctx
     data = data or {}
     ({core}) <- servebase.corectx _
-    disc = new discuss {root, core} <<< data{slug, host, uri}
+    disc = new discuss {root, core} <<< data{slug, host, uri, config}
     disc.init!
       .then -> disc.load!
       .then -> console.log "discuss loaded."
