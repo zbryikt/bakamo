@@ -307,10 +307,14 @@
           if (err) {
             next(err);
           } else {
-            res.send();
+            res.send({});
           }
         });
-      })['catch'](function(){
+      })['catch'](function(e){
+        if (lderror.id(e) === 1014) {
+          return next(e);
+        }
+        console.error(e);
         next(lderror(403));
       });
     });

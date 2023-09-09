@@ -133,6 +133,8 @@ module.exports =
           id = lderror.id e
           if id >= 500 and id < 599 => return lderror.reject 1007
           if id == 1029 => return Promise.reject e
+          # if we want to hint user the account existed.
+          # we can handle error id 1014 here (apply existed resource)
           if id == 1004 => return @info "login-exceeded"
           @info "#{@_tab}-failed"
           @form.fields.password.value = null

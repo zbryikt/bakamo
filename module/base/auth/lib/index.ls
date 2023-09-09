@@ -172,8 +172,11 @@ route.auth
             backend.log-mail.error {err}, "send mail verification mail failed (#username)".red
           .then -> user
       .then (user) !->
-        req.login user, (err) !-> if err => next(err) else res.send!
-      .catch !-> next(lderror 403)
+        req.login user, (err) !-> if err => next(err) else res.send {}
+      .catch (e) !->
+        if lderror.id(e) == 1014 => return next(e)
+        console.error e
+        next(lderror 403)
   ..post \/login, backend.middleware.captcha, (req, res, next) ->
     ((err,user,info) <- passport.authenticate \local, _
     if err or !user => return next(err or lderror(1000))
