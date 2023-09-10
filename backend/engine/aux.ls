@@ -67,7 +67,7 @@ base = do
 
   validate-key: (req, res, next) ->
     if ((val = req.params.key) and !isNaN(val) and val > 0) => return next!
-    next new lderror(400)
+    next(new Error! <<< {name: 'lderror', id: 400})
 
   clear-cookie: (req, res) ->
     domain = "#{req.hostname}".split('.').filter(->it)

@@ -67,11 +67,11 @@
         : next((ref$ = new Error(), ref$.name = 'lderror', ref$.id = 404, ref$));
     },
     validateKey: function(req, res, next){
-      var val;
+      var val, ref$;
       if ((val = req.params.key) && !isNaN(val) && val > 0) {
         return next();
       }
-      return next(new lderror(400));
+      return next((ref$ = new Error(), ref$.name = 'lderror', ref$.id = 400, ref$));
     },
     clearCookie: function(req, res){
       var domain, i$, to$, i, d;
