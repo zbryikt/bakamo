@@ -13,7 +13,7 @@ div
       .col-md
         .form-group
           label.d-flex.align-items-end
-            .flex-grow-1(t) userid
+            .flex-grow-1 #[span(t) userid] #[small.text-muted / #[span(t) iddesc]]
             a.badge.badge-dark.d-none(ld="is-staff",href="/staff/") staff
           .input-group
             input.form-control.disabled(ld="uid",readonly,value="")
