@@ -59,7 +59,8 @@ base = do
 
   # deprecated. use lderror.reject instead.
   reject: (code=403,msg="") ->
-    Promise.reject new Error(if typeof(msg) == typeof({}) => JSON.stringify(msg) else msg) <<< {code, name: 'lderror'}
+    e = new Error(if typeof(msg) == typeof({}) => JSON.stringify(msg) else msg)
+    Promise.reject(e <<< {id: code, code, name: 'lderror'})
 
   is-admin: (req, res, next) ->
     return if req.user and req.user.staff == 1 => next!
