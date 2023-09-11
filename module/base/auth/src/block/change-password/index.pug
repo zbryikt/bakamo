@@ -1,23 +1,24 @@
 include @/@servebase/pugutil/index.pug
 div
   script(type="@plotdb/block"): include:lsc index.ls
+  style(type="text/css"): include:stylus index.styl
   h3(t) title
   hr
   form.form(data-name="passwd")
-    .row
-      .col-md-8
+    ._sudo-row
+      ._sudo-col
         .form-group
           label(t) old
           //- https://goo.gl/9p2vKq Chrome complains if no type text username field provided.
           input.d-none(name="username",type="text",autocomplete="username")
           input.form-control(name="oldpasswd",type="password",autocomplete="current-password")
           .invalid-feedback(t) nomatch
-      .col-md-4
+      ._sudo-col
         .form-group
           label(t) forget
           .btn.btn-outline-dark.btn-block.ld-ext-right(ld="send-reset-link")
-            +i.i-mail
-            span.mx-1(t) send
+            +i.i-mail.d-none.d-sm-inline
+            span.mx-1.text-nowrap(t) send
             .ld.ldld.bare.em-1
     .row
       .col-md-8
@@ -26,8 +27,8 @@ div
           input.form-control(name="newpasswd1",type="password",autocomplete="new-password")
           .invalid-feedback(t) weak
       .col-md-4
-        .form-group(data-node="passwd-bar1")
-          label.text-capitalize &nbsp;
+        .form-group.pt-2(data-node="passwd-bar1")
+          label.text-sm.text-muted.text-capitalize.mb-1 Password Strength
           .progress(style="height:36px"): .progress-bar.progress-bar-striped(style="width:0%")
     .row
       .col-md-8

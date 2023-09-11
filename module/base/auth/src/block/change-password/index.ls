@@ -6,7 +6,7 @@ module.exports =
         old: "Old Password"
         nomatch: "Password not matched."
         forget: "Forget Password?"
-        send: "Send Reset Link"
+        send: "Get Reset Link"
         new: "New Password"
         weak: "Password too weak"
         again: "New Password Again"
