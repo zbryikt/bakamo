@@ -7,7 +7,9 @@
         var ret;
         ret = ldc.register(['core'], function(o){
           return o.core.init().then(function(){
-            return cb.apply(o.core, [o]);
+            if (cb) {
+              return cb.apply(o.core, [o]);
+            }
           }).then(res)['catch'](rej);
         });
         return ldc.init(ret);

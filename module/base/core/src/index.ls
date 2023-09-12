@@ -3,7 +3,7 @@ servebase =
     new Promise (res, rej) ->
       ret = ldc.register <[core]>, (o) ->
         o.core.init!
-          .then -> cb.apply o.core, [o]
+          .then -> if cb => cb.apply o.core, [o]
           .then res
           .catch rej
       ldc.init ret
