@@ -1,4 +1,6 @@
 servebase =
+  # last resort if we don't have inited core.
+  reset: -> auth.reset!
   corectx: (cb) ->
     new Promise (res, rej) ->
       ret = ldc.register <[core]>, (o) ->

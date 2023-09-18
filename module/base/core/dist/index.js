@@ -2,6 +2,9 @@
 (function(){
   var servebase;
   servebase = {
+    reset: function(){
+      return auth.reset();
+    },
     corectx: function(cb){
       return new Promise(function(res, rej){
         var ret;
