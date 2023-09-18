@@ -1,4 +1,4 @@
-require! <[fs chokidar lderror jsonwebtoken express-session passport passport-local]>
+require! <[fs chokidar lderror jsonwebtoken @plotdb/express-session passport passport-local]>
 require! <[passport-facebook]>
 require! <[passport-google-oauth20]>
 require! <[passport-line-auth]>

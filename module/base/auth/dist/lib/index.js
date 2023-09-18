@@ -5,7 +5,7 @@
   chokidar = require('chokidar');
   lderror = require('lderror');
   jsonwebtoken = require('jsonwebtoken');
-  expressSession = require('express-session');
+  expressSession = require('@plotdb/express-session');
   passport = require('passport');
   passportLocal = require('passport-local');
   passportFacebook = require('passport-facebook');
