@@ -5,7 +5,7 @@
   chokidar = require('chokidar');
   lderror = require('lderror');
   jsonwebtoken = require('jsonwebtoken');
-  expressSession = require('express-session');
+  expressSession = require('@plotdb/express-session');
   passport = require('passport');
   passportLocal = require('passport-local');
   passportFacebook = require('passport-facebook');
@@ -307,10 +307,14 @@
           if (err) {
             next(err);
           } else {
-            res.send();
+            res.send({});
           }
         });
-      })['catch'](function(){
+      })['catch'](function(e){
+        if (lderror.id(e) === 1014) {
+          return next(e);
+        }
+        console.error(e);
         next(lderror(403));
       });
     });

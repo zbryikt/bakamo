@@ -158,7 +158,13 @@
           config: config,
           createdtime: new Date()
         };
-        return this$.db.query("insert into users (username,password,method,displayname,createdtime,detail,config)\nvalues ($1,$2,$3,$4,$5,$6,$7)\nreturning key", [username, password, method, displayname, new Date().toUTCString(), detail, config]).then(function(r){
+        return this$.db.query("select key from users where username = $1", [username]).then(function(r){
+          r == null && (r = {});
+          if ((r.rows || (r.rows = [])).length) {
+            return lderror.reject(1014);
+          }
+          return this$.db.query("insert into users (username,password,method,displayname,createdtime,detail,config)\nvalues ($1,$2,$3,$4,$5,$6,$7)\nreturning key", [username, password, method, displayname, new Date().toUTCString(), detail, config]);
+        }).then(function(r){
           r == null && (r = {});
           if (!(r = (r.rows || (r.rows = []))[0])) {
             return Promise.reject(500);

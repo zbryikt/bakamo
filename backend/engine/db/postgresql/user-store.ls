@@ -72,14 +72,17 @@ user-store.prototype = Object.create(Object.prototype) <<< do
         if !displayname => displayname = username.replace(/@[^@]+$/, "")
         config.{}consent.cookie = new Date!getTime!
         user = { username, password, method, displayname, detail, config, createdtime: new Date! }
-        @db.query """
-        insert into users (username,password,method,displayname,createdtime,detail,config)
-        values ($1,$2,$3,$4,$5,$6,$7)
-        returning key
-        """, [
-          username, password, method, displayname,
-          new Date!toUTCString!, detail, config
-        ]
+        @db.query "select key from users where username = $1", [username]
+          .then (r={}) ~>
+            if r.[]rows.length => return lderror.reject 1014
+            @db.query """
+            insert into users (username,password,method,displayname,createdtime,detail,config)
+            values ($1,$2,$3,$4,$5,$6,$7)
+            returning key
+            """, [
+              username, password, method, displayname,
+              new Date!toUTCString!, detail, config
+            ]
           .then (r={}) ~>
             if !(r = r.[]rows.0) => return Promise.reject 500
             user <<< r{key}

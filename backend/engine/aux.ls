@@ -59,7 +59,8 @@ base = do
 
   # deprecated. use lderror.reject instead.
   reject: (code=403,msg="") ->
-    Promise.reject new Error(if typeof(msg) == typeof({}) => JSON.stringify(msg) else msg) <<< {code, name: 'lderror'}
+    e = new Error(if typeof(msg) == typeof({}) => JSON.stringify(msg) else msg)
+    Promise.reject(e <<< {id: code, code, name: 'lderror'})
 
   is-admin: (req, res, next) ->
     return if req.user and req.user.staff == 1 => next!
@@ -67,7 +68,7 @@ base = do
 
   validate-key: (req, res, next) ->
     if ((val = req.params.key) and !isNaN(val) and val > 0) => return next!
-    next new lderror(400)
+    next(new Error! <<< {name: 'lderror', id: 400})
 
   clear-cookie: (req, res) ->
     domain = "#{req.hostname}".split('.').filter(->it)

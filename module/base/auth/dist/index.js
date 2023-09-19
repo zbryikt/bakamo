@@ -120,7 +120,7 @@
       },
       reset: function(){
         this.ui.loader.on();
-        return window.location.href = "/auth/reset";
+        return auth.reset();
       },
       ensure: function(opt){
         opt == null && (opt = {});
@@ -249,6 +249,9 @@
         });
       }
     });
+    auth.reset = function(){
+      return window.location.href = "/auth/reset";
+    };
     if (typeof module != 'undefined' && module !== null) {
       return module.exports = auth;
     } else if (typeof window != 'undefined' && window !== null) {

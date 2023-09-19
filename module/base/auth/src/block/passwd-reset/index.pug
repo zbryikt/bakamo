@@ -17,7 +17,7 @@
         span(t) note.1
         a.mx-1.clickable(onclick="lda.ldcvmgr.toggle('contact')",t) contact
         span(t) letushelp
-    .ldcv(ld="not-found"): .base.w-640.rwd: .inner.card: .card-body: .p-4
+    .ldcv.scroll.autogap(ld="not-found"): .base.w-640.rwd: .inner
       h1.text-center(t) notfound.title
       .text-center.text-muted.mb-4(t) notfound.desc
       .text-muted
@@ -32,9 +32,9 @@
           span(t) letushelp
       br
       .row
-        .col-md: .btn.btn-lg.btn-primary.btn-block(onclick="lda.ldcvmgr.toggle('contact')",t) contact-alt
-        .col-md: .btn.btn-lg.btn-outline-dark.btn-block(data-ldcv-set="",t) close
-    .ldcv(ld="sent"): .base.w-640.rwd: .inner.card: .card-body: .p-4.my-4
+        .col-md.mb-2: .btn.btn-lg.btn-primary.btn-block(onclick="lda.ldcvmgr.toggle('contact')",t) contact-alt
+        .col-md.mb-2: .btn.btn-lg.btn-outline-dark.btn-block(data-ldcv-set="",t) close
+    .ldcv.scroll.autogap(ld="sent"): .base.w-640.rwd: .inner
       .text-center.mb-4
         h1(t) sent.title
         p(t) sent.desc

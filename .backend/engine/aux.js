@@ -55,10 +55,11 @@
       return next((ref$ = new Error(), ref$.name = 'lderror', ref$.id = 1000, ref$.redirect = "/auth/?nexturl=" + req.originalUrl, ref$));
     },
     reject: function(code, msg){
-      var ref$;
+      var e;
       code == null && (code = 403);
       msg == null && (msg = "");
-      return Promise.reject((ref$ = new Error(typeof msg === typeof {} ? JSON.stringify(msg) : msg), ref$.code = code, ref$.name = 'lderror', ref$));
+      e = new Error(typeof msg === typeof {} ? JSON.stringify(msg) : msg);
+      return Promise.reject((e.id = code, e.code = code, e.name = 'lderror', e));
     },
     isAdmin: function(req, res, next){
       var ref$;
@@ -67,11 +68,11 @@
         : next((ref$ = new Error(), ref$.name = 'lderror', ref$.id = 404, ref$));
     },
     validateKey: function(req, res, next){
-      var val;
+      var val, ref$;
       if ((val = req.params.key) && !isNaN(val) && val > 0) {
         return next();
       }
-      return next(new lderror(400));
+      return next((ref$ = new Error(), ref$.name = 'lderror', ref$.id = 400, ref$));
     },
     clearCookie: function(req, res){
       var domain, i$, to$, i, d;

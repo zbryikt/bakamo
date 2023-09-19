@@ -51,7 +51,7 @@ auth.prototype = Object.create(Object.prototype) <<< do
       .catch (e) ~> @fire \error, e
   reset: ->
     @ui.loader.on!
-    window.location.href = "/auth/reset"
+    auth.reset!
 
   # ensure user is authed. shorthand and for readbility for auth.get({authed-only:true})
   ensure: (opt = {}) -> @get(opt <<< {authed-only: true})
@@ -142,6 +142,10 @@ auth.prototype = Object.create(Object.prototype) <<< do
         @oauth.form.parentNode.removeChild @oauth.form
       .then (g = {}) -> if !g.{}user.key => Promise.reject new lderror(1000) else return g
       .catch (e) ~> @fire \error, e; return Promise.reject(e)
+
+# auth issue may lead to uninitialized auth.
+# in this case, we have to call `auth.reset` so we don't have to pend on a never-inited auth obj.
+auth.reset = -> window.location.href = "/auth/reset"
 
 if module? => module.exports = auth
 else if window? => window.auth = auth

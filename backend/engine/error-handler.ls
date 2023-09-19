@@ -29,11 +29,20 @@ handler = (err, req, res, next) ->
     if err.code == \SESSIONCORRUPTED =>
       aux.clear-cookie req, res
       err = lderror 1029
+    # delegate csrf token mismatch to lderror handling
+    if err.code == \EBADCSRFTOKEN => err = lderror 1005
+    if err.id == 1029 =>
       # SESSIONCORRUPTED is a rare and strange error.
       # we should log it until we have confidence that this is solved correctly.
       err.log = true
-    # delegate csrf token mismatch to lderror handling
-    if err.code == \EBADCSRFTOKEN => err = lderror 1005
+      # we used to handle this in a specific route such as `/auth/reset`.
+      # However, this exception may be emitted directly from @plotdb/express-session,
+      # thus bypass `/auth/reset` directly - in this case we can never handle them.
+      # So, we clear cookie + logout here as the last resort to clear the mess.
+      try
+        aux.clear-cookie req, res
+        req.logout!
+      catch _e
     err.uuid = suuid!
     err <<< {_detail: user: (req.user or {}).key or 0, ip: aux.ip(req), url: req.originalUrl}
     # log every single error except those will be logged below ( has id + log = true )

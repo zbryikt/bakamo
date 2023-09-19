@@ -1,4 +1,4 @@
-require! <[express-session events]>
+require! <[@plotdb/express-session events]>
 
 session-store = (opt = {}) ->
   events.EventEmitter.call @

@@ -26,7 +26,7 @@
       return res.status(490).send(err);
     };
     handler = function(err, req, res, next){
-      var e;
+      var _e, e;
       try {
         if (!err) {
           return next();
@@ -34,10 +34,18 @@
         if (err.code === 'SESSIONCORRUPTED') {
           aux.clearCookie(req, res);
           err = lderror(1029);
-          err.log = true;
         }
         if (err.code === 'EBADCSRFTOKEN') {
           err = lderror(1005);
+        }
+        if (err.id === 1029) {
+          err.log = true;
+          try {
+            aux.clearCookie(req, res);
+            req.logout();
+          } catch (e$) {
+            _e = e$;
+          }
         }
         err.uuid = suuid();
         err._detail = {
